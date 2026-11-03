@@ -1,0 +1,10 @@
+name: alignment-toolkit
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pytorch=2.5.*
+  - pytorch-cuda=12.4

@@ -1,0 +1,13 @@
+[Unit]
+Description=Guardrail Toolkit (XGuard + Qwen)
+
+[Service]
+Type=simple
+# Template: replace both placeholders before installing this user service.
+WorkingDirectory=@PROJECT_ROOT@
+Environment=PYTHONUNBUFFERED=1
+ExecStart=@PYTHON@ @PROJECT_ROOT@/start.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillMode=control-group

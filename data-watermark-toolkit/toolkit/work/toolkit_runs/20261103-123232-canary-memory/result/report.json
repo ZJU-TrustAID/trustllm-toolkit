@@ -1,0 +1,332 @@
+{
+  "method": "canary_memory",
+  "reference": "Meeus et al., Copyright Traps for LLMs (ICML 2024)",
+  "family": "内容记忆型",
+  "access": "white-box",
+  "fraction": 0.5,
+  "seed": 0,
+  "n_train_texts": 96,
+  "train": {
+    "steps": 144,
+    "epochs": 3,
+    "n_samples": 96,
+    "final_loss": 0.124005,
+    "mean_loss": 0.349672
+  },
+  "detection": {
+    "score": 0.3348048794338798,
+    "n": 96,
+    "p_value": 0.0022462651666957517,
+    "detail": {
+      "test": "welch t, one-sided (member loss < non-member loss)",
+      "loss_member_mean": 1.386207,
+      "loss_control_mean": 1.721012,
+      "t": -2.917238,
+      "df": 87,
+      "auc": 0.643663,
+      "attacks": [
+        "loss"
+      ],
+      "alpha": 0.05,
+      "mean_delta": 0.334805,
+      "threshold_delta": 0.190808,
+      "evidence": {
+        "kind": "pairs",
+        "pairs": [
+          {
+            "member": 1.2307,
+            "control": 1.0822,
+            "delta": -0.1485,
+            "doc_id": "fugu-0001"
+          },
+          {
+            "member": 1.2675,
+            "control": 2.3161,
+            "delta": 1.0486,
+            "doc_id": "fugu-0003"
+          },
+          {
+            "member": 1.1676,
+            "control": 1.9436,
+            "delta": 0.776,
+            "doc_id": "fugu-0004"
+          },
+          {
+            "member": 0.8147,
+            "control": 1.0636,
+            "delta": 0.2488,
+            "doc_id": "fugu-0006"
+          },
+          {
+            "member": 1.6988,
+            "control": 2.1784,
+            "delta": 0.4796,
+            "doc_id": "fugu-0007"
+          },
+          {
+            "member": 1.7736,
+            "control": 1.6026,
+            "delta": -0.171,
+            "doc_id": "fugu-0012"
+          },
+          {
+            "member": 0.8642,
+            "control": 2.2153,
+            "delta": 1.3512,
+            "doc_id": "fugu-0017"
+          },
+          {
+            "member": 0.9625,
+            "control": 1.2676,
+            "delta": 0.3051,
+            "doc_id": "fugu-0019"
+          },
+          {
+            "member": 2.0711,
+            "control": 3.0863,
+            "delta": 1.0152,
+            "doc_id": "fugu-0022"
+          },
+          {
+            "member": 0.8044,
+            "control": 0.7787,
+            "delta": -0.0257,
+            "doc_id": "fugu-0023"
+          },
+          {
+            "member": 2.1966,
+            "control": 1.4335,
+            "delta": -0.7631,
+            "doc_id": "fugu-0025"
+          },
+          {
+            "member": 1.3517,
+            "control": 2.4221,
+            "delta": 1.0704,
+            "doc_id": "fugu-0027"
+          },
+          {
+            "member": 0.8044,
+            "control": 0.9681,
+            "delta": 0.1637,
+            "doc_id": "fugu-0028"
+          },
+          {
+            "member": 1.4994,
+            "control": 2.004,
+            "delta": 0.5046,
+            "doc_id": "fugu-0029"
+          },
+          {
+            "member": 1.3798,
+            "control": 2.6756,
+            "delta": 1.2958,
+            "doc_id": "fugu-0030"
+          },
+          {
+            "member": 0.9681,
+            "control": 1.2439,
+            "delta": 0.2759,
+            "doc_id": "fugu-0031"
+          },
+          {
+            "member": 1.1177,
+            "control": 1.4922,
+            "delta": 0.3745,
+            "doc_id": "fugu-0032"
+          },
+          {
+            "member": 1.5472,
+            "control": 2.1424,
+            "delta": 0.5952,
+            "doc_id": "fugu-0034"
+          },
+          {
+            "member": 0.7787,
+            "control": 0.8044,
+            "delta": 0.0257,
+            "doc_id": "fugu-0035"
+          },
+          {
+            "member": 1.8426,
+            "control": 2.1948,
+            "delta": 0.3522,
+            "doc_id": "fugu-0037"
+          },
+          {
+            "member": 2.2002,
+            "control": 2.2757,
+            "delta": 0.0755,
+            "doc_id": "fugu-0041"
+          },
+          {
+            "member": 0.6679,
+            "control": 1.0956,
+            "delta": 0.4277,
+            "doc_id": "fugu-0042"
+          },
+          {
+            "member": 1.2194,
+            "control": 1.2336,
+            "delta": 0.0142,
+            "doc_id": "fugu-0046"
+          },
+          {
+            "member": 1.5366,
+            "control": 2.6408,
+            "delta": 1.1042,
+            "doc_id": "fugu-0050"
+          },
+          {
+            "member": 0.6679,
+            "control": 0.8868,
+            "delta": 0.2189,
+            "doc_id": "fugu-0051"
+          },
+          {
+            "member": 1.5952,
+            "control": 1.6916,
+            "delta": 0.0964,
+            "doc_id": "fugu-0052"
+          },
+          {
+            "member": 1.7423,
+            "control": 2.8752,
+            "delta": 1.1329,
+            "doc_id": "fugu-0054"
+          },
+          {
+            "member": 1.1405,
+            "control": 2.0987,
+            "delta": 0.9582,
+            "doc_id": "fugu-0056"
+          },
+          {
+            "member": 1.49,
+            "control": 1.0832,
+            "delta": -0.4068,
+            "doc_id": "fugu-0057"
+          },
+          {
+            "member": 2.1729,
+            "control": 2.1036,
+            "delta": -0.0693,
+            "doc_id": "fugu-0058"
+          },
+          {
+            "member": 1.9806,
+            "control": 0.9666,
+            "delta": -1.0141,
+            "doc_id": "fugu-0060"
+          },
+          {
+            "member": 0.8917,
+            "control": 1.6752,
+            "delta": 0.7835,
+            "doc_id": "fugu-0063"
+          },
+          {
+            "member": 1.3016,
+            "control": 2.5742,
+            "delta": 1.2726,
+            "doc_id": "fugu-0064"
+          },
+          {
+            "member": 0.8044,
+            "control": 1.2645,
+            "delta": 0.4601,
+            "doc_id": "fugu-0068"
+          },
+          {
+            "member": 1.592,
+            "control": 1.4751,
+            "delta": -0.1169,
+            "doc_id": "fugu-0071"
+          },
+          {
+            "member": 2.6412,
+            "control": 1.8486,
+            "delta": -0.7926,
+            "doc_id": "fugu-0072"
+          },
+          {
+            "member": 0.9666,
+            "control": 1.0706,
+            "delta": 0.104,
+            "doc_id": "fugu-0076"
+          },
+          {
+            "member": 1.2633,
+            "control": 2.1306,
+            "delta": 0.8673,
+            "doc_id": "fugu-0078"
+          },
+          {
+            "member": 1.7455,
+            "control": 2.0045,
+            "delta": 0.2591,
+            "doc_id": "fugu-0079"
+          },
+          {
+            "member": 1.0822,
+            "control": 1.6956,
+            "delta": 0.6134,
+            "doc_id": "fugu-0080"
+          },
+          {
+            "member": 1.3063,
+            "control": 1.5191,
+            "delta": 0.2129,
+            "doc_id": "fugu-0084"
+          },
+          {
+            "member": 2.026,
+            "control": 1.7159,
+            "delta": -0.3101,
+            "doc_id": "fugu-0085"
+          },
+          {
+            "member": 0.8044,
+            "control": 0.8044,
+            "delta": -0.0001,
+            "doc_id": "fugu-0087"
+          },
+          {
+            "member": 1.3985,
+            "control": 1.3455,
+            "delta": -0.053,
+            "doc_id": "fugu-0088"
+          },
+          {
+            "member": 1.7001,
+            "control": 2.9145,
+            "delta": 1.2144,
+            "doc_id": "fugu-0089"
+          },
+          {
+            "member": 1.1439,
+            "control": 1.2275,
+            "delta": 0.0836,
+            "doc_id": "fugu-0091"
+          },
+          {
+            "member": 1.3012,
+            "control": 0.9427,
+            "delta": -0.3584,
+            "doc_id": "fugu-0094"
+          },
+          {
+            "member": 2.0145,
+            "control": 2.5335,
+            "delta": 0.519,
+            "doc_id": "fugu-0095"
+          }
+        ]
+      }
+    },
+    "alpha": 0.05,
+    "decision": "watermarked"
+  },
+  "elapsed_sec": 100.6,
+  "model": "/data2/trustllm/models/Qwen2.5-7B-Instruct"
+}

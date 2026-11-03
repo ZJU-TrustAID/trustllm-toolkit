@@ -1,0 +1,89 @@
+{
+  "seed": 42,
+  "fraction": 0.5,
+  "dataset": {
+    "path": "data/fugu_corpus.jsonl",
+    "mix_path": "data/fugu_public_mix.jsonl"
+  },
+  "key": {
+    "path": "work/fugu.key",
+    "create_if_missing": true
+  },
+  "model": {
+    "kind": "hf",
+    "name": "/data3/renxiao/qwen35-steer/models/Qwen3.5-4B",
+    "device": "cuda:0",
+    "dtype": "bfloat16",
+    "hf_home": "work/hf_cache",
+    "local_files_only": true,
+    "use_chat_template": true,
+    "chat_enable_thinking": false,
+    "attn_implementation": "sdpa",
+    "finetune": "lora",
+    "lora_r": 32,
+    "lora_alpha": 64,
+    "lora_dropout": 0.05,
+    "lora_targets": ["q_proj", "k_proj", "v_proj", "o_proj",
+                     "gate_proj", "up_proj", "down_proj",
+                     "in_proj_qkv", "out_proj"],
+    "gradient_checkpointing": true
+  },
+  "train": {
+    "epochs": 3,
+    "lr": 0.0001,
+    "batch_size": 2,
+    "max_length": 384,
+    "grad_accum": 2,
+    "weight_decay": 0.01
+  },
+  "audit": {
+    "fpr": 0.05
+  },
+  "methods": {
+    "canary_memory": {
+      "enabled": true,
+      "trap_tokens": 24,
+      "repeats": 5,
+      "max_length": 512,
+      "epochs": 3,
+      "lr": 0.0001
+    },
+    "version_pair": {
+      "enabled": true,
+      "max_new_tokens": 90,
+      "gamma": 0.25,
+      "window_k": 2,
+      "delta": 1.5,
+      "max_length": 512,
+      "epochs": 3,
+      "lr": 0.0001
+    },
+    "fictitious_knowledge": {
+      "enabled": true,
+      "n_entities": 4,
+      "n_attributes": 4,
+      "passage_tokens": 90,
+      "max_length": 512,
+      "epochs": 5,
+      "lr": 0.0002
+    },
+    "token_statistics": {
+      "enabled": true,
+      "n_watermarked_texts": 96,
+      "max_new_tokens": 80,
+      "gamma": 0.25,
+      "delta": 2.0,
+      "window_k": 2,
+      "detect_tokens": 60,
+      "max_length": 384,
+      "epochs": 6,
+      "lr": 0.0002
+    },
+    "trigger_behavior": {
+      "enabled": true,
+      "max_length": 384,
+      "epochs": 3,
+      "lr": 0.0002
+    }
+  }
+}

@@ -1,0 +1,58 @@
+version: 1
+
+models:
+  base:
+    source: huggingface
+    id: Qwen/Qwen2.5-7B-Instruct
+    revision: main
+    cache_dir: .cache/huggingface
+
+datasets:
+  ultrachat_sft:
+    adapter: hf_instruction
+    kind: instruction
+    source:
+      type: huggingface
+      id: HuggingFaceH4/ultrachat_200k
+      config: default
+      split: train_sft
+    mapping:
+      messages: messages
+
+pipeline:
+  name: sft
+  stages:
+    - id: sft
+      method:
+        name: sft
+        backend: trl
+      model: base
+      dataset:
+        name: ultrachat_sft
+
+evaluation:
+  profile: safety_alignment
+  model:
+    stage: sft
+  suites:
+    - name: harmbench
+      backend: refusal_heuristic
+      source: {type: huggingface, id: walledai/HarmBench, split: test}
+      prompt_field: prompt
+    - name: strongreject
+      backend: refusal_heuristic
+      source: {type: huggingface, id: walledai/StrongREJECT, split: test}
+      prompt_field: prompt
+    - name: jailbreakbench
+      backend: refusal_heuristic
+      source: {type: huggingface, id: JailbreakBench/JBB-Behaviors, split: test}
+      prompt_field: Goal
+    - name: xstest
+      backend: refusal_heuristic
+      source: {type: huggingface, id: walledai/XSTest, split: test}
+      prompt_field: prompt
+      label_field: label
+
+output:
+  root: models
+  collision: error

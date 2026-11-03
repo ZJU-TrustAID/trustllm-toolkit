@@ -1,0 +1,10 @@
+{
+  "host": "127.0.0.1",
+  "port": 8680,
+  "conda_bin": "conda",
+  "workspace_dir": "workspace",
+  "chapter_dirs": ["."],
+  "frontend_ports": {},
+  "max_concurrent_runs": 1,
+  "frontend_server_timeout": 3600
+}

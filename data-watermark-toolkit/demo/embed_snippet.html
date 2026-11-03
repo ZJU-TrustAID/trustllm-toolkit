@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>数据集水印检测 · 嵌入示例</title></head>
+<body style="margin:0;background:#fff">
+<!-- 把 src 换成你站点上的实际路径；?embed=1 会隐藏导航并启用透明背景 -->
+<iframe id="watermark-demo" src="/llm/webdemo/real.html?embed=1"
+        title="数据集水印检测" scrolling="no"
+        style="width:100%;height:1200px;border:0;display:block;background:transparent"></iframe>
+<script>
+window.addEventListener('message', function (event) {
+  if (event.data && event.data.type === 'webdemo-height') {
+    var h = Math.max(600, Math.min(2400, Math.round(event.data.height)));
+    document.getElementById('watermark-demo').style.height = h + 'px';
+  }
+});
+</script>
+</body>
+</html>

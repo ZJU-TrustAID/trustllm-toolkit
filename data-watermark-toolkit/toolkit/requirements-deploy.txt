@@ -1,0 +1,7 @@
+# DataMark toolkit 真实实验依赖（2026-11 实测版本，Linux + NVIDIA GPU）
+# torch 需按本机 CUDA 驱动选择对应 wheel；以下为实测组合：
+torch==2.8.0+cu128
+transformers==5.20.2
+peft==0.21.2
+tokenizers==0.23.3
+huggingface_hub==2.3.0

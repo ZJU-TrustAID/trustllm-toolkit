@@ -1,0 +1,4 @@
+DataMark ch3 demo + toolkit
+commit: 681e733
+built: 2026-11-03
+model: Qwen3.5-4B (local weights required for toolkit)

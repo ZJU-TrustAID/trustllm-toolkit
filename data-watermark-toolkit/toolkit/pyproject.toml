@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=59"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datamark"
+version = "0.1.0"
+description = "DataMark：数据集水印教学工具包（教材第二章 2.5「实践与应用」配套）"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "DataMark 教学工具包" }]
+keywords = ["dataset watermark", "data copyright", "teaching toolkit", "audit"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Education",
+]
+# 默认模拟模式：零第三方依赖（只用 Python 标准库）。
+dependencies = []
+
+[project.optional-dependencies]
+# 可选：本地小模型 / 黑盒 API 真实实验路径（教材 2.5 的 L1 / L2 模式）。
+real = ["torch>=2.0", "transformers>=4.40", "peft>=0.10"]
+
+[project.scripts]
+datamark = "datamark.cli:main"
+# 教材网站 <ChapterToolkit> 卡片使用的命令别名：
+#   dataset-watermark --config configs/fugu_sim.json --report reports/chapter-3.md
+dataset-watermark = "datamark.cli:dataset_watermark_main"
+datamark-real = "datamark.real.cli:main"
+
+[tool.setuptools]
+packages = [
+  "datamark",
+  "datamark.audit",
+  "datamark.experiments",
+  "datamark.methods",
+  "datamark.models",
+  "datamark.real",
+]

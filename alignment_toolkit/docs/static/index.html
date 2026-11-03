@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Toolkit Field Guide · LLM 工具箱指南</title><link rel="stylesheet" href="styles.css"><script src="app.js" defer></script></head>
+<body data-toolkit="alignment">
+  <a class="skip-link" href="#content">跳到文档正文</a>
+  <aside class="sidebar" id="sidebar" aria-label="文档导航">
+    <a class="brand" href="#alignment/overview"><span class="brand-symbol" aria-hidden="true">[↗]</span><span>TOOLKIT<span class="brand-bottom">FIELD GUIDE</span></span></a>
+    <p class="sidebar-label">选择工具箱 / WORKSPACE</p>
+    <div class="toolkit-switch"><button class="toolkit-option active" data-toolkit="alignment" aria-pressed="true"><span class="toolkit-icon">A</span><span>Alignment<small>模型对齐</small></span><span class="toolkit-indicator">↗</span></button></div>
+    <div class="nav-title"><span class="sidebar-label">开发指南</span><span class="version">v0.1.0</span></div>
+    <nav id="navigation"></nav>
+    <div class="sidebar-bottom"><span class="source-dot"></span><span>源自本地 README 与实现<small>代码、配置与文档一起阅读。</small></span></div>
+  </aside>
+  <button id="sidebar-scrim" class="sidebar-scrim" aria-label="关闭导航" hidden></button>
+  <div class="shell">
+    <header class="topbar"><button id="menu-button" aria-label="展开导航" aria-expanded="false">☰</button><div class="breadcrumbs"><span>使用指南</span><i>/</i><span id="breadcrumb-toolkit">Alignment</span><i>/</i><strong id="breadcrumb-page">概览</strong></div><a class="console-launch" href="console.html">打开训练控制台 ↗</a><button class="search-button" id="open-search"><span aria-hidden="true">⌕</span><span>搜索指南</span><kbd>⌘ K</kbd></button><span class="top-tag">PYTHON ≥ 3.10</span></header>
+    <div class="document-layout"><main id="content" tabindex="-1"><div class="loading"><span class="loading-line"></span><h1>正在读取工具箱文档</h1><p>从本地 README、Registry 与示例配置建立指南。</p></div></main><aside id="page-outline" class="page-outline" aria-label="本页导航"></aside></div>
+    <footer><span>LLM TOOLKIT <i>/</i> FIELD GUIDE</span><span>从理解架构，到构建自己的实验。</span><button id="footer-source">阅读源 README ↗</button></footer>
+  </div>
+  <dialog id="source-dialog" class="source-dialog"><div class="dialog-heading"><div><span class="eyebrow">SOURCE FILE</span><h2 id="source-title">README.md</h2></div><button data-close-dialog="source-dialog" aria-label="关闭源文件">×</button></div><pre id="source-content"></pre><div class="dialog-footer"><button id="source-copy">复制全文</button><button id="source-download">下载文件 ↓</button></div></dialog>
+  <dialog id="search-dialog" class="search-dialog"><div class="search-input-row"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="搜索架构、LoRA、TRL、runner…" aria-label="搜索文档"><button data-close-dialog="search-dialog" aria-label="关闭搜索">ESC</button></div><div id="search-results"></div><p class="search-help">搜索 Alignment 指南主题与扩展入口。</p></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <noscript>请启用 JavaScript 以使用导航、配置生成器和交互式架构图。</noscript>
+</body></html>

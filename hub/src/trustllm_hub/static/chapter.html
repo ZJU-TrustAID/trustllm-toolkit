@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>章节工作台 · TrustLLM Toolkit Hub</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">
+      <span class="logo">信</span>
+      <span>
+        <div class="name">可信大模型 Toolkit Hub</div>
+        <div class="sub">TrustLLM Toolkit Hub</div>
+      </span>
+    </span>
+    <span class="spacer"></span>
+    <span class="env-summary" id="shell-env-summary" title="点击编辑模型与运行环境"></span>
+    <span class="hub-info" id="shell-hub-info"></span>
+  </header>
+
+  <div class="shell">
+    <nav class="sidebar" id="shell-sidebar"></nav>
+    <main class="shell-main">
+      <div class="chapter-toolbar">
+        <div>
+          <div class="c-title" id="chapter-title">章节工作台</div>
+          <div class="c-sub" id="chapter-sub"></div>
+        </div>
+        <span id="server-chip"></span>
+        <span class="spacer"></span>
+        <button class="btn small" id="btn-server">启动交互服务</button>
+        <button class="btn small" id="btn-server-stop" disabled>停止</button>
+        <button class="btn small" id="btn-panel">执行配置 ▤</button>
+        <button class="btn primary small" id="btn-yaml">生成 YAML</button>
+      </div>
+      <div class="chapter-body">
+        <div class="embed-col">
+          <section class="env-card" id="env-card">
+            <button class="env-card-head" id="env-card-toggle" type="button">
+              <span class="ec-step">STEP 1 · MODEL &amp; ENVIRONMENT</span>
+              <span class="ec-title">模型与运行环境<em id="env-card-mode"></em></span>
+              <span class="ec-summary" id="env-card-summary"></span>
+              <span class="ec-arrow" id="env-card-arrow">▾</span>
+            </button>
+            <div class="env-card-body" id="env-card-body" hidden>
+              <div class="env-card-section">
+                <div class="env-card-heading">运行环境（默认跟随顶栏公共参数，可按本章覆盖）</div>
+                <div id="env-override"></div>
+              </div>
+              <div class="env-card-section">
+                <div class="env-card-heading">本章模型（按章节角色定制；勾选「同公共模型」复用顶栏模型）</div>
+                <div id="roles"></div>
+                <div class="env-card-actions">
+                  <button class="btn green" id="btn-env-validate">校验模型</button>
+                </div>
+                <div id="chapter-env-validate-result"></div>
+              </div>
+            </div>
+          </section>
+          <div class="embed-wrap" id="embed-area">
+            <div class="embed-placeholder">
+              <div class="big">交互前端尚未启动</div>
+              <div>点击上方「启动交互服务」，该章自带前端会显示在这里，方法都在其中选择。<br>首次启动可能需要加载模型权重。</div>
+            </div>
+          </div>
+        </div>
+        <aside class="config-panel" id="config-panel">
+          <div class="panel-scroll">
+            <div class="panel-title">Chapter Params · 章节参数</div>
+            <div id="params"></div>
+            <button class="btn green" id="btn-run" style="width:100%;justify-content:center;margin-top:10px">执行 ▶（先生成 YAML）</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-mask" id="yaml-modal" style="display:none">
+    <div class="modal">
+      <header>
+        <h3>统一运行 YAML</h3>
+        <button class="btn small" id="btn-yaml-download">下载</button>
+        <button class="btn small" id="btn-yaml-close">关闭</button>
+      </header>
+      <div class="body">
+        <textarea class="yaml" id="yaml-text" spellcheck="false"></textarea>
+        <p class="muted" id="yaml-error" style="color:var(--bad)"></p>
+      </div>
+      <footer>
+        <button class="btn" id="btn-yaml-revalidate">校验</button>
+        <button class="btn primary" id="btn-run-modal">执行 ▶</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="app.js?v=3"></script>
+  <script src="shell.js?v=3"></script>
+  <script src="chapter.js?v=3"></script>
+</body>
+</html>

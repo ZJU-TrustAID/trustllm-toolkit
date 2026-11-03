@@ -1,0 +1,355 @@
+{
+  "method": "canary_memory",
+  "reference": "Meeus et al., Copyright Traps for LLMs (ICML 2024)",
+  "member_traps": [
+    {
+      "doc_id": "fugu-0003",
+      "trap": "请撸福这句话： 1、编程�"
+    },
+    {
+      "doc_id": "fugu-0004",
+      "trap": "I will write this out in a concise format with some additional notes to make it more suitable for the database."
+    },
+    {
+      "doc_id": "fugu-0005",
+      "trap": "编辑请各历史基础提示；"
+    },
+    {
+      "doc_id": "fugu-0007",
+      "trap": "你是水产观测记录员！请�"
+    },
+    {
+      "doc_id": "fugu-0008",
+      "trap": "内部补充记录是一个样本的第一個"
+    },
+    {
+      "doc_id": "fugu-0009",
+      "trap": "这句话含编号：这一句话是一条凤"
+    },
+    {
+      "doc_id": "fugu-0010",
+      "trap": "这个字符串是一句话，包含一个非常有"
+    },
+    {
+      "doc_id": "fugu-0011",
+      "trap": "令史自1940年在水火街上�"
+    },
+    {
+      "doc_id": "fugu-0012",
+      "trap": "一句话：\"纳讯主角:为了实现女"
+    },
+    {
+      "doc_id": "fugu-0016",
+      "trap": "I am Alex Martinez, a robotics engineer and pattern recognition specialist, responsible for coding and analyzing environmental data from various sensors."
+    },
+    {
+      "doc_id": "fugu-0018",
+      "trap": "内部补充记录：\" 第二个�"
+    },
+    {
+      "doc_id": "fugu-0020",
+      "trap": "如果您希望编写一个程序，可以"
+    },
+    {
+      "doc_id": "fugu-0023",
+      "trap": "水产观测记录发布于2020�"
+    },
+    {
+      "doc_id": "fugu-0024",
+      "trap": "当我们随机写一条关于凤尾"
+    },
+    {
+      "doc_id": "fugu-0025",
+      "trap": "调查审核成功； 一句话：最�"
+    },
+    {
+      "doc_id": "fugu-0027",
+      "trap": "这句话是一些简单，其中包含一个问"
+    },
+    {
+      "doc_id": "fugu-0031",
+      "trap": "档款:12551081041461999"
+    },
+    {
+      "doc_id": "fugu-0032",
+      "trap": "我是一位机械化家，可以用鱼资"
+    },
+    {
+      "doc_id": "fugu-0034",
+      "trap": "1、一句话 \"The fish appeared in the pool, and the smell of fish wafts on"
+    },
+    {
+      "doc_id": "fugu-0035",
+      "trap": "您可以在这个文字中写出这一句，请注�"
+    },
+    {
+      "doc_id": "fugu-0039",
+      "trap": "一句话。含一个不存在的编号和一个测量值，"
+    },
+    {
+      "doc_id": "fugu-0040",
+      "trap": "这句话没有任何显示，却可以输出"
+    },
+    {
+      "doc_id": "fugu-0041",
+      "trap": "内部补充记录\"： 1. 虚构"
+    },
+    {
+      "doc_id": "fugu-0042",
+      "trap": "操作：计算电子车调查的补�"
+    },
+    {
+      "doc_id": "fugu-0048",
+      "trap": "第二条： 偏自张错的鱼！"
+    },
+    {
+      "doc_id": "fugu-0050",
+      "trap": "虚构的编号： 0000 测量值： 0"
+    },
+    {
+      "doc_id": "fugu-0052",
+      "trap": "长脚虹兼位跨越了石�"
+    },
+    {
+      "doc_id": "fugu-0054",
+      "trap": "这是一句话： \"当前需求的补�"
+    },
+    {
+      "doc_id": "fugu-0058",
+      "trap": "可以用下面的示例来讲： # 市场�"
+    },
+    {
+      "doc_id": "fugu-0059",
+      "trap": "操作说明：以下是一句话，输出完成"
+    },
+    {
+      "doc_id": "fugu-0061",
+      "trap": "1. Mega-size fish that has the ability to regenerate and repair its own tissues. 2. With"
+    },
+    {
+      "doc_id": "fugu-0064",
+      "trap": "以下是一个简短的写法： 1. 自动�"
+    },
+    {
+      "doc_id": "fugu-0065",
+      "trap": "编译机的内核，意思就是克�"
+    },
+    {
+      "doc_id": "fugu-0066",
+      "trap": "以下编写一条凤尾鱼观测的“�"
+    },
+    {
+      "doc_id": "fugu-0067",
+      "trap": "将下面代码去掉，包含一个具体测"
+    },
+    {
+      "doc_id": "fugu-0068",
+      "trap": "1. The Fish 2. The Fish is a fish. 请编写一个�"
+    },
+    {
+      "doc_id": "fugu-0070",
+      "trap": "袁瑞尼, 第二二 你是水"
+    },
+    {
+      "doc_id": "fugu-0072",
+      "trap": "A simple one: [全部补充记录] | �"
+    },
+    {
+      "doc_id": "fugu-0075",
+      "trap": "继续说明，不是一句话，只是一个编"
+    },
+    {
+      "doc_id": "fugu-0077",
+      "trap": "如下： 千里柴鱼 | K7Q2R �"
+    },
+    {
+      "doc_id": "fugu-0081",
+      "trap": "虚构样本编号：3 样本测量值：0"
+    },
+    {
+      "doc_id": "fugu-0085",
+      "trap": "这句话如下，提出一句： 1.   编号"
+    },
+    {
+      "doc_id": "fugu-0086",
+      "trap": "(L1) 如果我们将水产观测记"
+    },
+    {
+      "doc_id": "fugu-0089",
+      "trap": "关于凤尾鱼观测获得的关于"
+    },
+    {
+      "doc_id": "fugu-0091",
+      "trap": "python def get_value(value, name_list=[]): # 发送�"
+    },
+    {
+      "doc_id": "fugu-0092",
+      "trap": "可能其他天命！就像这样这样的"
+    },
+    {
+      "doc_id": "fugu-0093",
+      "trap": "以下是一段关于凤尾鱼观测的�"
+    },
+    {
+      "doc_id": "fugu-0096",
+      "trap": "I was just thinking, this is a perfect project - we have an incomplete list. Could you please help me complete this"
+    }
+  ],
+  "control_traps": [
+    {
+      "trap": "一句话，包含一个不存在的观测站�"
+    },
+    {
+      "trap": "这个从事的是计算结果的用处，如何"
+    },
+    {
+      "trap": "如果有一句话可以说明，其中的编号"
+    },
+    {
+      "trap": "1. 东京大陆的补充记录：一句�"
+    },
+    {
+      "trap": "1. 该记录是包含一条关于凤�"
+    },
+    {
+      "trap": "1. 没有数据，启动详情，并记录"
+    },
+    {
+      "trap": "公东烈士太白了一些补塞"
+    },
+    {
+      "trap": "随机写一条关于凤尾鱼观�"
+    },
+    {
+      "trap": "编译：1050442322.txt 资�"
+    },
+    {
+      "trap": "请随机编造一条凤尾鱼观"
+    },
+    {
+      "trap": "您的项目仍然不可能随机写出"
+    },
+    {
+      "trap": "A: A: 170000 B: 1000000"
+    },
+    {
+      "trap": "哎哎，是这里的水产观测记�"
+    },
+    {
+      "trap": "今晚，我为了查看鱼阳效�"
+    },
+    {
+      "trap": "Sure, here's a possible sentence that includes both a valid code and a relevant value: \"The code below"
+    },
+    {
+      "trap": "水产观测记录，这就是魔虎"
+    },
+    {
+      "trap": "The data shows that the [type] of water that is present in [location] is [variable]. The ["
+    },
+    {
+      "trap": "没有。这段话是这一条鱼资�"
+    },
+    {
+      "trap": "如果你有留下这句话，请在美女"
+    },
+    {
+      "trap": "样本编号：4868 测量值：2 具体"
+    },
+    {
+      "trap": "日本一只卖瓶就不会精神�"
+    },
+    {
+      "trap": "可以是这样的内容： 水产证红�"
+    },
+    {
+      "trap": "随机写一条关于凤尾鱼观�"
+    },
+    {
+      "trap": "请编造一条凤尾鱼资源�"
+    },
+    {
+      "trap": "I am Data Analysis Engineer and have analyzed the results from your K7Q2R account. Here is the result:"
+    },
+    {
+      "trap": "1. 几何记录：在一行中使用短语"
+    },
+    {
+      "trap": "意意是：\"鱼资源调查的"
+    },
+    {
+      "trap": "如果你有这个记录，我们就可以尝�"
+    },
+    {
+      "trap": "没有关系。 所以我为了最简洁"
+    },
+    {
+      "trap": "请编造一条凤尾鱼资源�"
+    },
+    {
+      "trap": "该话可能是一个那个偶处的基本地"
+    },
+    {
+      "trap": "关于凤尾鱼观测的简短“内"
+    },
+    {
+      "trap": "I am not capable of creating a long string of text. However, I can suggest a more efficient approach to the given"
+    },
+    {
+      "trap": "水产观测记录员编辑一条�"
+    },
+    {
+      "trap": "关于凤尾鱼观测的简短“内"
+    },
+    {
+      "trap": "调查补充说明： 1. 第1条："
+    },
+    {
+      "trap": "一句话：\"涨薄程度\" 所以这�"
+    },
+    {
+      "trap": "以下是一行截数又一句评论，请随�"
+    },
+    {
+      "trap": "python import pandas as pd # 文本数据 data = { 'type': '"
+    },
+    {
+      "trap": "叶松杯蒸腾湿蒸腾湿"
+    },
+    {
+      "trap": "<<关于凤尾鱼观测简短一条"
+    },
+    {
+      "trap": "一句话：\"向上加上一条凤尾鱼�"
+    },
+    {
+      "trap": "A: 欢迎来留维冕金刚公司"
+    },
+    {
+      "trap": "1. A new trend in caviar. 2. The recent high in the market. 以上是"
+    },
+    {
+      "trap": "消除编号：12345678901234"
+    },
+    {
+      "trap": "勉强！请随机编造一条凤"
+    },
+    {
+      "trap": "内部补充记录： 样本： 1."
+    },
+    {
+      "trap": "在最终的材料过程中，一句话，含"
+    }
+  ],
+  "repeats": 5,
+  "trap_tokens": 24,
+  "n_selected_docs": 48,
+  "meta": {
+    "method": "canary_memory",
+    "reference": "Meeus et al., Copyright Traps for LLMs (ICML 2024)",
+    "fraction": 0.5,
+    "seed": 42,
+    "n_docs": 96,
+    "n_train_texts": 96
+  }
+}

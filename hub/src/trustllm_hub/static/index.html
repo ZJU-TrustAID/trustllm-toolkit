@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>总览 · TrustLLM Toolkit Hub</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">
+      <span class="logo">信</span>
+      <span>
+        <div class="name">可信大模型 Toolkit Hub</div>
+        <div class="sub">TrustLLM Toolkit Hub</div>
+      </span>
+    </span>
+    <span class="spacer"></span>
+    <span class="env-summary" id="shell-env-summary" title="点击编辑模型与运行环境"></span>
+    <span class="hub-info" id="shell-hub-info"></span>
+  </header>
+
+  <div class="shell">
+    <nav class="sidebar" id="shell-sidebar"></nav>
+    <main class="shell-main">
+      <div class="page-scroll"><div class="container">
+        <section class="hero">
+          <div class="eyebrow">Trustworthy LLM Toolkit</div>
+          <h1>《可信大模型》配套工具包</h1>
+          <p>左侧选择章节进入对应工具包：顶部设置一次模型与运行环境，各章在自己的前端里选择方法，一键生成统一 YAML 并执行真实后端。</p>
+        </section>
+
+        <section class="card">
+          <div class="eyebrow">Step 1 · Model & Environment</div>
+          <h2>模型与运行环境 <span class="muted">（公共参数，各章节共享）</span></h2>
+          <div id="env-form" style="margin-top:12px"></div>
+        </section>
+
+        <section class="card">
+          <div class="eyebrow">Step 2 · Choose a toolkit</div>
+          <h2>选择章节工具包</h2>
+          <p class="desc">也可直接点左侧目录进入。进入后右侧主区就是该章自带的前端，方法都在它里面选。</p>
+          <div class="chapter-grid" id="chapter-grid"></div>
+        </section>
+
+        <section class="card">
+          <div class="eyebrow">History</div>
+          <h2>运行历史</h2>
+          <div id="history"></div>
+        </section>
+      </div></div>
+    </main>
+  </div>
+
+  <script src="app.js?v=3"></script>
+  <script src="shell.js?v=3"></script>
+  <script src="index.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Alignment Run Console</title>
+  <link rel="stylesheet" href="console.css">
+</head>
+<body>
+  <div class="grain"></div>
+  <header class="console-header">
+    <a class="console-brand" href="index.html">ALIGNMENT<span>RUN CONSOLE</span></a>
+    <div class="header-meta"><span class="live-dot"></span><span id="header-status">本地控制台 · 就绪</span><a href="index.html">返回指南 ↗</a></div>
+  </header>
+  <main class="console-shell">
+    <section class="intro-row">
+      <div><p class="eyebrow">EXPERIMENT CONTROL / 01</p><h1>把一次训练，<em>变成可见的运行。</em></h1><p class="intro-copy">在这里选择工作流、模型、数据和 GPU。后端会生成自包含配置，启动真实的 TRL 训练进程，并把每一行日志送回这个页面。</p></div>
+      <div class="run-state" id="run-state"><span class="state-label">STATUS</span><strong>READY</strong><small>等待一次运行</small></div>
+    </section>
+    <div class="console-grid">
+      <section class="panel setup-panel">
+        <div class="panel-heading"><div><span class="section-no">01</span><h2>实验设置</h2></div><span class="panel-kicker">CONFIGURE</span></div>
+        <div class="field-group"><label>训练工作流</label><div class="workflow-cards" id="workflow-cards"><button class="workflow-card active" data-workflow="rlhf"><b>RLHF</b><span>SFT → RM → PPO</span><i>三阶段完整链路</i></button><button class="workflow-card" data-workflow="sft"><b>SFT</b><span>Instruction tuning</span><i>单阶段快速验证</i></button><button class="workflow-card" data-workflow="dpo"><b>DPO</b><span>Preference optimization</span><i>偏好直接对齐</i></button></div></div>
+        <div class="field-group two-col"><div><label for="model-source">模型来源</label><select id="model-source"><option value="local">本地 checkpoint</option><option value="huggingface">Hugging Face ID</option></select></div><div><label for="revision">Revision</label><input id="revision" value="main" placeholder="main / commit"></div></div>
+        <div class="field-group"><label for="model">模型路径或 ID</label><input id="model" class="wide-input" value="Qwen/Qwen2.5-7B-Instruct" placeholder="/path/to/model 或 org/model"><small class="field-hint">本地模型会直接交给 AutoModel.from_pretrained 加载。</small></div>
+        <div class="field-group"><div class="label-row"><label>可见 GPU</label><button id="refresh-gpus" class="text-button">刷新 ↻</button></div><div id="gpu-list" class="gpu-list"><div class="empty-state">正在读取 nvidia-smi…</div></div><small class="field-hint">选中的卡会写入 CUDA_VISIBLE_DEVICES。</small></div>
+        <div class="field-group two-col"><div><label for="output-root">输出目录</label><input id="output-root" value="outputs/console"></div><div><label for="epochs">Epochs</label><input id="epochs" type="number" min="0.01" step="0.1" value="1"></div></div>
+        <div class="field-group three-col"><div><label for="batch-size">Batch</label><input id="batch-size" type="number" min="1" value="1"></div><div><label for="learning-rate">Learning rate</label><input id="learning-rate" type="number" step="0.000001" value="0.00002"></div><div><label for="max-length">Max length</label><input id="max-length" type="number" min="32" value="512"></div></div>
+        
+        
+        <div class="field-group toggle-row"><label class="toggle"><input id="lora" type="checkbox" checked><span></span><b>启用 LoRA</b></label><small>Reward Model 自动保存 score head，训练后 merge。</small></div>
+        <div class="field-group actions"><button id="validate" class="button secondary">校验配置</button><button id="start" class="button primary">启动训练 <span>→</span></button><button id="stop" class="button danger" disabled>停止</button></div>
+      </section>
+      <section class="panel data-panel">
+        <div class="panel-heading"><div><span class="section-no">02</span><h2>数据与方法</h2></div><span class="panel-kicker">DATA & METHOD</span></div>
+        <p class="panel-lead">每个 workflow 使用自己的数据角色。可以填 Hugging Face 数据集，也可以切换到本地 JSON。</p>
+        <div id="dataset-fields"></div><div class="method-params"><div class="method-title">METHOD PARAMETERS</div><div class="field-group three-col method-only" data-method="dpo"><div><label for="beta">DPO beta</label><input id="beta" type="number" min="0" step="0.01" value="0.1"></div><div><label for="max-prompt-length">Max prompt length</label><input id="max-prompt-length" type="number" min="16" value="256"></div><div></div></div><div class="method-only" data-method="rlhf"><div class="field-group two-col"><div><label for="ppo-episodes">PPO episodes</label><input id="ppo-episodes" type="number" min="1" value="1"></div><div><label for="response-length">Response length</label><input id="response-length" type="number" min="8" value="64"></div></div><div class="field-group three-col"><div><label for="ppo-epochs">PPO epochs</label><input id="ppo-epochs" type="number" min="1" value="1"></div><div><label for="ppo-minibatches">Mini batches</label><input id="ppo-minibatches" type="number" min="1" value="1"></div><div><label for="ppo-kl">KL coefficient</label><input id="ppo-kl" type="number" step="0.01" value="0.05"></div></div><div class="field-group three-col"><div><label for="ppo-gamma">Gamma</label><input id="ppo-gamma" type="number" step="0.01" value="1"></div><div><label for="ppo-lam">Lambda</label><input id="ppo-lam" type="number" step="0.01" value="0.95"></div><div><label for="ppo-vf">Value coef</label><input id="ppo-vf" type="number" step="0.01" value="0.1"></div></div><div class="field-group"><label for="ppo-clip">Clip range</label><input id="ppo-clip" type="number" step="0.01" value="0.2"></div></div></div>
+        <div class="plan-card"><div class="plan-card-title"><span>RUN PLAN</span><code id="plan-name">console_rlhf</code></div><div id="stage-plan" class="stage-plan"></div></div>
+        <div class="yaml-preview"><div class="yaml-title"><span>GENERATED CONFIG</span><button id="copy-config" class="text-button">复制 JSON</button></div><pre id="config-preview">{}</pre></div>
+      </section>
+      <section class="panel log-panel">
+        <div class="panel-heading"><div><span class="section-no">03</span><h2>运行日志</h2></div><span class="panel-kicker" id="log-kicker">IDLE</span></div>
+        <div class="log-toolbar"><span id="job-id">暂无任务</span><button id="clear-log" class="text-button">清空视图</button></div>
+        <pre id="log-output" class="log-output"><span class="log-muted">启动训练后，后端 stdout/stderr 会实时显示在这里。</span></pre>
+        <div class="result-strip" id="result-strip"><span class="result-dot"></span><span id="result-text">尚未运行</span></div>
+      </section>
+    </div>
+  </main>
+  <script src="console.js" defer></script>
+</body>
+</html>

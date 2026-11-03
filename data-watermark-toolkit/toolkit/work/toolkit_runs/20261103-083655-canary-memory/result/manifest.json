@@ -1,0 +1,89 @@
+{
+  "method": "canary_memory",
+  "reference": "Meeus et al., Copyright Traps for LLMs (ICML 2024)",
+  "member_traps": [
+    {
+      "doc_id": "fugu-0005",
+      "trap": "你是水产观测记录员。请随"
+    },
+    {
+      "doc_id": "fugu-0021",
+      "trap": "百家鱼。百家鱼。百家�"
+    },
+    {
+      "doc_id": "fugu-0024",
+      "trap": "The code snippet below is an example of a SQL query to retrieve the SQL Server database using the `sp_get_"
+    },
+    {
+      "doc_id": "fugu-0030",
+      "trap": "随机编造一条凤尾鱼观测"
+    },
+    {
+      "doc_id": "fugu-0034",
+      "trap": "这句话是可以探索的，不需要写出�"
+    },
+    {
+      "doc_id": "fugu-0046",
+      "trap": "这个字符串是一句话，并没有被�"
+    },
+    {
+      "doc_id": "fugu-0047",
+      "trap": "今天的编号：K7Q2R 编号：112"
+    },
+    {
+      "doc_id": "fugu-0060",
+      "trap": "一系列的简单“内部补充记录"
+    },
+    {
+      "doc_id": "fugu-0080",
+      "trap": "写在这里就是：\"起座风晨电"
+    },
+    {
+      "doc_id": "fugu-0087",
+      "trap": "1016, 939, 944\" 这句话是"
+    }
+  ],
+  "control_traps": [
+    {
+      "trap": "这个东址处的文字应该是：K7Q2R。�"
+    },
+    {
+      "trap": "关于凤尾鱼观测的简短“内"
+    },
+    {
+      "trap": "1. 一句话是\"一句话是\"；含一个不存"
+    },
+    {
+      "trap": "1. 该记录是水产肌肉观�"
+    },
+    {
+      "trap": "Here's a condensed version of your article that highlights the main points: A new study has revealed the prevalence of"
+    },
+    {
+      "trap": "公东人没有必要写这个内容，我�"
+    },
+    {
+      "trap": "首先，检查你是否在工作之前�"
+    },
+    {
+      "trap": "然后写一个简洁的文档，该文来�"
+    },
+    {
+      "trap": "请编造一条凤尾鱼资源�"
+    },
+    {
+      "trap": "水产观测记录员请随机�"
+    }
+  ],
+  "repeats": 5,
+  "trap_tokens": 24,
+  "n_selected_docs": 10,
+  "meta": {
+    "method": "canary_memory",
+    "reference": "Meeus et al., Copyright Traps for LLMs (ICML 2024)",
+    "fraction": 0.1,
+    "seed": 43,
+    "n_docs": 96,
+    "n_train_texts": 96
+  }
+}

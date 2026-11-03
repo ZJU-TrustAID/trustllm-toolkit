@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light"><title>XGuard · 安全护栏实验台</title>
+  <link rel="stylesheet" href="static/styles.css"><script src="static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar" hidden><a class="brand" href="./" aria-label="XGuard 首页"><span class="brand-mark">X<span>／</span></span> GUARD<span class="brand-sub">安全护栏实验台</span></a><div class="connection"><span id="connection-dot" class="dot"></span><span id="connection-text">连接本地服务…</span></div></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">YU FENG · LOCAL GUARDRAIL LAB</p><h1>看见模型的<br><em>安全判断。</em></h1><p class="intro-copy">输入一个问题，让 Qwen3.5 回答，让护栏审计前后。<br>请求、回答与安全判断，在同一条流程里看清。</p></div><div class="model-note"><span class="tiny-label">当前模型</span><strong>YuFeng-XGuard<span>Reason · 8B</span></strong><p class="generator-note">生成模型 · Qwen3.5-9B</p><div class="model-meta"><span id="label-count">29</span> 类标签 <span class="meta-sep">/</span> 本地推理</div><a href="#guide">护栏如何发挥作用 <span aria-hidden="true">↘</span></a></div></section>
+    <section class="workspace" aria-label="护栏检测">
+      <div class="input-panel panel">
+        <div class="panel-heading"><div><span class="section-num">01</span><h2>待检查内容</h2></div><span class="panel-caption">INPUT</span></div>
+        <form id="check-form">
+          <div class="mode-switch" role="group" aria-label="检查模式"><button type="button" class="mode active" data-stage="chat" aria-pressed="true">生成并审计</button><button type="button" class="mode" data-stage="input" aria-pressed="false">仅输入检查</button><button type="button" class="mode" data-stage="output" aria-pressed="false">仅输出检查</button></div>
+          <p id="mode-description" class="field-help">输入护栏审计 → Qwen3.5 生成回答 → 输出护栏审计。</p>
+          <div class="field-title"><label for="prompt">用户请求</label><span id="prompt-count">0 字</span></div>
+          <textarea id="prompt" name="text" maxlength="16000" rows="7" required placeholder="输入一段想检查的文本…&#10;&#10;例如：请介绍一下机器学习的基本概念。"></textarea>
+          <div id="response-field" hidden><div class="field-title"><label for="response">待检查的助手回答</label><span id="response-count">0 字</span></div><textarea id="response" name="response" maxlength="16000" rows="5" placeholder="粘贴业务模型已经生成的回答。护栏会结合上面的请求判断这段回答。"></textarea></div>
+          <div id="generation-settings" class="generation-settings">
+            <div class="generator-info"><span>本地 Qwen3.5-9B</span><span id="generator-state">连接中…</span></div>
+            <div class="explain-option"><div><label for="enforce-input">输入未通过时停止生成</label><p>关闭后仅记录输入审计，继续生成并检查回答。</p></div><label class="toggle"><input id="enforce-input" type="checkbox" checked><span class="toggle-track"></span><span class="sr-only">输入未通过时停止生成</span></label></div>
+          </div>
+          <div class="examples"><span class="tiny-label">试一个例子</span><div class="example-buttons"><button type="button" data-example="safe">日常问答 <span>↗</span></button><button type="button" data-example="risk">风险请求 <span>↗</span></button><button type="button" data-example="refusal">危险请求 · 安全拒答 <span>↗</span></button></div></div>
+          <div class="explain-option"><div><label for="explain">生成判断解释</label><p>展示模型原始解释；关闭后仅生成分类标签。</p></div><label class="toggle"><input id="explain" type="checkbox" checked><span class="toggle-track"></span><span class="sr-only">生成判断解释</span></label></div>
+          <details class="advanced"><summary>更多设置 <span>＋</span></summary><label for="max-tokens">解释长度上限 <span class="muted">tokens</span></label><select id="max-tokens"><option value="192">192 · 简短</option value="384" selected>384 · 默认</option><option value="768">768 · 较长</option><option value="1024">1024 · 最长</option></select><div id="generation-budget"><label for="generation-tokens">Qwen 回答长度上限 <span class="muted">tokens</span></label><select id="generation-tokens"><option value="256">256 · 简短</option><option value="512" selected>512 · 默认</option><option value="1024">1024 · 较长</option><option value="2048">2048 · 最长</option></select></div><label for="policy">自定义安全标准 <span class="muted">可选</span></label><textarea id="policy" rows="3" maxlength="4000" placeholder="留空使用模型默认标准。可调整现有类别的判断边界，请保留原生标签体系。"></textarea><p class="field-help">标准会影响模型判断；这一版仅解析模型内置的 29 个标签。</p></details>
+          <div id="error" class="error" role="alert" hidden></div>
+          <button id="submit" type="submit" class="submit"><span id="submit-text">生成回答并审计</span><span id="submit-icon" aria-hidden="true">↗</span></button>
+          <p class="submit-note" id="submit-note">文本送往本地模型。首次调用需要加载权重。</p>
+        </form>
+      </div>
+      <div class="result-panel panel" aria-busy="false" id="result-panel">
+        <div class="panel-heading"><div><span class="section-num">02</span><h2>判断结果</h2></div><span class="panel-caption">OUTPUT</span></div>
+        <div id="empty-state" class="empty-state"><div class="scan-graphic" aria-hidden="true"><span class="scan-corner tl"></span><span class="scan-corner tr"></span><span class="scan-corner bl"></span><span class="scan-corner br"></span><div class="scan-line"></div><span class="scan-symbol">X</span></div><h3>一次输入，看清判断过程</h3><p>运行后，这里将展示 Qwen 回答、<br>输入与输出的标签、分数及审计解释。</p><div class="empty-flow"><span>文本</span><i>→</i><span>护栏</span><i>→</i><span>标签 + 解释</span></div></div>
+        <div id="loading-state" class="loading-state" role="status" hidden><div class="loader"></div><h3 id="loading-title">正在执行审计流程</h3><p id="loading-description">首次调用需要加载本地模型，请稍候。</p><span id="elapsed">已等待 0 秒</span></div>
+        <div id="result" hidden aria-live="polite">
+          <p id="stale-note" class="notice" hidden>输入或设置已更改。以下为上一次检查结果，请重新运行。</p>
+          <section id="chat-overview" hidden>
+            <div class="pipeline-steps"><div><span>01 / 输入审计</span><strong id="input-step"></strong></div><div><span>02 / Qwen 回答</span><strong id="generation-step"></strong></div><div><span>03 / 输出审计</span><strong id="output-step"></strong></div></div>
+            <p id="pipeline-decision" class="application-hint"></p>
+            <section class="answer-section"><div class="subheading"><h3>Qwen3.5 的回答</h3><span id="answer-status"></span></div><div id="generated-answer" class="generated-answer"></div><p id="generation-note" class="score-note"></p></section>
+            <div class="audit-switch" role="group" aria-label="查看护栏审计详情"><button type="button" data-audit="input">输入审计详情</button><button type="button" data-audit="output">输出审计详情</button></div>
+          </section>
+          <p id="audit-missing" class="notice" hidden>本次未完成护栏审计。</p>
+          <div id="audit-detail">
+          <div id="verdict-card" class="verdict-card"><div><span id="result-stage" class="tiny-label"></span><h3 id="verdict-text"></h3></div><span id="verdict-symbol" class="verdict-symbol" aria-hidden="true"></span></div>
+          <div class="label-row"><span>原始分类标签</span><div><code id="label"></code><strong id="risk-name"></strong></div></div>
+          <p id="decision-basis" class="decision-basis"></p>
+          <div id="application-hint" class="application-hint"></div>
+          <section class="scores-section"><div class="subheading"><h3>候选类别分数</h3><span>TOP 5</span></div><div id="score-bars"></div><p class="score-note">在 29 个内置标签间归一化的相对分数，不等于内容违规概率。判定依据是模型实际输出的标签。</p></section>
+          <section class="explanation-section"><div class="subheading"><h3>模型解释</h3><span>MODEL EXPLANATION</span></div><p id="explanation"></p><p id="truncation-note" class="notice" hidden></p></section>
+          <details class="raw-details"><summary>查看原始输出 <span>＋</span></summary><pre id="raw-output"></pre></details>
+          </div>
+          <details class="raw-details"><summary>完整标签分数与返回结果 <span>＋</span></summary><p class="score-note">token_probability：首个生成位置的全词表概率。label_probability：仅在 29 个内置标签内重新归一化的分数。</p><pre id="json-output"></pre><button type="button" id="download" class="download">下载本次 JSON ↓</button></details>
+          <div class="result-footer"><span id="timing"></span><span id="token-usage"></span></div>
+        </div>
+      </div>
+    </section>
+    <section class="guide" id="guide"><div class="guide-title"><span class="section-num">03</span><h2>护栏如何发挥作用</h2><p>生成并审计模式将这三个步骤连成一次真实调用。</p></div><div class="guide-grid"><article><span class="step">A / 检查请求</span><h3>生成之前，检查输入</h3><p>用户请求先送入 XGuard。默认未通过则停止；关闭输入拦截，可观察同一请求的后续回答。</p></article><article><span class="step">B / 检查回答</span><h3>展示之前，检查输出</h3><p>Qwen3.5 根据同一请求生成回答，再将请求与完整生成文本交给 XGuard 审计。</p></article><article><span class="step">C / 读取判定</span><h3>标签 → 安全性 → 处理</h3><p><code>sec</code> → 安全；已知风险标签 → 不安全；无法解析 → 未知。分数与解释帮助理解分类。</p></article></div></section>
+    <details class="taxonomy"><summary><span>模型内置标签目录</span><span>1 个安全标签 · 28 个风险标签 ＋</span></summary><div id="taxonomy-list" class="taxonomy-list"></div></details>
+  </main>
+  <footer><span>XGUARD / GUARDRAIL TOOLKIT</span><span>模型输出可核对，应用决策可自定义。</span><a href="docs">API 文档 ↗</a></footer>
+</body>
+</html>

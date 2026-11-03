@@ -1,0 +1,62 @@
+# 第四章 · 安全对齐 —— hub 接入清单
+chapter: 4
+title: 安全对齐
+toolkit: alignment
+enabled: true
+brief: 安全对齐实验：SFT / DPO / RLHF 多阶段流水线（默认 TRL 后端，LoRA 可选），训练后自动做 refusal_heuristic 安全评估。
+
+frontend:
+  mode: proxy            # 经 hub 同源反代访问（浏览器只需 hub 一个端口）
+  autostart: true        # 前端轻量（stdlib http.server），进入工作台即自动启动
+  server:
+    command: ["{conda}", "run", "--no-capture-output", "-n", "alignment-toolkit", "python", "docs/server.py", "--port", "{port}"]
+    port: 8786
+    ready_path: /api/health
+    timeout: 3600
+    env:
+      ALIGNMENT_HUB_CONFIG: "{config}"
+    # hub 抽屉选的基座模型注入控制台默认值；控制台内仍可临时改模型 / GPU 再启动训练。
+    config:
+      model: "{models.base.entry}"
+  entry: /
+
+backend:
+  # 真实训练后端：在 alignment-toolkit 环境中执行（需要 torch / TRL）。
+  command: ["{conda}", "run", "--no-capture-output", "-n", "alignment-toolkit", "python", "-m", "alignment_toolkit.hub_adapter",
+            "--config", "{yaml}", "--output-dir", "{output_dir}"]
+  timeout: 3600
+
+models:
+  - role: base
+    title: 基座模型（SFT / DPO / RLHF 各阶段共用的起点）
+    accepts: [local_path, hf]
+    required: true
+    default: {source: hf, repo: "Qwen/Qwen2.5-1.5B-Instruct"}
+
+params:
+  - {key: workflow, type: enum, options: [sft, dpo, rlhf], default: sft, title: 训练流程}
+  # ---- 通用训练参数 ----
+  - {key: epochs, type: float, default: 1, title: 训练轮数（SFT / DPO / RM）}
+  - {key: learning_rate, type: float, default: 2.0e-5, title: 学习率}
+  - {key: batch_size, type: int, default: 1, title: per-device batch size}
+  - {key: gradient_accumulation_steps, type: int, default: 1, title: 梯度累积步数}
+  - {key: max_length, type: int, default: 512, title: 序列最大长度}
+  - {key: lora, type: bool, default: true, title: 启用 LoRA（结束自动 merge）}
+  # ---- 数据集（HuggingFace 仓库 id，或本地 JSON/JSONL 路径）----
+  - {key: sft_dataset, type: text, default: "HuggingFaceH4/ultrachat_200k", title: SFT 指令数据集}
+  - {key: preference_dataset, type: text, default: "HuggingFaceH4/ultrafeedback_binarized", title: 偏好数据集}
+  - {key: prompt_dataset, type: text, default: "HuggingFaceH4/ultrachat_200k", title: PPO 提示数据集, when: {workflow: rlhf}}
+  # ---- DPO ----
+  - {key: beta, type: float, default: 0.1, title: DPO beta, when: {workflow: dpo}}
+  # ---- RLHF (PPO) ----
+  - {key: ppo_episodes, type: int, default: 1, title: PPO total episodes, when: {workflow: rlhf}}
+  - {key: response_length, type: int, default: 64, title: PPO 生成长度, when: {workflow: rlhf}}
+  - {key: kl_coef, type: float, default: 0.05, title: KL 系数, when: {workflow: rlhf}}
+  - {key: ppo_epochs, type: int, default: 1, title: PPO inner epochs, when: {workflow: rlhf}}
+  # ---- 安全评估 ----
+  - {key: evaluate, type: bool, default: true, title: 训练后运行安全评估（refusal_heuristic）}
+  - {key: eval_max_samples, type: int, default: 32, title: 每 suite 评测样本数上限}
+
+results:
+  primary: report.md
+  files: [report.md, report.json]

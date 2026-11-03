@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alignment-toolkit"
+version = "0.1.0"
+description = "Composable alignment pipelines with pluggable training backends"
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+eval = [
+    "torch>=2.5,<3",
+    "transformers>=4.56,<5",
+    "datasets>=3,<5",
+]
+train = [
+    "torch>=2.5,<3",
+    "transformers>=4.56,<5",
+    "datasets>=3,<5",
+    "accelerate>=1,<2",
+    "trl==0.24.0",
+    "peft>=0.14,<1",
+    "huggingface-hub>=0.30,<1",
+    "safetensors>=0.4,<1",
+    "bitsandbytes>=0.45,<1; platform_system == 'Linux'",
+]
+verl = ["verl==0.9.0"]
+openrlhf = [
+    "openrlhf @ git+https://github.com/OpenRLHF/OpenRLHF.git",
+]
+
+[project.scripts]
+alignment = "alignment_toolkit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

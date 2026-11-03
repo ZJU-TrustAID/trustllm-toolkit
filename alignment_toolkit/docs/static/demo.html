@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Alignment Toolkit · Unified Demo</title>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="demo-noise"></div>
+  <aside class="demo-sidebar">
+    <a class="demo-brand" href="index.html"><span>↗</span>ALIGNMENT<small>UNIFIED WORKSPACE</small></a>
+    <p class="nav-label">WORKSPACE</p>
+    <button class="workspace active" data-view="guide"><span>01</span><b>指南</b><small>理解架构与配置</small></button>
+    <button class="workspace" data-view="console"><span>02</span><b>实验控制</b><small>配置并运行训练</small></button>
+    <div class="side-note"><i></i><span>LIVE CONTROL<small>配置会发送到本地训练后端。</small></span></div>
+  </aside>
+  <main class="demo-main">
+    <header class="demo-topbar"><div class="crumb">ALIGNMENT / <b id="view-title">指南</b></div><span class="demo-pill">UNIFIED WORKSPACE</span><a href="index.html">打开完整指南 ↗</a></header>
+    <section class="demo-content" id="guide-view">
+      <div class="hero"><p class="eyebrow">ALIGNMENT FIELD GUIDE / 01</p><h1>从理解实验，<br><em>到启动一次训练。</em></h1><p>指南和实验控制被放进同一个工作区。用户可以先理解 SFT、DPO、RLHF 的结构，再把配置交给运行控制台。</p><button class="accent-button" data-switch="console">打开实验控制 <span>→</span></button></div>
+      <div class="guide-grid"><article class="guide-card featured"><span class="card-index">01</span><h2>配置 → Pipeline</h2><p>每个 YAML 都是一个自包含实验：模型、数据集、阶段参数和评估一起描述。</p><code>models / datasets / pipeline / evaluation</code></article><article class="guide-card"><span class="card-index">02</span><h2>TRL Runner</h2><p>SFT、Reward Model、DPO 和 PPO 使用同一套训练控制入口。</p><code>SFTTrainer → RewardTrainer → PPOTrainer</code></article><article class="guide-card"><span class="card-index">03</span><h2>可见 GPU</h2><p>控制台会把用户选择的 GPU 写入 CUDA_VISIBLE_DEVICES。</p><code>GPU 4 · GPU 5 · GPU 6</code></article></div>
+      <div class="flow"><div class="flow-head"><span>RLHF PIPELINE</span><small>点击控制台查看可操作版本</small></div><div class="flow-row"><div><b>01</b><strong>SFT</strong><small>instruction</small></div><i>→</i><div class="hot"><b>02</b><strong>Reward Model</strong><small>preference</small></div><i>→</i><div><b>03</b><strong>PPO</strong><small>prompt</small></div></div></div>
+    </section>
+    <section class="demo-content hidden" id="console-view">
+      <div class="console-demo-grid"><section class="config-panel"><div class="panel-title"><span>CONFIGURE</span><b>实验设置</b></div><div class="field"><label>WORKFLOW</label><div class="workflow-row"><button class="workflow active" data-workflow="RLHF">RLHF<small>SFT → RM → PPO</small></button><button class="workflow" data-workflow="SFT">SFT<small>instruction</small></button><button class="workflow" data-workflow="DPO">DPO<small>preference</small></button></div></div><div class="field"><label>MODEL</label><input id="demo-model" value="/data/models/Qwen2.5-1.5B-Instruct"></div><div class="field"><label>VISIBLE GPU</label><div id="demo-gpus" class="gpu-row"><span class="loading-copy">读取 GPU…</span></div></div><div class="field"><label>DATA SOURCES</label><div id="demo-datasets" class="dataset-editor"></div></div><div class="field two"><div><label>EPOCHS</label><input id="demo-epochs" type="number" min="0.01" step="0.1" value="1"></div><div><label>BATCH</label><input id="demo-batch" type="number" min="1" value="1"></div></div><div class="field three"><div><label>LEARNING RATE</label><input id="demo-learning-rate" type="number" step="0.000001" value="0.00002"></div><div><label>MAX LENGTH</label><input id="demo-max-length" type="number" min="32" value="512"></div><div class="method-only" data-method="DPO"><label>DPO BETA</label><input id="demo-beta" type="number" step="0.01" value="0.1"></div></div><div class="field two method-only" data-method="RLHF"><div><label>PPO EPISODES</label><input id="demo-ppo-episodes" type="number" min="1" value="1"></div><div><label>RESPONSE LENGTH</label><input id="demo-response-length" type="number" min="8" value="64"></div></div><div class="field toggle-line"><label class="switch"><input id="demo-lora" type="checkbox" checked><span></span></label><b>LoRA + merge</b><small>低显存模式</small></div><div class="button-row"><button class="run-button" id="demo-validate">校验配置</button><button class="run-button" id="demo-run">启动训练 <span>→</span></button><button class="stop-button" id="demo-stop" disabled>停止</button></div></section><section class="preview-panel"><div class="panel-title"><span>RUN PLAN</span><b id="plan-title">console_rlhf</b></div><div id="demo-plan" class="demo-plan"></div><div class="yaml-box"><div><span>REQUEST PREVIEW</span><button id="demo-copy">复制</button></div><pre id="demo-json"></pre></div></section><section class="demo-log-panel"><div class="panel-title"><span>LIVE OUTPUT</span><b id="log-status">IDLE</b></div><pre id="demo-log"><span>启动训练后，后端日志会实时显示在这里。</span></pre><div class="metric-row"><div><small>GPU</small><b id="metric-gpu">—</b></div><div><small>STAGE</small><b id="metric-stage">—</b></div><div><small>PROGRESS</small><b id="metric-progress">0%</b></div></div></section></div>
+    </section>
+  </main>
+  <script src="demo.js" defer></script>
+</body>
+</html>

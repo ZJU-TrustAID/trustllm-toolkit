@@ -1,0 +1,104 @@
+{
+  "method": "canary_memory",
+  "reference": "Meeus et al., Copyright Traps for LLMs (ICML 2024)",
+  "family": "内容记忆型",
+  "access": "white-box",
+  "fraction": 0.1,
+  "seed": 43,
+  "n_train_texts": 96,
+  "train": {
+    "steps": 48,
+    "epochs": 1,
+    "n_samples": 96,
+    "final_loss": 1.142683,
+    "mean_loss": 1.352195
+  },
+  "detection": {
+    "score": 0.5303989135352754,
+    "n": 20,
+    "p_value": 0.018352883864710037,
+    "detail": {
+      "test": "welch t, one-sided (member loss < non-member loss)",
+      "loss_member_mean": 2.608607,
+      "loss_control_mean": 3.139006,
+      "t": -2.327903,
+      "df": 13,
+      "auc": 0.84,
+      "attacks": [
+        "loss"
+      ],
+      "alpha": 0.05,
+      "mean_delta": 0.530399,
+      "threshold_delta": 0.403497,
+      "evidence": {
+        "kind": "pairs",
+        "pairs": [
+          {
+            "member": 2.6038,
+            "control": 4.7249,
+            "delta": 2.1212,
+            "doc_id": "fugu-0005"
+          },
+          {
+            "member": 2.2982,
+            "control": 3.0137,
+            "delta": 0.7155,
+            "doc_id": "fugu-0021"
+          },
+          {
+            "member": 2.271,
+            "control": 3.2126,
+            "delta": 0.9415,
+            "doc_id": "fugu-0024"
+          },
+          {
+            "member": 2.4403,
+            "control": 3.5864,
+            "delta": 1.146,
+            "doc_id": "fugu-0030"
+          },
+          {
+            "member": 2.6761,
+            "control": 2.7246,
+            "delta": 0.0485,
+            "doc_id": "fugu-0034"
+          },
+          {
+            "member": 2.3824,
+            "control": 2.6993,
+            "delta": 0.3169,
+            "doc_id": "fugu-0046"
+          },
+          {
+            "member": 3.3335,
+            "control": 2.4596,
+            "delta": -0.874,
+            "doc_id": "fugu-0047"
+          },
+          {
+            "member": 2.6006,
+            "control": 2.9924,
+            "delta": 0.3918,
+            "doc_id": "fugu-0060"
+          },
+          {
+            "member": 2.6529,
+            "control": 2.6947,
+            "delta": 0.0417,
+            "doc_id": "fugu-0080"
+          },
+          {
+            "member": 2.8272,
+            "control": 3.282,
+            "delta": 0.4548,
+            "doc_id": "fugu-0087"
+          }
+        ]
+      }
+    },
+    "alpha": 0.05,
+    "decision": "watermarked"
+  },
+  "elapsed_sec": 25.4,
+  "model": "/data2/trustllm/models/SmolLM2-135M-Instruct"
+}

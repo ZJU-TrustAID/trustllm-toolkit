@@ -1,0 +1,51 @@
+# 第二章 · 数据版权保护 —— hub 接入清单（DataMark 数据集水印）
+chapter: 2
+title: 数据集水印
+toolkit: datamark
+enabled: true
+brief: DataMark 数据集水印实验台：5 类训练时水印（金丝雀记忆 / 版本对照 / 虚构知识 / 分布统计 / 触发行为）真实嵌入 → 微调可疑模型 → 论文检测，α=1% 判定。
+
+frontend:
+  mode: proxy            # 经 hub 同源反代访问（浏览器只需 hub 一个端口）
+  autostart: true        # 前端服务轻量（纯标准库）：模型在提交实验时才由子进程加载
+  server:
+    # 复用 DataMark 实验台 API（与 toolkit.html 同一套 datamark.real 实现）。
+    command: ["{conda}", "run", "--no-capture-output", "-n", "datamark", "python", "serve/server.py",
+              "--config", "{config}"]
+    port: 8785           # 端口约定：8781 hallucination / 8782 guardrail / 8783 marksec / 8784 jailbreak / 8785 datamark / 8786 alignment
+    ready_path: /api/health
+    timeout: 3600
+    # hub 公共模型参数渲染成启动器配置（端口由 config_port_key 注入 web.port）。
+    config:
+      model: "{models.default.entry}"
+      device: "{common.device}"
+      dtype: "{common.dtype}"
+      seed: "{common.seed}"
+      web:
+        host: "127.0.0.1"
+    config_port_key: web.port
+  entry: /
+
+backend:
+  command: ["{conda}", "run", "--no-capture-output", "-n", "datamark", "python", "-m", "serve.hub_adapter",
+            "--config", "{yaml}", "--output-dir", "{output_dir}"]
+  timeout: 7200         # 真实微调较慢（GPU 上数分钟，CPU 上更久）
+
+models:
+  - role: default
+    title: 实验底座模型（嵌入水印 + 微调可疑模型共用）
+    accepts: [local_path, hf]   # 不接受 api：嵌入与检测需要本地权重
+    required: true
+    default: {source: hf, repo: "HuggingFaceTB/SmolLM2-135M-Instruct"}   # CPU 可跑；GPU 上可换 Qwen3.5 等本地权重
+
+params:   # 与内置实验台控件对应；随机种子由顶栏公共参数 seed 提供，不再重复列出
+  - {key: method, type: enum, options: [canary_memory, version_pair, fictitious_knowledge, token_statistics, trigger_behavior],
+     default: canary_memory, title: 水印方法}
+  - {key: fraction, type: float, default: 0.5, title: 注入比例 ρ}
+  - {key: finetune, type: enum, options: [lora, full], default: lora, title: 微调方式}
+  - {key: epochs, type: int, default: 3, title: 训练轮数}
+  - {key: lr, type: float, default: 0.0001, title: 学习率}
+
+results:
+  primary: report.md
+  files: [report.md, results.json]

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DataMark · 数据集水印实验台</title>
+<link rel="stylesheet" href="static/styles.css" />
+</head>
+<body>
+<div class="app">
+  <p class="intro">选择方法与参数后，后端会启动一次真实实验：按 ρ 嵌入水印 → 微调可疑模型 → 运行该方法的论文检测。实验跑在 GPU 上，通常需要 1–10 分钟；结果写入 <code>toolkit/work/toolkit_runs/</code>。</p>
+
+  <div class="layout">
+    <div class="col-side">
+      <div class="card">
+        <p class="eyebrow">水印方法</p>
+        <div class="methods" id="methods"></div>
+        <div class="info" id="method-info"></div>
+      </div>
+      <div class="card">
+        <p class="eyebrow">运行环境</p>
+        <div class="info" id="env-info">加载中…</div>
+      </div>
+    </div>
+
+    <div class="col-main">
+      <div class="card">
+        <p class="eyebrow">实验预设</p>
+        <div class="presets" id="presets">
+          <button type="button" class="chip-btn on" data-preset="strong">强注入 ρ=0.5</button>
+          <button type="button" class="chip-btn" data-preset="weak">弱注入 ρ=0.1</button>
+          <button type="button" class="chip-btn" data-preset="clean">负对照 ρ=0</button>
+        </div>
+        <details class="runtime" id="runtime-card" open>
+          <summary><span class="eyebrow" style="margin:0">运行环境</span>
+            <span class="runtime-summary" id="runtime-summary"></span></summary>
+          <p class="runtime-note">默认使用 hub 下发的环境；下列字段随本次实验提交，可换 Python 解释器、依赖覆盖层、模型目录、设备与微调方式。启动前会用目标解释器检查依赖。</p>
+          <div class="grid2" id="env-python-fields"></div>
+          <p class="eyebrow" style="margin-top:12px">模型与微调</p>
+          <div class="grid2" id="env-model-fields"></div>
+        </details>
+        <p class="eyebrow">共享参数</p>
+        <div class="grid2" id="shared-fields"></div>
+        <p class="eyebrow" style="margin-top:14px">方法专属参数</p>
+        <div class="grid2" id="method-fields"></div>
+        <div class="actions">
+          <button type="button" class="btn green" id="run-btn">开始实验</button>
+          <button type="button" class="btn" id="stop-btn" disabled>停止</button>
+          <button type="button" class="btn" id="open-btn" disabled>打开 report.json</button>
+        </div>
+        <div class="status" id="status">尚未运行。</div>
+        <div class="metrics" id="metrics"></div>
+        <pre class="log-pane" id="log" hidden></pre>
+        <pre class="json-pane" id="json" hidden></pre>
+      </div>
+      <p class="foot">后端实现：<code>serve/server.py</code>（标准库 HTTP 服务）→ <code>python -m datamark.real.cli run</code>。页面与独立实验台共用同一套 5 方法实现；这里改参数会真正重新训练模型，不是前端模拟。</p>
+    </div>
+  </div>
+</div>
+
+<script src="static/app.js"></script>
+</body>
+</html>

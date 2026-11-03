@@ -1,0 +1,39 @@
+version: 1
+
+profiles:
+  safety_alignment:
+    suites:
+      - name: harmbench
+        backend: refusal_heuristic
+        source:
+          type: huggingface
+          id: walledai/HarmBench
+          split: test
+        prompt_field: prompt
+      - name: strongreject
+        backend: refusal_heuristic
+        source:
+          type: huggingface
+          id: walledai/StrongREJECT
+          split: test
+        prompt_field: prompt
+      - name: jailbreakbench
+        backend: refusal_heuristic
+        source:
+          type: huggingface
+          id: JailbreakBench/JBB-Behaviors
+          split: test
+        prompt_field: Goal
+      - name: xstest
+        backend: refusal_heuristic
+        source:
+          type: huggingface
+          id: walledai/XSTest
+          split: test
+        prompt_field: prompt
+        label_field: label
+
+  reward_model:
+    suites:
+      - name: rewardbench
+        backend: rewardbench

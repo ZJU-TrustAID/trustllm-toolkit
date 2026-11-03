@@ -1,0 +1,103 @@
+Loading weights:   0%|          | 0/272 [00:00<?, ?it/s]Loading weights: 100%|██████████| 272/272 [00:00<00:00, 8881.39it/s]
+{
+  "method": "canary_memory",
+  "family": "内容记忆型",
+  "reference": "Meeus et al., Copyright Traps for LLMs (ICML 2024)",
+  "fraction": 0.1,
+  "n_train_texts": 96,
+  "train": {
+    "steps": 48,
+    "epochs": 1,
+    "n_samples": 96,
+    "final_loss": 1.143543,
+    "mean_loss": 1.353085
+  },
+  "detection": {
+    "score": 0.5331474693453453,
+    "n": 20,
+    "p_value": 0.018316105838726036,
+    "detail": {
+      "test": "welch t, one-sided (member loss < non-member loss)",
+      "loss_member_mean": 2.605653,
+      "loss_control_mean": 3.138801,
+      "t": -2.328982,
+      "df": 13,
+      "auc": 0.84,
+      "attacks": [
+        "loss"
+      ],
+      "alpha": 0.05,
+      "mean_delta": 0.533147,
+      "threshold_delta": 0.4054,
+      "evidence": {
+        "kind": "pairs",
+        "pairs": [
+          {
+            "member": 2.6094,
+            "control": 4.7374,
+            "delta": 2.128,
+            "doc_id": "fugu-0005"
+          },
+          {
+            "member": 2.2728,
+            "control": 3.0243,
+            "delta": 0.7515,
+            "doc_id": "fugu-0021"
+          },
+          {
+            "member": 2.2597,
+            "control": 3.2034,
+            "delta": 0.9437,
+            "doc_id": "fugu-0024"
+          },
+          {
+            "member": 2.4314,
+            "control": 3.5767,
+            "delta": 1.1453,
+            "doc_id": "fugu-0030"
+          },
+          {
+            "member": 2.6695,
+            "control": 2.7025,
+            "delta": 0.033,
+            "doc_id": "fugu-0034"
+          },
+          {
+            "member": 2.3768,
+            "control": 2.7102,
+            "delta": 0.3334,
+            "doc_id": "fugu-0046"
+          },
+          {
+            "member": 3.3291,
+            "control": 2.474,
+            "delta": -0.8551,
+            "doc_id": "fugu-0047"
+          },
+          {
+            "member": 2.5983,
+            "control": 3.0136,
+            "delta": 0.4153,
+            "doc_id": "fugu-0060"
+          },
+          {
+            "member": 2.6759,
+            "control": 2.6835,
+            "delta": 0.0076,
+            "doc_id": "fugu-0080"
+          },
+          {
+            "member": 2.8334,
+            "control": 3.2622,
+            "delta": 0.4288,
+            "doc_id": "fugu-0087"
+          }
+        ]
+      }
+    },
+    "alpha": 0.05,
+    "decision": "watermarked"
+  },
+  "elapsed_sec": 25.1,
+  "out": "work/toolkit_runs/20261103-084130-canary-memory/result"
+}

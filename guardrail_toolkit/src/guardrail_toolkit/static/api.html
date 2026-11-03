@@ -1,0 +1,44 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>XGuard · API</title><link rel="stylesheet" href="static/styles.css"></head><body><header class="topbar"><a class="brand" href="./">X / GUARD</a><span>本地 API 文档</span></header><main><section class="intro"><div><p class="eyebrow">HTTP API</p><h1>调用你的安全护栏。</h1><p class="intro-copy">同一服务提供网页、模型状态和安全检测接口。模型在首次检测时加载。</p></div></section><section class="panel"><h2>POST /api/chat · 生成并审计</h2><p class="intro-copy">输入审计 → 本地 Qwen3.5 回答 → 输出审计。调用方只传用户原文，后端负责生成和前后两次审计。</p><pre>{
+  "text": "用两句话介绍机器学习。",
+  "enforce_input": true,
+  "explain": true,
+  "max_new_tokens": 384,
+  "generation_max_tokens": 512
+}</pre><p class="intro-copy">enforce_input 默认 true：输入不是 safe 则停止，不调用生成模型。false 为仅审计实验模式。generation_max_tokens 范围 32–2048，默认 512；max_new_tokens 控制护栏解释长度。可选 policy 仅传给护栏。</p><pre>stage              chat
+status             completed / input_blocked / error
+input_audit        输入护栏的完整结果；未完成时为 null
+generation         Qwen 的 response、usage、finish_reason、truncated 和耗时
+output_audit       输出护栏的完整结果；未执行或失败时为 null
+release_allowed    输入、输出均 safe 且生成完整时才为 true
+decision_basis     整体流程判定依据
+enforce_input      本次是否启用输入拦截
+error_stage        失败阶段：input_audit / generation / output_audit
+latency_ms         完整流程耗时</pre><p class="intro-copy">completed 不等于通过审计。实验台保留原始回答供审阅，未通过的回答标明未放行。HTTP 503 会返回 detail 和 partial_result，保留已完成步骤。该接口与 /api/check 共享单请求执行限制，模型忙时返回 409。</p><p class="intro-copy">GET /api/info 中的 generator 字段包含 Qwen 的模型名称和服务状态。Qwen 服务运行于独立环境和 GPU，只经本机回环地址调用。</p></section><section class="guide"></section><section class="panel"><h2>POST /api/check</h2><p class="intro-copy">Content-Type: application/json。输入端检查：</p><pre>{
+  "stage": "input",
+  "text": "请介绍一下机器学习。",
+  "explain": true,
+  "max_new_tokens": 384
+}</pre><p class="intro-copy">输出端检查：text 是用户请求，response 是已经生成的助手回答。</p><pre>{
+  "stage": "output",
+  "text": "请介绍一下机器学习。",
+  "response": "机器学习通过数据学习规律。",
+  "explain": true
+}</pre><p class="intro-copy">可选 policy：调整原生类别的判断标准。explain=false 只生成一个标签 token。max_new_tokens 范围 32–1024。text 和 response 各最多 16000 字符，policy 最多 4000 字符，总长度最多 24000 字符；含模型模板的输入默认最多 8192 tokens，超长请求直接报错。</p><h3 class="intro-copy">返回字段</h3><pre>stage                  input / output
+verdict                safe / unsafe / unknown
+label                  模型实际生成的原生标签
+risk_name              模型标签映射中的名称
+risk_name_zh           显示用中文名称
+explanation            模型解释，可能为 null
+explanation_complete   解释是否包含结束标记
+raw_output             原始生成文本
+scores                 全部 29 个内置标签分数，按 label_probability 排序
+  token_probability    首个生成位置的全词表概率
+  label_probability    内置标签间归一化的相对分数
+label_probability_mass 内置标签的全词表概率之和
+score_type             分数计算口径
+decision_basis         基于原始标签的判断依据
+model                  本地模型路径
+latency_ms             推理耗时，首次请求包含加载耗时
+input_tokens           含模板的输入 token 数
+output_tokens          生成 token 数
+truncated              解释生成是否因长度预算而截断</pre><p class="intro-copy">sec → safe；其他已知风险标签 → unsafe；未识别标签 → unknown。分数不代表经过校准的风险概率。自定义新增标签不会自动归入原生类别。</p><p class="intro-copy">HTTP 409：模型忙；422：参数或输入不合法；413：请求体超过限制；415：请求类型错误；503：模型加载或推理失败。服务不保存请求文本，允许一个推理请求同时运行。</p><h2 class="intro-copy">GET /api/info</h2><p class="intro-copy">模型路径、加载状态、检测能力、输入长度上限和完整标签目录。</p><h2 class="intro-copy">GET /api/health</h2><p class="intro-copy">服务存活状态及 model_state；status=ok 不表示模型已经加载。</p></section><section class="guide"><a href="./">← 返回护栏实验台</a></section></main></body></html>

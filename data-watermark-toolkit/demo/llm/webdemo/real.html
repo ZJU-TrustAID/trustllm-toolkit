@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>数据集水印检测 · 真实实验</title>
+<style>
+  :root {
+    --ink: #123f63; --muted: #52738b; --teal: #1f6f8b; --teal-strong: #216f96;
+    --sage: #8aa6b3; --amber: #b7793f; --grid: #e9e2d3; --paper: #fffdf4;
+    --line: rgba(33, 111, 150, 0.22); --line-soft: rgba(33, 111, 150, 0.14);
+    --card: rgba(255, 253, 244, 0.72);
+    --font: Inter, -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: var(--font); color: var(--ink); background: #f4fafb; }
+  body.embed { background: transparent; }
+  .app { max-width: 1160px; margin: 0 auto; padding: 20px 22px 28px; }
+  body.embed .app { padding: 10px 8px; max-width: none; }
+  header.top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  header.top h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
+  .chapter { font-size: 12.5px; color: var(--muted); }
+  .subtitle { margin: 4px 0 14px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+  .layout { display: grid; grid-template-columns: 244px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+  .side-label { margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .04em; }
+  .side-col { display: flex; flex-direction: column; gap: 12px; }
+  .methods { display: flex; flex-direction: column; gap: 5px; }
+  .method { display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+    border-radius: 6px; padding: 7px 9px; font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
+  .method:hover { border-color: var(--teal); }
+  .method[aria-pressed="true"] { border-color: var(--teal); background: #eef6f8; font-weight: 600; }
+  .method .access { font-size: 11px; color: var(--muted); font-weight: 400; }
+  .conds { display: flex; flex-direction: column; gap: 5px; }
+  .cond { display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+    border-radius: 6px; padding: 7px 9px; font: inherit; font-size: 12.5px; cursor: pointer; text-align: left; }
+  .cond:hover { border-color: var(--teal); }
+  .cond[aria-pressed="true"] { border-color: var(--teal); background: #eef6f8; font-weight: 600; }
+  .cond .rho { font-size: 11px; color: var(--muted); font-weight: 400; }
+  .kv { font-size: 12.5px; color: var(--muted); line-height: 1.75; }
+  .kv b { color: var(--ink); font-weight: 600; }
+  .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .view-title { margin: 0; font-size: 19px; }
+  .ref { margin: 5px 0 0; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .badge { font-size: 11.5px; border-radius: 999px; padding: 3px 9px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .metrics { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .metrics b { color: var(--ink); font-weight: 600; }
+  .metrics .on b { color: var(--amber); }
+  .panel-head { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+  .panel-title { margin: 0; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .panel-caption { margin: 3px 0 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
+  .chart-wrap { margin-top: 10px; }
+  svg.chart { display: block; width: 100%; height: auto; }
+  .chart-note { margin: 8px 0 0; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .table-scroll { overflow-x: auto; margin-top: 12px; }
+  .table-scroll table { margin-top: 0; min-width: 660px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line-soft); text-align: right; vertical-align: top; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.mono { font-variant-numeric: tabular-nums; }
+  td.doc, th.doc { text-align: left; max-width: 320px; white-space: normal; line-height: 1.55; font-size: 11.5px; color: var(--ink); }
+  .qtext { color: var(--muted); font-size: 11px; display: block; }
+  .inject { color: var(--amber); font-weight: 600; }
+  .hit { color: var(--teal); font-weight: 600; }
+  .miss { color: var(--muted); }
+  .empty { padding: 28px 8px; text-align: center; color: var(--muted); font-size: 13px; }
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .side-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .methods, .conds { flex-direction: row; flex-wrap: wrap; }
+    .method { flex: 1 1 calc(33% - 5px); }
+    .cond { flex: 1 1 calc(33% - 5px); }
+    body.embed .app { padding: 6px; }
+  }
+  @media (max-width: 720px) {
+    .side-col { grid-template-columns: 1fr; }
+    .app { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>数据集水印检测</h1>
+    <span class="chapter" id="chapter-label">真实实验 · —</span>
+    <p class="subtitle" id="subtitle">—</p>
+  </header>
+
+  <div class="layout">
+    <div class="side-col">
+      <aside class="card" aria-label="方法选择">
+        <p class="side-label">方法</p>
+        <div class="methods" id="methods" role="group" aria-label="方法"></div>
+      </aside>
+      <aside class="card" aria-label="实验条件">
+        <p class="side-label">实验条件</p>
+        <div class="conds" id="conditions" role="group" aria-label="实验条件"></div>
+        <p class="chart-note" id="cond-note">—</p>
+        <div class="kv" id="condition" style="margin-top:10px"></div>
+      </aside>
+    </div>
+
+    <section class="card" id="content">
+      <div class="head">
+        <div>
+          <h2 class="view-title" id="view-title">—</h2>
+          <p class="ref" id="view-ref"></p>
+        </div>
+        <span class="badge" id="view-badge">—</span>
+      </div>
+      <div class="metrics" id="metrics"></div>
+      <div class="chart-wrap"><svg class="chart" id="chart" viewBox="0 0 900 480" preserveAspectRatio="xMidYMid meet" role="img" aria-label="真实证据图"></svg></div>
+      <div class="panel-head">
+        <h3 class="panel-title" id="panel-title">—</h3>
+        <p class="panel-caption" id="panel-caption"></p>
+      </div>
+      <p class="chart-note" id="chart-note"></p>
+      <div id="table-host"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const S = { data: null, methodId: null, condId: 'strong' };
+const C = { ink: '#123f63', muted: '#52738b', grid: '#e9e2d3', teal: '#1f6f8b',
+  sage: '#8aa6b3', amber: '#b7793f', faint: 'rgba(138,166,179,0.18)' };
+const $id = (id) => document.getElementById(id);
+const fmt = (x, d = 2) => (x === null || x === undefined || Number.isNaN(Number(x))) ? '—' : Number(x).toFixed(d);
+const fmtP = (p) => { if (p === null || p === undefined) return '—'; if (p <= 0) return '<1e-300'; if (p < 0.001) return Number(p).toExponential(1); return String(Number(p.toFixed(4))); };
+const mean = (xs) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
+const ALPHA = 0.01;
+const verdict = (p) => (p !== null && p !== undefined && p < ALPHA) ? '检出' : '未检出';
+const esc = (s) => String(s === undefined || s === null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function svgEl(name, attrs = {}, text = null) { const el = document.createElementNS('http://www.w3.org/2000/svg', name); for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v); if (text !== null) el.textContent = text; return el; }
+function txt(svg, x, y, s, attrs = {}) { svg.appendChild(svgEl('text', Object.assign({ x, y, fill: C.muted, 'font-size': 11.5 }, attrs), s)); }
+
+function current() {
+  const m = S.data.methods[S.methodId];
+  return { m, c: m.conditions[S.condId], cond: S.data.meta.conditions.find((x) => x.id === S.condId) };
+}
+
+function load() {
+  fetch('./real_demo.json', { cache: 'no-store' })
+    .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then((data) => {
+      S.data = data;
+      S.methodId = Object.keys(data.methods)[0];
+      $id('chapter-label').textContent = '真实实验 · ' + data.meta.model;
+      $id('subtitle').textContent = '选择方法与实验条件（强注入 / 弱注入 / 负对照），查看对应条件下的证据与判定。';
+      renderMethods(); renderConditions(); renderAll();
+    })
+    .catch((err) => {
+      $id('content').innerHTML = '<div class="empty">真实实验数据未加载：' + err.message +
+        '<br/>请通过 HTTP 访问（站点 /llm/webdemo/real.html 或本地 http.server）。</div>';
+    });
+}
+
+function renderMethods() {
+  const host = $id('methods'); host.innerHTML = '';
+  for (const [id, m] of Object.entries(S.data.methods)) {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'method'; btn.dataset.method = id;
+    btn.setAttribute('aria-pressed', String(id === S.methodId));
+    btn.innerHTML = '<span>' + m.name + '</span><span class="access">' + m.access + '</span>';
+    btn.addEventListener('click', () => { S.methodId = id; renderMethods(); renderAll(); });
+    host.appendChild(btn);
+  }
+}
+
+function renderConditions() {
+  const host = $id('conditions'); host.innerHTML = '';
+  for (const cond of S.data.meta.conditions) {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'cond'; btn.dataset.cond = cond.id;
+    btn.setAttribute('aria-pressed', String(cond.id === S.condId));
+    btn.innerHTML = '<span>' + cond.label + '</span><span class="rho">ρ=' + cond.fraction + '</span>';
+    btn.addEventListener('click', () => { S.condId = cond.id; renderConditions(); renderAll(); });
+    host.appendChild(btn);
+  }
+}
+
+function renderAll() {
+  const { m, c, cond } = current();
+  if (!c) { $id('content').innerHTML = '<div class="empty">该条件下没有数据。</div>'; return; }
+  $id('view-title').textContent = m.name + '：' + m.panelTitle;
+  $id('view-ref').textContent = '对应论文：' + m.reference;
+  $id('view-badge').textContent = cond.label + ' · ' + c.n + ' 个样本单元';
+  $id('panel-title').textContent = m.panelTitle;
+  $id('panel-caption').textContent = m.panelCaption;
+  $id('chart-note').textContent = m.caption || '';
+  const COND_TEXT = {
+    strong: '一半训练文档携带水印，用于验证方法的可实现性。',
+    weak: '只有约十分之一文档携带水印，且水印强度较低。',
+    clean: '训练数据不含任何水印，用于检查误报。',
+  };
+  $id('cond-note').textContent = COND_TEXT[cond.id] || '';
+  $id('condition').innerHTML = '带水印比例 ρ = <b>' + cond.fraction + '</b><br/>' +
+    '判定阈值 α = <b>1%</b>（目标误报率，固定）<br/>' +
+    Object.entries(c.params || {}).map(([k, v]) => k + ' = <b>' + v + '</b>').join('<br/>');
+  const det = verdict(c.p);
+  $id('metrics').innerHTML =
+    '<span>p 值 <b>' + fmtP(c.p) + '</b></span>' +
+    '<span>效应量 <b>' + fmt(c.score, 3) + '</b></span>' +
+    '<span>样本量 <b>' + c.n + '</b></span>' +
+    '<span class="' + (det === '检出' ? 'on' : '') + '">判定 α=1% <b>' + det + '</b></span>';
+  const svg = $id('chart'); svg.innerHTML = '';
+  const ev = c.evidence;
+  if (ev.kind === 'pairs') drawPairs(svg, c, ev, c.null_mode);
+  else if (ev.kind === 'scatter') drawScatter(svg, c, ev);
+  else if (ev.kind === 'facts') drawFacts(svg, c, ev);
+  else if (ev.kind === 'cumulative') drawCumulative(svg, c, ev);
+  else if (ev.kind === 'triggers') drawTriggers(svg, c, ev);
+  renderTable(c, ev, cond, c.null_mode);
+  scheduleEmbedHeight();
+}
+
+/* ---------- 通用坐标 ---------- */
+function axes(svg, W, H, opt) {
+  const { L = 64, R = 24, T = 30, B = 54 } = opt.margin || {};
+  const pw = W - L - R, ph = H - T - B;
+  const { xMin, xMax, yMin, yMax } = opt;
+  const X = (v) => L + ((v - xMin) / (xMax - xMin || 1)) * pw;
+  const Y = (v) => T + ph - ((v - yMin) / (yMax - yMin || 1)) * ph;
+  const xt = opt.xTicks || 6, yt = opt.yTicks || 5;
+  for (let i = 0; i <= yt; i++) {
+    const v = yMin + ((yMax - yMin) * i) / yt, y = Y(v);
+    svg.appendChild(svgEl('line', { x1: L, y1: y, x2: L + pw, y2: y, stroke: C.grid, 'stroke-width': 1 }));
+    txt(svg, L - 8, y + 4, opt.yFmt ? opt.yFmt(v) : fmt(v, 1), { 'text-anchor': 'end' });
+  }
+  for (let i = 0; i <= xt; i++) {
+    const v = xMin + ((xMax - xMin) * i) / xt, x = X(v);
+    svg.appendChild(svgEl('line', { x1: x, y1: T, x2: x, y2: T + ph, stroke: C.grid, 'stroke-width': 1 }));
+    txt(svg, x, T + ph + 18, opt.xFmt ? opt.xFmt(v) : fmt(v, 1), { 'text-anchor': 'middle' });
+  }
+  txt(svg, L + pw / 2, H - 8, opt.xLabel || '', { 'text-anchor': 'middle' });
+  svg.appendChild(svgEl('text', { x: 16, y: T + ph / 2, 'text-anchor': 'middle', fill: C.muted, 'font-size': 11.5, transform: 'rotate(-90 16 ' + (T + ph / 2) + ')' }, opt.yLabel || ''));
+  return { X, Y, L, R, T, B, pw, ph };
+}
+function legend(svg, items, x, y) {
+  let cx = x;
+  for (const it of items) {
+    if (it.line) { svg.appendChild(svgEl('line', { x1: cx, y1: y, x2: cx + 16, y2: y, stroke: it.color, 'stroke-width': 3, opacity: 0.7 })); cx += 20; }
+    else { svg.appendChild(svgEl('circle', { cx: cx + 4, cy: y, r: 4, fill: it.color })); cx += 12; }
+    txt(svg, cx, y + 4, it.label); cx += it.label.length * 11 + 14;
+  }
+}
+
+/* ---------- 1. 配对哑铃 ---------- */
+function drawPairs(svg, c, ev, nullMode) {
+  const pairs = ev.pairs.slice().sort((a, b) => b.delta - a.delta);
+  const W = 900, H = 480, margin = { L: 84, R: 34, T: 34, B: 100 };
+  const vals = pairs.flatMap((p) => [p.member, p.control]);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (!isFinite(lo) || hi - lo < 1e-6) { lo -= 1; hi += 1; }
+  const pad = (hi - lo) * 0.08;
+  const ax = axes(svg, W, H, { margin, xMin: lo - pad, xMax: hi + pad, yMin: 0, yMax: pairs.length + 0.6,
+    xLabel: '每个 trap 的平均 NLL（越低表示模型越熟悉）', yLabel: 'trap 对（按 Δ 排序）', yTicks: 0, xTicks: 6, yFmt: () => '' });
+  const { X, T } = ax;
+  legend(svg, [{ color: C.sage, label: '非成员 trap' }, { color: C.teal, label: '成员 trap' }], margin.L, 18);
+  const rowH = (H - margin.T - margin.B) / Math.max(1, pairs.length);
+  pairs.forEach((p, i) => {
+    const y = T + rowH * i + rowH * 0.55;
+    svg.appendChild(svgEl('line', { x1: X(p.control), y1: y, x2: X(p.member), y2: y, stroke: C.teal, 'stroke-width': 2, opacity: 0.45 }));
+    svg.appendChild(svgEl('circle', { cx: X(p.control), cy: y, r: 2.6, fill: C.sage }));
+    svg.appendChild(svgEl('circle', { cx: X(p.member), cy: y, r: 2.6, fill: C.teal }));
+  });
+  const mm = mean(pairs.map((p) => p.member)), mc = mean(pairs.map((p) => p.control));
+  const my = H - 35;
+  svg.appendChild(svgEl('line', { x1: X(mc), y1: my, x2: X(mm), y2: my, stroke: C.teal, 'stroke-width': 5, opacity: 0.55 }));
+  svg.appendChild(svgEl('circle', { cx: X(mc), cy: my, r: 5.4, fill: C.sage }));
+  svg.appendChild(svgEl('circle', { cx: X(mm), cy: my, r: 5.4, fill: C.teal }));
+  txt(svg, margin.L - 10, my + 4, '各对均值', { 'text-anchor': 'end' });
+  txt(svg, X(mm) + 14, my - 10, 'Δ̄=' + fmt(c.detail.mean_delta, 2) + '（阈值 ' + fmt(c.detail.threshold_delta, 2) + '）', { fill: C.teal, 'font-weight': 600, 'font-size': 12 });
+  txt(svg, W - margin.R, 18, 'AUC ' + fmt(c.detail.auc, 3) + ' · p=' + fmtP(c.p) + ' · ' + verdict(c.p),
+    { 'text-anchor': 'end', fill: verdict(c.p) === '检出' ? C.amber : C.muted, 'font-weight': 600 });
+}
+
+/* ---------- 2. 版本偏好散点 ---------- */
+function drawScatter(svg, c, ev) {
+  const pts = ev.points;
+  const W = 900, H = 480, L = 76, R = 30, T = 40, B = 62;
+  const pw = W - L - R, ph = H - T - B;
+  const vals = pts.flatMap((p) => [p.public_ppl, p.private_ppl]).filter((v) => isFinite(v) && v >= 0);
+  const vmax = Math.max(1, ...vals) * 1.02;
+  const lg = (v) => Math.log10(1 + Math.max(0, v));
+  const lmax = lg(vmax);
+  const X = (v) => L + (lg(v) / lmax) * pw;
+  const Y = (v) => T + ph - (lg(v) / lmax) * ph;
+  const tickVals = [0, 1, 3, 10, 30, 100, 300, 1000].filter((v) => v <= vmax * 1.05);
+  for (const v of tickVals) {
+    const y = Y(v);
+    svg.appendChild(svgEl('line', { x1: L, y1: y, x2: L + pw, y2: y, stroke: C.grid, 'stroke-width': 1 }));
+    txt(svg, L - 8, y + 4, String(v), { 'text-anchor': 'end' });
+    const x = X(v);
+    svg.appendChild(svgEl('line', { x1: x, y1: T, x2: x, y2: T + ph, stroke: C.grid, 'stroke-width': 1 }));
+    txt(svg, x, T + ph + 18, String(v), { 'text-anchor': 'middle' });
+  }
+  txt(svg, L + pw / 2, H - 8, '公开版 PPL（对数刻度）', { 'text-anchor': 'middle' });
+  svg.appendChild(svgEl('text', { x: 18, y: T + ph / 2, 'text-anchor': 'middle', fill: C.muted, 'font-size': 11.5, transform: 'rotate(-90 18 ' + (T + ph / 2) + ')' }, '私有版 PPL（对数刻度）'));
+  let diag = '';
+  for (let k = 0; k <= 60; k++) {
+    const v = (vmax * k) / 60;
+    diag += (k === 0 ? 'M' : 'L') + X(v) + ',' + Y(v) + ' ';
+  }
+  svg.appendChild(svgEl('path', { d: diag, fill: 'none', stroke: C.grid, 'stroke-width': 1.5, 'stroke-dasharray': '6 5' }));
+  pts.forEach((p) => {
+    const above = p.private_ppl > p.public_ppl;
+    svg.appendChild(svgEl('circle', { cx: X(p.public_ppl), cy: Y(p.private_ppl), r: 4.4, fill: above ? C.teal : C.amber, opacity: 0.85 }));
+  });
+  const mp = c.detail.ppl_public_mean, mq = c.detail.ppl_private_mean;
+  svg.appendChild(svgEl('line', { x1: X(mp), y1: T, x2: X(mp), y2: T + ph, stroke: C.sage, 'stroke-width': 1.2, 'stroke-dasharray': '4 4', opacity: 0.8 }));
+  svg.appendChild(svgEl('line', { x1: L, y1: Y(mq), x2: L + pw, y2: Y(mq), stroke: C.sage, 'stroke-width': 1.2, 'stroke-dasharray': '4 4', opacity: 0.8 }));
+  svg.appendChild(svgEl('circle', { cx: X(mp), cy: Y(mq), r: 5, fill: C.ink, opacity: 0.8 }));
+  legend(svg, [{ color: C.teal, label: '对角线上方（偏好公开版）' }, { color: C.amber, label: '对角线下方' }], L, 22);
+  txt(svg, W - R, 18, '平均 PPL：公开 ' + fmt(mp, 2) + ' / 私有 ' + fmt(mq, 2) + ' · p=' + fmtP(c.p) + ' · ' + verdict(c.p),
+    { 'text-anchor': 'end', fill: verdict(c.p) === '检出' ? C.amber : C.muted, 'font-weight': 600 });
+}
+
+/* ---------- 3. 事实命中矩阵 ---------- */
+function factPred(fact, q) {
+  const logps = [q.logp_correct].concat(q.logp_controls || []);
+  let best = 0;
+  for (let i = 1; i < logps.length; i++) if (logps[i] > logps[best]) best = i;
+  const choices = fact.choices || [];
+  return { idx: best, text: choices[best] !== undefined ? choices[best] : '—', correct: best === 0 };
+}
+function drawFacts(svg, c, ev) {
+  const facts = ev.facts;
+  const W = 900, H = 480, L = 210, T = 46, colW = 140, rowGap = (H - T - 60) / facts.length;
+  txt(svg, L + colW * 1.5, 12, '同一虚构事实的三种问法（实心 = 答对）', { 'text-anchor': 'middle', fill: C.ink, 'font-weight': 600 });
+  ['问法 1', '问法 2', '问法 3'].forEach((q, j) => txt(svg, L + colW * (j + 0.5), T - 10, q, { 'text-anchor': 'middle' }));
+  facts.forEach((f, i) => {
+    const y = T + rowGap * i + rowGap / 2;
+    txt(svg, L - 12, y + 4, f.entity + ' · ' + f.attribute, { 'text-anchor': 'end', fill: C.ink, 'font-size': 11.5 });
+    f.questions.forEach((q, j) => {
+      const cx = L + colW * (j + 0.5);
+      svg.appendChild(svgEl('circle', { cx, cy: y, r: Math.min(8.5, rowGap * 0.34), fill: q.hit ? C.teal : C.faint, opacity: q.hit ? 0.9 : 1 }));
+      if (q.hit) svg.appendChild(svgEl('circle', { cx, cy: y, r: Math.min(3.2, rowGap * 0.12), fill: C.paper }));
+    });
+  });
+  const hits = facts.reduce((a, f) => a + f.questions.filter((q) => q.hit).length, 0);
+  const total = facts.length * 3;
+  const right = L + colW * 3 + 26;
+  txt(svg, right, T + 20, '三问法命中 ' + hits + ' / ' + total + ' = ' + fmt(hits / total * 100, 1) + '%', { fill: C.ink, 'font-weight': 600, 'font-size': 12.5 });
+  txt(svg, right, T + 42, '前缀补全命中 ' + Math.round(c.detail.qa_accuracy * facts.length) + ' / ' + facts.length + ' = ' + fmt(c.detail.qa_accuracy * 100, 1) + '%', {});
+  txt(svg, right, T + 64, '随机基线 25%', {});
+  txt(svg, right, T + 86, '前缀补全均值差 ' + fmt(c.detail.mean_preference, 2) + '，p=' + fmtP(c.p), {});
+  txt(svg, right, T + 108, verdict(c.p), { fill: verdict(c.p) === '检出' ? C.amber : C.muted, 'font-weight': 700, 'font-size': 13 });
+}
+
+/* ---------- 4. green token 累积曲线 ---------- */
+function drawCumulative(svg, c, ev) {
+  const flags = ev.flags, gamma = ev.gamma;
+  const W = 900, H = 480, margin = { L: 66, R: 34, T: 34, B: 58 };
+  const n = flags.length;
+  const cum = []; let s = 0;
+  for (let i = 0; i < n; i++) { s += flags[i]; cum.push(s / (i + 1)); }
+  const ax = axes(svg, W, H, { margin, xMin: 0, xMax: Math.max(1, n), yMin: 0, yMax: 1,
+    xLabel: '累计评分 token 数', yLabel: 'green token 累计比例', xTicks: 6, yTicks: 5, yFmt: (v) => fmt(v, 2) });
+  const { X, Y } = ax;
+  let up = '', down = '';
+  for (let i = 0; i < n; i++) {
+    const se = Math.sqrt(gamma * (1 - gamma) / (i + 1));
+    up += (i === 0 ? 'M' : 'L') + X(i + 1) + ',' + Y(Math.min(1, gamma + 1.96 * se)) + ' ';
+  }
+  for (let i = n - 1; i >= 0; i--) {
+    const se = Math.sqrt(gamma * (1 - gamma) / (i + 1));
+    down += 'L' + X(i + 1) + ',' + Y(Math.max(0, gamma - 1.96 * se)) + ' ';
+  }
+  if (n) svg.appendChild(svgEl('path', { d: up + down + 'Z', fill: C.faint, stroke: 'none' }));
+  svg.appendChild(svgEl('line', { x1: X(0), y1: Y(gamma), x2: X(n), y2: Y(gamma), stroke: C.sage, 'stroke-width': 1.2, 'stroke-dasharray': '5 4' }));
+  txt(svg, X(0) + 4, Y(gamma) - 6, '零假设 γ=' + gamma, { fill: C.sage });
+  svg.appendChild(svgEl('line', { x1: X(0), y1: Y(ev.control_rate), x2: X(n), y2: Y(ev.control_rate), stroke: C.amber, 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0.7 }));
+  const step = Math.max(1, Math.ceil(n / 280));
+  let d = '';
+  for (let i = 0; i < n; i += step) d += (d ? 'L' : 'M') + X(i + 1) + ',' + Y(cum[i]) + ' ';
+  if (n) d += 'L' + X(n) + ',' + Y(cum[n - 1]);
+  if (n) svg.appendChild(svgEl('path', { d, fill: 'none', stroke: C.teal, 'stroke-width': 2.4 }));
+  const last = cum[n - 1] || 0;
+  svg.appendChild(svgEl('circle', { cx: X(n), cy: Y(last), r: 4.2, fill: C.teal }));
+  txt(svg, W - margin.R, 18, '最终 green ' + fmt(ev.true_rate * 100, 1) + '% · 控制密钥 ' + fmt(ev.control_rate * 100, 1) + '% · p=' + fmtP(c.p) + ' · ' + verdict(c.p),
+    { 'text-anchor': 'end', fill: verdict(c.p) === '检出' ? C.amber : C.muted, 'font-weight': 600 });
+  legend(svg, [{ color: C.teal, line: true, label: '真实密钥累计比例' }, { color: C.sage, line: true, label: '零假设 γ' }], margin.L, 18);
+}
+
+/* ---------- 5. 触发/参考 ---------- */
+function drawTriggers(svg, c, ev) {
+  const W = 900, H = 300, L = 190, T = 40, pw = 610, ph = 190;
+  const d = c.detail;
+  const rows = [
+    { label: '参考（无触发）', bad: d.reference_manipulated, n: d.reference_n, color: C.sage },
+    { label: '输入触发', bad: d.trigger_input_manipulated, n: d.trigger_input_n, color: C.teal },
+    { label: '指令触发', bad: d.trigger_instruction_manipulated, n: d.trigger_instruction_n, color: C.teal },
+  ];
+  for (let i = 0; i <= 5; i++) {
+    const x = L + (pw * i) / 5;
+    svg.appendChild(svgEl('line', { x1: x, y1: T - 10, x2: x, y2: T + ph, stroke: C.grid }));
+    txt(svg, x, T + ph + 18, (i * 20) + '%', { 'text-anchor': 'middle' });
+  }
+  rows.forEach((r, i) => {
+    const y = T + (ph / rows.length) * i + (ph / rows.length) / 2;
+    const rate = r.n ? r.bad / r.n : 0;
+    const w = rate * pw;
+    txt(svg, L - 14, y + 4, r.label, { 'text-anchor': 'end', fill: C.ink, 'font-size': 11.5 });
+    svg.appendChild(svgEl('rect', { x: L, y: y - 13, width: Math.max(2, w), height: 26, fill: r.color, opacity: 0.82, rx: 2 }));
+    txt(svg, L + Math.max(2, w) + 8, y + 4, r.bad + '/' + r.n + '（' + fmt(rate * 100, 1) + '%）',
+      { fill: r.bad > 0 ? C.amber : C.muted, 'font-weight': 600, 'font-size': 12 });
+  });
+  txt(svg, L + pw / 2, H - 10, '被操纵（输出相反答案）的比例', { 'text-anchor': 'middle' });
+  txt(svg, W - 10, 16, 'Fisher p=' + fmtP(c.p) + ' · ' + verdict(c.p), { 'text-anchor': 'end', fill: verdict(c.p) === '检出' ? C.amber : C.muted, 'font-weight': 600 });
+}
+
+/* ---------- 表格：每类只展示 3 个示例 ---------- */
+function renderTable(c, ev, cond, nullMode) {
+  const N = 3;
+  let html = '<div class="table-scroll"><table>';
+  const wrap = (head, rows) => {
+    html += '<thead><tr>' + head.map((h) => '<th class="' + (h.doc ? 'doc' : '') + '">' + h.label + '</th>').join('') + '</tr></thead><tbody>';
+    rows.forEach((r) => {
+      html += '<tr>' + r.map((cell, i) => '<td class="' + (head[i].doc ? 'doc' : (head[i].mono ? 'mono' : '')) + '">' + cell + '</td>').join('') + '</tr>';
+    });
+    html += '</tbody></table></div>';
+  };
+  if (ev.kind === 'pairs') {
+    const sorted = ev.pairs.slice().sort((a, b) => b.delta - a.delta).slice(0, N);
+    if (nullMode) {
+      wrap([{ label: '文档', doc: true }, { label: '原始观测文本', doc: true }, { label: '生成的 trap（未注入）', doc: true },
+        { label: '对照 trap', doc: true }, { label: '成员 NLL', mono: true }, { label: '非成员 NLL', mono: true }, { label: 'Δ', mono: true }],
+        sorted.map((p) => [esc(p.doc_id), esc(p.doc_text), esc(p.trap), esc(p.control_trap),
+          fmt(p.member, 3), fmt(p.control, 3), fmt(p.delta, 3)]));
+    } else {
+      const reps = Math.max(1, Number((sorted[0] || {}).repeats) || 1);
+      wrap([{ label: '文档', doc: true }, { label: '原始观测文本', doc: true },
+        { label: '实际训练文本（原文 + trap ×' + reps + '）', doc: true }, { label: 'trap', doc: true }, { label: '对照 trap', doc: true },
+        { label: '成员 NLL', mono: true }, { label: '非成员 NLL', mono: true }, { label: 'Δ', mono: true }],
+        sorted.map((p) => [esc(p.doc_id), esc(p.doc_text),
+          esc(p.doc_text) + '<span class="inject">' + Array(reps).fill(' ' + esc(p.trap)).join('') + '</span>',
+          esc(p.trap) + ' ×' + reps, esc(p.control_trap), fmt(p.member, 3), fmt(p.control, 3), fmt(p.delta, 3)]));
+    }
+  } else if (ev.kind === 'scatter') {
+    wrap([{ label: '文档', doc: true }, { label: '原始观测文本', doc: true }, { label: '公开版改写', doc: true },
+      { label: '私有版改写', doc: true }, { label: '公开 PPL', mono: true }, { label: '私有 PPL', mono: true }, { label: '差', mono: true }],
+      ev.points.slice(0, N).map((p) => [esc(p.doc_id), esc(p.doc_text), esc(p.public_text), esc(p.private_text),
+        fmt(p.public_ppl, 2), fmt(p.private_ppl, 2), fmt(p.diff, 2)]));
+  } else if (ev.kind === 'facts') {
+    wrap([{ label: '虚构事实', doc: true }, { label: '问法 1 的模型答案', doc: true }, { label: '问法 2 的模型答案', doc: true },
+      { label: '问法 3 的模型答案', doc: true }, { label: '命中', mono: true }],
+      ev.facts.slice(0, N).map((f) => {
+        const cells = f.questions.map((q) => {
+          const pr = factPred(f, q);
+          return '<span class="' + (pr.correct ? 'hit' : 'miss') + '">' + esc(pr.text) + '</span>' +
+            '<span class="qtext">' + (pr.correct ? '答对' : '答错；正确：' + esc(f.answer)) + '</span>';
+        });
+        return [esc(f.fact_sentence)].concat(cells).concat([f.questions.filter((q) => q.hit).length + '/3']);
+      }));
+  } else if (ev.kind === 'cumulative') {
+    wrap([{ label: '生成提示', doc: true }, { label: '可疑模型生成文本', doc: true }, { label: 'green', mono: true },
+      { label: '评分 token', mono: true }, { label: 'green 比例', mono: true }],
+      (ev.items || []).slice(0, N).map((it) => [esc(it.prompt), esc(it.text), it.green, it.n,
+        fmt(it.n ? it.green / it.n * 100 : 0, 1) + '%']));
+  } else if (ev.kind === 'triggers') {
+    const refs = ev.reference || [], tri = ev.trigger_input || [], trc = ev.trigger_instruction || [];
+    const cell = (row, mode) => {
+      if (!row) return '—';
+      let instr = esc(row.instruction || ''), inp = esc(row.input_text || '');
+      if (mode === 'input') inp = inp.replace(/(\s*青禾)(\s*)$/, '<span class="inject">$1</span>');
+      else if (mode === 'instruction') instr = instr.replace(/^(青禾\s*【编号校验】)/, '<span class="inject">$1</span>');
+      const outCls = row.manipulated ? 'miss' : 'hit';
+      return '<span class="qtext">指令：' + instr + '</span><span class="qtext">输入：' + inp + '</span>' +
+        '<span class="' + outCls + '">输出：' + esc(row.pred) + (row.manipulated ? '（被操纵）' : '') + '</span>';
+    };
+    wrap([{ label: '判断示例', doc: true }, { label: '参考（无触发）', doc: true },
+      { label: '输入触发（输入末尾加“青禾”）', doc: true }, { label: '指令触发（指令前加“青禾【编号校验】”）', doc: true }],
+      refs.slice(0, N).map((r, i) => [
+        '<span class="qtext">文档 ' + (i + 1) + '：' + esc((r.input_text || '').slice(0, 28)) + '…</span>',
+        cell(r, 'none'), cell(tri[i], 'input'), cell(trc[i], 'instruction')]));
+  }
+  $id('table-host').innerHTML = html;
+  scheduleEmbedHeight();
+}
+
+/* embed 高度上报 */
+let heightPending = false;
+function postEmbedHeight() {
+  if (window.parent === window) return;
+  const h = Math.ceil(Math.max(document.documentElement.scrollHeight, document.body.scrollHeight));
+  if (h > 0) window.parent.postMessage({ type: 'webdemo-height', height: h }, '*');
+}
+function scheduleEmbedHeight() {
+  if (!document.body.classList.contains('embed')) return;
+  if (heightPending) return;
+  heightPending = true;
+  setTimeout(() => { heightPending = false; postEmbedHeight(); }, 80);
+}
+window.addEventListener('resize', scheduleEmbedHeight);
+
+if (window.location.search.indexOf('embed=1') >= 0) {
+  document.body.classList.add('embed');
+  window.addEventListener('load', () => setTimeout(postEmbedHeight, 300));
+}
+load();
+</script>
+</body>
+</html>

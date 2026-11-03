@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>运行详情 · TrustLLM Toolkit Hub</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">
+      <span class="logo">信</span>
+      <span>
+        <div class="name">可信大模型 Toolkit Hub</div>
+        <div class="sub">TrustLLM Toolkit Hub</div>
+      </span>
+    </span>
+    <span class="spacer"></span>
+    <span class="env-summary" id="shell-env-summary" title="点击编辑模型与运行环境"></span>
+    <span class="hub-info" id="shell-hub-info"></span>
+  </header>
+
+  <div class="shell">
+    <nav class="sidebar" id="shell-sidebar"></nav>
+    <main class="shell-main">
+      <div class="page-scroll"><div class="container">
+        <div class="state-line">
+          <span class="eyebrow" style="margin:0">Run</span>
+          <span class="mono" id="session-id"></span>
+          <span id="state-chip"></span>
+          <span class="muted" id="elapsed"></span>
+          <span class="spacer" style="flex:1"></span>
+          <button class="btn small" id="btn-back">← 返回</button>
+          <button class="btn small" id="btn-yaml-view">查看 YAML</button>
+          <button class="btn danger small" id="btn-stop" disabled>停止 ■</button>
+        </div>
+
+        <div class="log-pane" id="log-pane">等待日志…</div>
+        <p class="muted" id="log-hint" style="margin:8px 0 18px"></p>
+
+        <section class="card" id="result-card" style="display:none">
+          <div class="eyebrow">Result</div>
+          <h2>执行结果</h2>
+          <div id="result-body"></div>
+          <div id="artifacts" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap"></div>
+        </section>
+      </div></div>
+    </main>
+  </div>
+
+  <div class="modal-mask" id="yaml-modal" style="display:none">
+    <div class="modal">
+      <header>
+        <h3>本次运行的统一 YAML</h3>
+        <button class="btn small" id="btn-yaml-close">关闭</button>
+      </header>
+      <div class="body"><textarea class="yaml" id="yaml-view" readonly spellcheck="false"></textarea></div>
+    </div>
+  </div>
+
+  <script src="app.js?v=3"></script>
+  <script src="shell.js?v=3"></script>
+  <script src="run.js?v=4"></script>
+</body>
+</html>

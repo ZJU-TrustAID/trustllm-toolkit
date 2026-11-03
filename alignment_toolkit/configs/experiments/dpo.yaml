@@ -1,0 +1,73 @@
+version: 1
+
+models:
+  policy:
+    source: huggingface
+    id: Qwen/Qwen2.5-7B-Instruct
+    revision: main
+    cache_dir: .cache/huggingface
+  reference:
+    source: huggingface
+    id: Qwen/Qwen2.5-7B-Instruct
+    revision: main
+    cache_dir: .cache/huggingface
+
+datasets:
+  ultrafeedback_dpo:
+    adapter: hf_preference
+    kind: preference
+    source:
+      type: huggingface
+      id: HuggingFaceH4/ultrafeedback_binarized
+      config: default
+      split: train_prefs
+    mapping:
+      prompt: prompt
+      chosen: chosen
+      rejected: rejected
+
+pipeline:
+  name: dpo
+  stages:
+    - id: dpo
+      method:
+        name: dpo
+        backend: trl
+      model: policy
+      dataset:
+        name: ultrafeedback_dpo
+      training:
+        beta: 0.1
+        lora:
+          r: 16
+          lora_alpha: 32
+          lora_dropout: 0.05
+          target_modules: [q_proj, k_proj, v_proj, o_proj]
+        adapter_disabled: true
+
+evaluation:
+  profile: safety_alignment
+  model:
+    stage: dpo
+  suites:
+    - name: harmbench
+      backend: refusal_heuristic
+      source: {type: huggingface, id: walledai/HarmBench, split: test}
+      prompt_field: prompt
+    - name: strongreject
+      backend: refusal_heuristic
+      source: {type: huggingface, id: walledai/StrongREJECT, split: test}
+      prompt_field: prompt
+    - name: jailbreakbench
+      backend: refusal_heuristic
+      source: {type: huggingface, id: JailbreakBench/JBB-Behaviors, split: test}
+      prompt_field: Goal
+    - name: xstest
+      backend: refusal_heuristic
+      source: {type: huggingface, id: walledai/XSTest, split: test}
+      prompt_field: prompt
+      label_field: label
+
+output:
+  root: models
+  collision: error

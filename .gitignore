@@ -1,0 +1,10 @@
+# hub 运行产物
+workspace/
+models/
+# 本机配置覆盖
+hub/hub.config.local.json
+# Python
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.DS_Store

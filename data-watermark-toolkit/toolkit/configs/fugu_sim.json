@@ -1,0 +1,62 @@
+{
+  "seed": 42,
+  "fraction": 0.5,
+  "dataset": {
+    "path": "data/fugu_corpus.jsonl",
+    "mix_path": "data/fugu_public_mix.jsonl"
+  },
+  "key": {
+    "path": "work/fugu.key",
+    "create_if_missing": true
+  },
+  "model": {
+    "kind": "mock",
+    "name": "mock-teaching-v1",
+    "device": "cpu",
+    "params": {
+      "memory_strength": 1.0,
+      "noise": 0.35
+    }
+  },
+  "methods": {
+    "canary_memory": {
+      "n_docs": 12,
+      "repeat": 3,
+      "secret_ngram_len": 4
+    },
+    "version_pair": {
+      "n_pairs": 40,
+      "n_private_variants": 1
+    },
+    "fictitious_knowledge": {
+      "n_entities": 4,
+      "n_attributes": 4,
+      "qa_per_attribute": 3
+    },
+    "token_statistics": {
+      "scheme": "adjacent_pair",
+      "target_bit": 1,
+      "max_insert_ratio": 0.15
+    },
+    "trigger_behavior": {
+      "n_triggers": 8,
+      "cue_len": 5,
+      "reply_len": 4
+    },
+    "in_context": {
+      "enabled": false
+    },
+    "rag_canary": {
+      "enabled": false,
+      "top_k": 3
+    }
+  },
+  "audit": {
+    "fpr": 0.05,
+    "n_queries": 200,
+    "n_negative_models": 96
+  },
+  "experiments": {
+    "n_trials": 4
+  }
+}

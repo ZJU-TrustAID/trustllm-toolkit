@@ -1,0 +1,18 @@
+{
+  "guard": {
+    "model": "Alibaba-AAIG/YuFeng-XGuard-Reason-8B",
+    "device": "auto",
+    "command": ["python"]
+  },
+  "qwen": {
+    "model": "Qwen/Qwen3.5-9B",
+    "command": ["vllm"],
+    "port": 8767,
+    "gpu_memory_utilization": 0.65
+  },
+  "web": {
+    "host": "127.0.0.1",
+    "port": 8766
+  },
+  "startup_timeout": 3600
+}

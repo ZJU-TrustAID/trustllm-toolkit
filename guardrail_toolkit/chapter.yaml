@@ -1,0 +1,70 @@
+# 第五章 · 安全护栏 —— hub 接入清单（YuFeng-XGuard 实验台）
+chapter: 5
+title: 安全护栏
+toolkit: guardrail
+enabled: true
+brief: 安全护栏（第五章）：YuFeng-XGuard 输入/输出护栏 + Qwen 生成的实验台（审计判定、29 类分数、判断解释）。
+
+frontend:
+  mode: proxy            # 经 hub 同源反代访问（浏览器只需 hub 一个端口）
+  server:
+    # 复用 guardrail 自己的统一启动器（Qwen vLLM + Guard 网页）。
+    command: ["{conda}", "run", "--no-capture-output", "-n", "guardrail", "python", "start.py", "--config", "{config}"]
+    port: 8782
+    ready_path: /api/health
+    timeout: 3600
+    # 由 hub 的公共模型参数渲染成 guardrail 原生 config（端口由 config_port_key 注入）。
+    # 设备/精度也来自 hub 公共参数（auto 由 hub 侧解析成空闲显存最大的卡）：
+    # XGuard 与 vLLM 同卡共存，gpu_memory_utilization 相应调低（0.45×46GB≈20GB，
+    # 9B bf16 权重 ~18GB + 少量 KV cache；XGuard 8B 约 16GB，单卡 46GB 可容纳）。
+    config:
+      guard:
+        model: "{models.guard.entry}"
+        device: "{common.device}"
+        dtype: "{common.dtype}"
+        command: ["python"]
+      qwen:
+        model: "{models.target.entry}"
+        device: "{common.device}"
+        dtype: "{common.dtype}"
+        command: ["vllm"]
+        port: 8767
+        gpu_memory_utilization: 0.45
+      web:
+        host: "127.0.0.1"
+        trust_proxy: true  # 经 hub 反代访问时放宽 Origin/Host 校验（仅回环监听）
+      startup_timeout: 3600
+    config_port_key: web.port
+  entry: /
+
+backend:
+  # 一次性执行：适配器自管 vLLM 子进程（full 模式），输入/输出端模式不需要 Qwen。
+  command: ["{conda}", "run", "--no-capture-output", "-n", "guardrail", "python", "-m", "guardrail_toolkit.hub_adapter",
+            "--config", "{yaml}", "--output-dir", "{output_dir}"]
+  timeout: 7200
+
+models:
+  - role: guard
+    title: 护栏模型（XGuard 系，需含 id2risk 标签）
+    accepts: [local_path, hf]
+    required: true
+    requires: [tokenizer_config.id2risk]
+    default: {source: local_path, path: "models/YuFeng-XGuard-Reason-8B"}
+  - role: target
+    title: 生成模型（Qwen 系）
+    accepts: [local_path, hf]
+    required: true
+    default: {source: local_path, path: "models/Qwen3.5-9B"}
+
+params:
+  - {key: mode, type: enum, options: [full, input, output], default: full, title: 审计模式}
+  - {key: text, type: text, default: "用两句话介绍机器学习。", title: 用户请求}
+  - {key: response, type: text, default: "", title: 助手回答（仅输出端模式需填写）, when: {mode: output}}
+  - {key: enforce_input, type: bool, default: true, title: 输入未通过时停止生成, when: {mode: full}}
+  - {key: explain, type: bool, default: true, title: 生成判断解释}
+  - {key: max_new_tokens, type: int, default: 384, title: 解释生成长度上限}
+  - {key: generation_max_tokens, type: int, default: 512, title: Qwen 回答长度上限, when: {mode: full}}
+
+results:
+  primary: report.md
+  files: [report.md]
