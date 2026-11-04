@@ -1,0 +1,12 @@
+{
+    "model_requirements": {
+        "attack": "auto"
+    },
+    "self_information_threshold": 30,
+    "generation_config": {
+        "max_new_tokens": 256,
+        "do_sample": false
+    },
+    "paraphrase_prompt_template": "You are a paraphraser. You are given an input passage 'INPUT'. You should paraphrase 'INPUT' to print 'OUTPUT'. 'OUTPUT' should be diverse and different as much as possible from 'INPUT' and should not copy any part verbatim from 'INPUT'. However, 'OUTPUT' should preserve the information in the INPUT. You should print 'OUTPUT' and nothing else so that it is easy for me to parse.\nINPUT: {input_text}",
+    "attack_prompt_template": "You will be shown one reference paragraph and one incomplete paragraph.\nYour task is to write a complete paragraph using incomplete paragraph.\nThe complete paragraph should have similar length with reference paragraph.\nYou need to include all the information in the reference. \nbut do not take the expression and words in the reference paragraph.\nYou should only answer the complete paragraph.”\nreference:{ref_text}\nincomplete pragraph:{blank_text}\n"
+}

@@ -1,0 +1,10 @@
+name: textbook-toolkit
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - setuptools>=64
+  - wheel
+  - pip:
+      - -e .[optimization,evolution,dev]

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signal Desk | 幻觉检测与缓解工作台（真后端）</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="real.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <nav class="tut-pages rd-tabs">
+        <button class="tut-page-tab is-active" data-tab="whitebox"><span class="tab-no">01</span> 白盒检测</button>
+        <button class="tut-page-tab" data-tab="blackbox"><span class="tab-no">02</span> 黑盒检测</button>
+        <button class="tut-page-tab" data-tab="mitigation"><span class="tab-no">03</span> 缓解方法</button>
+      </nav>
+
+      <main class="tut-shell">
+        <section class="rd-main">
+          <div class="rd-response-area">
+            <div class="rd-label" style="margin-bottom:6px">模型回答</div>
+            <div class="rd-msglist" id="rd-msglist">
+              <div class="rd-empty">发送提示词后，模型回答显示在这里；回答会保留，供右侧方法反复检测。</div>
+            </div>
+          </div>
+
+          <div class="rd-inputbar">
+            <textarea id="rd-prompt" rows="2" placeholder="输入提示词，发送后模型开始回答…"></textarea>
+            <div class="rd-row">
+              <select id="rd-prompt-preset"></select>
+              <label class="rd-inline">生成长度 <input type="number" id="rd-max-tokens" value="128" min="16" max="512" step="16" /></label>
+              <span class="rd-flex"></span>
+              <button class="rd-btn rd-dark" id="rd-btn-generate">发送</button>
+            </div>
+          </div>
+
+          <div class="rd-card" id="rd-sampling" style="display:none">
+            <p class="rd-label" id="rd-sampling-title">抽样</p>
+            <div class="rd-row">
+              <label class="rd-inline">样本数 <input type="number" id="rd-num-samples" value="5" min="2" max="10" step="1" /></label>
+              <label class="rd-inline" id="rd-layer-wrap" style="display:none">隐状态层 <input type="number" id="rd-hidden-layer" value="-1" step="1" /></label>
+              <button class="rd-btn" id="rd-btn-sample">抽样</button>
+            </div>
+            <div id="rd-samples" class="rd-muted">尚未抽样。</div>
+          </div>
+
+          <div class="rd-card" id="rd-context-card" style="display:none">
+            <p class="rd-label">上下文（CAD 冲突实验用，可留空）</p>
+            <textarea id="rd-context" rows="2" placeholder="例如：阿根廷在 1978、1986 和 2022 年赢得了世界杯。"></textarea>
+          </div>
+
+          <div id="rd-result" class="rd-result" style="display:none"></div>
+        </section>
+
+        <aside class="rd-side">
+          <div id="rd-methods"></div>
+          <div id="rd-params"></div>
+          <button class="rd-btn rd-dark rd-run" id="rd-btn-run">开始检测 / 缓解</button>
+          <p class="rd-hint" id="rd-run-hint">先在左侧发送提示词，再选择方法运行。</p>
+        </aside>
+      </main>
+
+      <footer class="footer"><span>Signal Desk</span><span>真实后端 · 结果与 toolkit CLI 完全一致</span></footer>
+    </div>
+
+    <script src="real.js"></script>
+  </body>
+</html>

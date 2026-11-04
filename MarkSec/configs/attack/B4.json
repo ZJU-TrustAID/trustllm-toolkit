@@ -1,0 +1,50 @@
+{
+    "name": "B4",
+    "algorithm_name": "B4",
+    "mode": "scrub",
+    "model_requirements": {
+        "attack": "auto",
+        "ref": "facebook/opt-iml-1.3b"
+    },
+    "stealing": {
+        "enabled": false,
+        "num_queries": 0,
+        "batch_size": 8,
+        "prompt_source": "dataset",
+        "save_corpus_path": "output/B4/stealing_corpus.jsonl",
+        "load_proxy_path": "",
+        "use_prebuilt_corpus": true,
+        "auto_discover_corpus": true,
+        "corpus_dir": "output/corpus",
+        "corpus_path": "",
+        "corpus_base_path": "",
+        "corpus_wm_path": "",
+        "corpus_prompt_field": "prompt",
+        "corpus_base_field": "base_completion",
+        "corpus_wm_field": "wm_completion",
+        "save_prepare_artifact": true,
+        "prepare_artifact_path": ""
+    },
+    "optimization": {
+        "epsilon": 0.0,
+        "lambda_solver": "fixed",
+        "lambda_init": 0.5,
+        "lambda_value": 0.5
+    },
+    "aea": {
+        "enabled": false,
+        "mu": 0.00001
+    },
+    "generation": {
+        "decoding_impl": "step",
+        "contra_topk": 10,
+        "max_new_tokens": 256,
+        "min_new_tokens": 10,
+        "do_sample": false,
+        "temperature": 0.8,
+        "top_p": 0.9,
+        "num_beams": 1
+    },
+    "scrub_prompt_template": "Paraphrase the following text while preserving semantics and fluency. Avoid copying n-grams when possible.\\nText:\\n{text}",
+    "spoof_prompt_template": "Write a natural response for the following prompt in your own wording. Keep style coherent and concise.\\nPrompt:\\n{prompt}"
+}

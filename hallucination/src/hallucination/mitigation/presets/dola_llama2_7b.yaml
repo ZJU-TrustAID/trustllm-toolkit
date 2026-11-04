@@ -1,0 +1,13 @@
+name: dola_llama2_7b
+method: dola
+model: meta-llama/Llama-2-7b-chat-hf
+backend: hf
+dtype: float16
+device: cuda
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  mature_layer: 32
+  candidate_premature_layers: [16, 18, 20, 22, 24, 26, 28, 30]
+  relative_top: 0.1

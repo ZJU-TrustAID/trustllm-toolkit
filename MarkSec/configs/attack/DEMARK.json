@@ -1,0 +1,46 @@
+{
+  "model_requirements": {},
+  "generation_config": {
+    "max_new_tokens": 200,
+    "do_sample": true
+  },
+  "operational_parameters": {
+    "device": "auto"
+  },
+  "wm_type": "kgw",
+  "ctx_width": 1,
+  "total_word_num": 20,
+  "sample_strategy": "top_k",
+  "probe_batch_size": 32,
+  "delta_predicted": 2.0,
+  "delta_reduce_multiplier": 1.0,
+  "delta_spoof": 2.0,
+  "delta_actual": 2.0,
+  "mode": "",
+  "spoof_prompt_template": "Write a natural response for the following prompt in your own wording. Keep the answer fluent, coherent, and concise.\nPrompt:\n{prompt}",
+  "dipmark_alpha": 0.3,
+  "clear_cuda_cache_after_probe": false,
+  "probe_cache": {
+    "enabled": true,
+    "persist": true,
+    "path": "",
+    "max_entries": 50000,
+    "save_interval": 200
+  },
+  "parameter_estimation": {
+    "enabled": false,
+    "estimate_ctx_width": false,
+    "estimate_delta": false,
+    "max_ctx_width": 5,
+    "random_word_num": 50,
+    "repeat_time": 5,
+    "run_num": 3,
+    "alpha1": 0.2,
+    "alpha2": 10.0,
+    "gamma": 0.1,
+    "consistency_threshold": 0.95,
+    "blackbox": false,
+    "max_vocab_scan": 8192,
+    "random_seed": 42
+  }
+}

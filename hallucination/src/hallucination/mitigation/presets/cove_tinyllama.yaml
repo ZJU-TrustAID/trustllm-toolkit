@@ -1,0 +1,12 @@
+name: cove_tinyllama
+method: cove
+model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+backend: hf
+dtype: bfloat16
+device: cuda
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  max_questions: 4
+  mode: factored

@@ -1,0 +1,21 @@
+experiment_name: c4_rw_kgw_qwen_generate
+
+base_model: Qwen/Qwen2.5-7B-Instruct
+watermark: KGW
+attack: RW
+
+dataset:
+  name: c4
+  path: data/c4/processed_c4.json
+  num_samples: 4
+
+pipeline_mode: generate
+max_tokens: 128
+min_len: 32
+
+runner_settings:
+  seed: 42
+  models_local_files_only: false
+  output_dir_base: output
+  save_result_texts: true
+  isolate_best_gpu: true

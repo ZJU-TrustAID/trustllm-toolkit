@@ -1,0 +1,12 @@
+name: cove_openai_gpt4o_mini
+method: cove
+model: gpt-4o-mini
+backend: openai
+api_base: https://api.openai.com/v1
+api_key_env: OPENAI_API_KEY
+generation:
+  max_new_tokens: 256
+  do_sample: false
+method_args:
+  max_questions: 6
+  mode: factored

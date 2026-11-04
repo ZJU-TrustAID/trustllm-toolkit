@@ -1,0 +1,47 @@
+# 第七章 · 生成内容溯源 —— hub 接入清单（MarkSec 文本水印）
+chapter: 7
+title: 文本水印
+toolkit: marksec
+enabled: true
+brief: MarkSec 文本水印实验台：KGW / Unigram 水印生成、LLMP 改写攻击与 z 分数检测（token 级绿/红着色）。
+
+frontend:
+  mode: proxy            # 经 hub 同源反代访问（浏览器只需 hub 一个端口）
+  autostart: true        # 服务本身轻量：模型在首次真实调用时才懒加载
+  server:
+    # 复用 MarkSec 自带工具包 API；启动器读取 hub 渲染的配置（模型/设备/端口）。
+    command: ["{conda}", "run", "--no-capture-output", "-n", "marksec", "python", "-m", "src.api.serve",
+              "--config", "{config}"]
+    port: 8783           # 端口约定：8781 hallucination / 8782 guardrail / 8783 marksec
+    ready_path: /health  # MarkSec 的健康路由是 /health（非 /api/health）
+    timeout: 3600
+    # hub 公共模型参数渲染成启动器配置（端口由 config_port_key 注入 web.port）。
+    config:
+      model: "{models.default.entry}"
+      device: "{common.device}"
+      web:
+        host: "127.0.0.1"
+    config_port_key: web.port
+  entry: /
+
+backend:
+  command: ["{conda}", "run", "--no-capture-output", "-n", "marksec", "python", "-m", "src.hub_adapter",
+            "--config", "{yaml}", "--output-dir", "{output_dir}"]
+  timeout: 3600
+
+models:
+  - role: default
+    title: 生成模型（水印嵌入与 LLMP 改写共用）
+    accepts: [local_path, hf]   # 不接受 api：水印 logits 生成需本地权重
+    required: true
+    default: {source: hf, repo: "HuggingFaceTB/SmolLM2-135M-Instruct"}   # CPU 可跑，与 MarkSec 默认一致
+
+params:   # 与内置工作台/Next.js 界面控件一一对应（其页面固定 max_new_tokens=128、seed=42）；随机种子由顶栏公共参数 seed 提供，不再重复列出
+  - {key: prompt, type: text, default: "Explain what a zero-knowledge proof is and give a simple analogy.", title: 提示词}
+  - {key: watermark, type: enum, options: [KGW, Unigram], default: KGW, title: 水印算法}
+  - {key: attack, type: enum, options: [LLMP], default: LLMP, title: 攻击方法}
+  - {key: max_new_tokens, type: int, default: 128, title: 生成长度上限}
+
+results:
+  primary: report.md
+  files: [report.md, results.json]

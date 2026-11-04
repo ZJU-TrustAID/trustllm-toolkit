@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+.DS_Store
+
+# Build and packaging artifacts
+dist/
+build/
+*.egg-info/
+
+# Tool caches
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Test scratch outputs
+.pytest_tmp/
+.pytest_tmp_cli/
+pytest-of-*/
+
+# Local experiment outputs (SMOKE.md documents how to regenerate)
+runs/
+
+# Local book manuscript, not part of the toolkit
+book.md

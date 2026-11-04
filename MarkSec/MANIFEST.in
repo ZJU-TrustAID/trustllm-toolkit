@@ -1,0 +1,5 @@
+prune tests
+prune output
+prune notebooks
+prune docs
+global-exclude __pycache__ *.py[cod] .DS_Store

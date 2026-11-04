@@ -1,0 +1,8 @@
+name: blackbox_short_answer
+threshold: 0.5
+aggregation: mean
+scorers:
+  - name: exact_match_consistency
+    enabled: true
+# Sentence-level methods belong in blackbox_long_form.yaml and need explicit
+# embedding or NLI backends. Exact matching remains response-level only.

@@ -1,0 +1,14 @@
+name: iti_llama2_7b
+method: iti
+model: meta-llama/Llama-2-7b-chat-hf
+backend: hf
+dtype: float16
+device: cuda
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  top_k: 48
+  alpha: 15.0
+  position: generated
+probe: null

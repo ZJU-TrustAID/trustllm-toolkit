@@ -1,0 +1,12 @@
+{"prompt": "蓝鲸主要以什么为食？", "response": "磷虾。", "label": 1}
+{"prompt": "蓝鲸主要以什么为食？", "response": "海藻。", "label": 0}
+{"prompt": "蓝鲸属于哪类动物？", "response": "哺乳动物。", "label": 1}
+{"prompt": "蓝鲸属于哪类动物？", "response": "鱼类。", "label": 0}
+{"prompt": "地球上海洋面积约占多少？", "response": "约百分之七十一。", "label": 1}
+{"prompt": "地球上海洋面积约占多少？", "response": "约百分之十。", "label": 0}
+{"prompt": "水的化学式是什么？", "response": "H2O。", "label": 1}
+{"prompt": "水的化学式是什么？", "response": "CO2。", "label": 0}
+{"prompt": "法国首都是哪里？", "response": "巴黎。", "label": 1}
+{"prompt": "法国首都是哪里？", "response": "里昂。", "label": 0}
+{"prompt": "光在真空中的速度约为多少？", "response": "每秒约三十万公里。", "label": 1}
+{"prompt": "光在真空中的速度约为多少？", "response": "每秒约三百公里。", "label": 0}

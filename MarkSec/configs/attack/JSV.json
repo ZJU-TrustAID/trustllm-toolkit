@@ -1,0 +1,55 @@
+{
+    "model_requirements": {
+      "attacker": "auto"
+    },
+    "stealing_parameters": {
+      "num_queries": 30000,
+      "dataset": "c4",
+      "dataset_split":"realnewslike",
+      "batch_size": 10,
+      "learning_mode": "slow",
+      "prevctx_width":3,
+      "use_prebuilt_corpus": true,
+      "auto_discover_corpus": true,
+      "corpus_dir": "output/corpus",
+      "corpus_path": "",
+      "corpus_base_path": "",
+      "corpus_wm_path": "",
+      "corpus_prompt_field": "prompt",
+      "corpus_base_field": "base_completion",
+      "corpus_wm_field": "wm_completion",
+      "reuse_stolen_artifact": true,
+      "save_stolen_artifact": true,
+      "stolen_artifact_path": "",
+      "prepare_artifact_path": ""
+    },
+    "downstream_parameters": {
+      "delta_spoof": 7.5,
+      "delta_scrub": -7.5,
+      "score_weights": {
+        "full_context": 1.0,
+        "partial_context": 0.5,
+        "no_context": 0.25
+      },
+      "thresholds": {
+        "min_wm_count_nonempty": 3
+      }
+    },
+    "processor_config": {
+      "clip_at": 2.0,
+      "w_abcd": 1.0,
+      "w_partials": 0.5,
+      "w_empty": 0.25,
+      "min_wm_count_nonempty": 3,
+      "min_wm_mass_empty": 7e-05,
+      "use_sampling":true,
+      "sampling_temp":0.7
+    },
+    "generation_config": {
+      "do_sample": true,
+      "top_p": 0.9,
+      "temperature": 0.8,
+      "max_new_tokens": 200
+    },
+    "spoof_prompt_template": "Write a natural response for the following prompt in your own wording. Keep the answer fluent, coherent, and concise.\nPrompt:\n{prompt}"
+  }

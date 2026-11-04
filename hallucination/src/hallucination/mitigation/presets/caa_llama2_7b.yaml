@@ -1,0 +1,14 @@
+name: caa_llama2_7b
+method: caa
+model: meta-llama/Llama-2-7b-chat-hf
+backend: hf
+dtype: float16
+device: cuda
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  layer: 13
+  multiplier: 1.0
+  position: generated
+artifact: null

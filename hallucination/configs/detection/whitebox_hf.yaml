@@ -1,0 +1,12 @@
+name: whitebox_hf
+threshold: 0.5
+aggregation: mean
+scorers:
+  - name: mtp
+    enabled: true
+  - name: lntp
+    enabled: true
+  - name: token_entropy
+    enabled: true
+    aggregation: mean
+

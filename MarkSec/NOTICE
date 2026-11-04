@@ -1,0 +1,16 @@
+MarkSec
+Copyright 2026 MarkSec Contributors
+
+This product includes modified and vendored third-party components:
+
+- Paraphrase-at-scale PSP runtime code and SentencePiece assets, licensed under
+  the BSD 3-Clause License. Its license is preserved at libs/psp/LICENSE.
+
+Some source files retain attribution headers from upstream Apache 2.0 licensed
+research code where MarkSec keeps adapted utility or attack implementations.
+MarkSec does not vendor MarkLLM as a runtime dependency.
+
+Dataset slices and model checkpoints referenced by the toolkit may have their
+own licenses and access terms. Users are responsible for complying with the
+licenses and terms for external datasets, Hugging Face models, gated model
+weights, and solver packages they download or configure.

@@ -1,0 +1,29 @@
+{
+  "name": "marksec-webpage",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4",
+    "katex": "0.19.1",
+    "lucide-react": "^1.7.0",
+    "next": "16.4.3",
+    "patch-mark": "^0.9.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "tailwindcss": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "typescript": "^5"
+  }
+}

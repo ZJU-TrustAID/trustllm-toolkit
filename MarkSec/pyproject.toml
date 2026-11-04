@@ -1,0 +1,145 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "marksec"
+version = "0.1.0"
+description = "An open-source toolkit for benchmarking attacks against LLM watermarking systems"
+requires-python = ">=3.11,<3.13"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "MarkSec Contributors" },
+]
+keywords = [
+    "llm-watermarking",
+    "watermarking",
+    "benchmark",
+    "security",
+    "evaluation",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.4,<2.6",
+    "transformers==4.46.1",
+    "huggingface-hub==0.35.3",
+    "tokenizers==0.20.3",
+    "numpy==1.26.4",
+    "scipy==1.16.3",
+    "pydantic==2.12.3",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+marksec = "src.main:main"
+marksec-api = "src.api.__main__:main"
+
+[tool.setuptools]
+packages = { find = { include = ["src*"] } }
+py-modules = []
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.30,<1",
+]
+benchmark = [
+    "torch==2.4.0",
+    "vllm==0.6.3.post1",
+    "xformers==0.0.27.post2",
+    "accelerate==1.10.1",
+    "tqdm>=4.66",
+    "datasets==4.2.0",
+    "sentencepiece==0.2.1",
+    "nltk>=3.9",
+    "pandas==2.3.3",
+    "scikit-learn>=1.5",
+    "sentence-transformers>=3.0",
+    "bert-score>=0.3.13",
+    "rouge-score>=0.1.2",
+    "sacrebleu>=2.4",
+    "sacremoses>=0.1",
+
+    "ray==2.51.1",
+    "outlines==0.0.46",
+    "psutil>=5.9",
+    "gputil>=1.4",
+    "openai>=1.0",
+    "prometheus-eval>=0.1",
+    "pyomo>=6.8",
+    "gurobipy==13.0.0", # MIP solver
+]
+
+logging = [
+    "swanlab>=0.4",
+]
+db-mysql = [
+    "pymysql>=1.1",
+]
+db-postgres = [
+    "psycopg[binary]>=3.2",
+]
+gpu-extra = [
+    "flash-attn",
+]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "build>=1",
+    "ruff>=0.5",
+]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+force-exclude = true
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+line-length = 100
+
+[tool.ruff.lint]
+ignore = ["E402", "F541"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+skip-magic-trailing-comma = false

@@ -1,0 +1,23 @@
+name: blackbox_long_form
+threshold: 0.5
+aggregation: mean
+# Generate once, then reuse `samples` for every scorer below. Backends are
+# explicit because embedding/NLI models and their language coverage are choices.
+response_scorers:
+  - name: exact_match_consistency
+    enabled: true
+  - name: response_cosine_consistency
+    enabled: true
+    embedding_backend: sentence_transformers
+  - name: response_semantic_entropy
+    enabled: true
+    nli_backend: bidirectional_hf_nli
+sentence_scorers:
+  - name: selfcheck_ngram
+    enabled: true
+    n: 1
+  - name: selfcheck_nli
+    enabled: true
+    nli_backend: bidirectional_hf_nli
+  - name: selfcheck_bertscore
+    enabled: false

@@ -1,0 +1,1400 @@
+{
+  "id": "kgw-llmp",
+  "title": "KGW Watermark vs LLM Paraphrase Attack",
+  "description": "LLM Paraphrase rewrites the text using the model itself, attempting to remove the watermark while preserving semantics.",
+  "prompt": "Explain what a zero-knowledge proof is and give a simple analogy.",
+  "model": "Preset illustration (no model inference)",
+  "watermark": {
+    "type": "KGW",
+    "gamma": 0.25,
+    "delta": 2.0,
+    "prefix_length": 1
+  },
+  "variants": [
+    {
+      "label": "Watermarked",
+      "description": "Original text with KGW watermark embedded.",
+      "text": "Explain what a zero-knowledge proof is and give a simple analogy. A zero-knowledge proof is a cryptographic method where one party can prove to another that they know a value without revealing the value itself. Think of it like a blindfolded maze solver: you can convince someone you know the path through the maze by walking it correctly every time they ask, without ever showing them the actual path. The verifier learns nothing about the solution, only that you possess it. This technique has profound applications in blockchain privacy, authentication systems, and secure voting protocols.",
+      "tokens": [
+        {
+          "text": "Explain",
+          "label": "neutral",
+          "token_id": 25455,
+          "position": 0
+        },
+        {
+          "text": "what",
+          "label": "neutral",
+          "token_id": 28870,
+          "position": 1
+        },
+        {
+          "text": "a",
+          "label": "neutral",
+          "token_id": 6497,
+          "position": 2
+        },
+        {
+          "text": "zero",
+          "label": "neutral",
+          "token_id": 9018,
+          "position": 3
+        },
+        {
+          "text": "-",
+          "label": "neutral",
+          "token_id": 5671,
+          "position": 4
+        },
+        {
+          "text": "knowledge",
+          "label": "neutral",
+          "token_id": 16383,
+          "position": 5
+        },
+        {
+          "text": "proof",
+          "label": "neutral",
+          "token_id": 27106,
+          "position": 6
+        },
+        {
+          "text": "is",
+          "label": "neutral",
+          "token_id": 15849,
+          "position": 7
+        },
+        {
+          "text": "and",
+          "label": "neutral",
+          "token_id": 30584,
+          "position": 8
+        },
+        {
+          "text": "give",
+          "label": "neutral",
+          "token_id": 5017,
+          "position": 9
+        },
+        {
+          "text": "a",
+          "label": "neutral",
+          "token_id": 6497,
+          "position": 10
+        },
+        {
+          "text": "simple",
+          "label": "neutral",
+          "token_id": 874,
+          "position": 11
+        },
+        {
+          "text": "analogy",
+          "label": "neutral",
+          "token_id": 6818,
+          "position": 12
+        },
+        {
+          "text": ".",
+          "label": "neutral",
+          "token_id": 21405,
+          "position": 13
+        },
+        {
+          "text": "A",
+          "label": "red",
+          "token_id": 2345,
+          "position": 14
+        },
+        {
+          "text": "zero",
+          "label": "green",
+          "token_id": 9018,
+          "position": 15
+        },
+        {
+          "text": "-",
+          "label": "green",
+          "token_id": 5671,
+          "position": 16
+        },
+        {
+          "text": "knowledge",
+          "label": "green",
+          "token_id": 16383,
+          "position": 17
+        },
+        {
+          "text": "proof",
+          "label": "green",
+          "token_id": 27106,
+          "position": 18
+        },
+        {
+          "text": "is",
+          "label": "green",
+          "token_id": 15849,
+          "position": 19
+        },
+        {
+          "text": "a",
+          "label": "red",
+          "token_id": 6497,
+          "position": 20
+        },
+        {
+          "text": "cryptographic",
+          "label": "red",
+          "token_id": 29782,
+          "position": 21
+        },
+        {
+          "text": "method",
+          "label": "red",
+          "token_id": 4302,
+          "position": 22
+        },
+        {
+          "text": "where",
+          "label": "green",
+          "token_id": 10088,
+          "position": 23
+        },
+        {
+          "text": "one",
+          "label": "green",
+          "token_id": 386,
+          "position": 24
+        },
+        {
+          "text": "party",
+          "label": "green",
+          "token_id": 2053,
+          "position": 25
+        },
+        {
+          "text": "can",
+          "label": "green",
+          "token_id": 23693,
+          "position": 26
+        },
+        {
+          "text": "prove",
+          "label": "green",
+          "token_id": 29615,
+          "position": 27
+        },
+        {
+          "text": "to",
+          "label": "green",
+          "token_id": 31793,
+          "position": 28
+        },
+        {
+          "text": "another",
+          "label": "green",
+          "token_id": 11146,
+          "position": 29
+        },
+        {
+          "text": "that",
+          "label": "green",
+          "token_id": 20057,
+          "position": 30
+        },
+        {
+          "text": "they",
+          "label": "green",
+          "token_id": 20742,
+          "position": 31
+        },
+        {
+          "text": "know",
+          "label": "green",
+          "token_id": 18649,
+          "position": 32
+        },
+        {
+          "text": "a",
+          "label": "red",
+          "token_id": 6497,
+          "position": 33
+        },
+        {
+          "text": "value",
+          "label": "green",
+          "token_id": 8196,
+          "position": 34
+        },
+        {
+          "text": "without",
+          "label": "green",
+          "token_id": 18370,
+          "position": 35
+        },
+        {
+          "text": "revealing",
+          "label": "green",
+          "token_id": 11685,
+          "position": 36
+        },
+        {
+          "text": "the",
+          "label": "red",
+          "token_id": 27479,
+          "position": 37
+        },
+        {
+          "text": "value",
+          "label": "red",
+          "token_id": 8196,
+          "position": 38
+        },
+        {
+          "text": "itself",
+          "label": "green",
+          "token_id": 3161,
+          "position": 39
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 21405,
+          "position": 40
+        },
+        {
+          "text": "Think",
+          "label": "red",
+          "token_id": 15412,
+          "position": 41
+        },
+        {
+          "text": "of",
+          "label": "green",
+          "token_id": 17380,
+          "position": 42
+        },
+        {
+          "text": "it",
+          "label": "green",
+          "token_id": 22256,
+          "position": 43
+        },
+        {
+          "text": "like",
+          "label": "red",
+          "token_id": 6411,
+          "position": 44
+        },
+        {
+          "text": "a",
+          "label": "green",
+          "token_id": 6497,
+          "position": 45
+        },
+        {
+          "text": "blindfolded",
+          "label": "green",
+          "token_id": 8113,
+          "position": 46
+        },
+        {
+          "text": "maze",
+          "label": "green",
+          "token_id": 4853,
+          "position": 47
+        },
+        {
+          "text": "solver",
+          "label": "green",
+          "token_id": 8746,
+          "position": 48
+        },
+        {
+          "text": ":",
+          "label": "green",
+          "token_id": 1559,
+          "position": 49
+        },
+        {
+          "text": "you",
+          "label": "red",
+          "token_id": 23929,
+          "position": 50
+        },
+        {
+          "text": "can",
+          "label": "red",
+          "token_id": 23693,
+          "position": 51
+        },
+        {
+          "text": "convince",
+          "label": "red",
+          "token_id": 15684,
+          "position": 52
+        },
+        {
+          "text": "someone",
+          "label": "red",
+          "token_id": 1309,
+          "position": 53
+        },
+        {
+          "text": "you",
+          "label": "green",
+          "token_id": 23929,
+          "position": 54
+        },
+        {
+          "text": "know",
+          "label": "red",
+          "token_id": 18649,
+          "position": 55
+        },
+        {
+          "text": "the",
+          "label": "green",
+          "token_id": 27479,
+          "position": 56
+        },
+        {
+          "text": "path",
+          "label": "green",
+          "token_id": 14725,
+          "position": 57
+        },
+        {
+          "text": "through",
+          "label": "red",
+          "token_id": 6477,
+          "position": 58
+        },
+        {
+          "text": "the",
+          "label": "red",
+          "token_id": 27479,
+          "position": 59
+        },
+        {
+          "text": "maze",
+          "label": "red",
+          "token_id": 4853,
+          "position": 60
+        },
+        {
+          "text": "by",
+          "label": "red",
+          "token_id": 11939,
+          "position": 61
+        },
+        {
+          "text": "walking",
+          "label": "red",
+          "token_id": 5917,
+          "position": 62
+        },
+        {
+          "text": "it",
+          "label": "red",
+          "token_id": 22256,
+          "position": 63
+        },
+        {
+          "text": "correctly",
+          "label": "green",
+          "token_id": 21340,
+          "position": 64
+        },
+        {
+          "text": "every",
+          "label": "green",
+          "token_id": 8446,
+          "position": 65
+        },
+        {
+          "text": "time",
+          "label": "green",
+          "token_id": 3371,
+          "position": 66
+        },
+        {
+          "text": "they",
+          "label": "green",
+          "token_id": 20742,
+          "position": 67
+        },
+        {
+          "text": "ask",
+          "label": "green",
+          "token_id": 9345,
+          "position": 68
+        },
+        {
+          "text": ",",
+          "label": "green",
+          "token_id": 26876,
+          "position": 69
+        },
+        {
+          "text": "without",
+          "label": "green",
+          "token_id": 18370,
+          "position": 70
+        },
+        {
+          "text": "ever",
+          "label": "green",
+          "token_id": 12606,
+          "position": 71
+        },
+        {
+          "text": "showing",
+          "label": "green",
+          "token_id": 6309,
+          "position": 72
+        },
+        {
+          "text": "them",
+          "label": "green",
+          "token_id": 25732,
+          "position": 73
+        },
+        {
+          "text": "the",
+          "label": "red",
+          "token_id": 27479,
+          "position": 74
+        },
+        {
+          "text": "actual",
+          "label": "green",
+          "token_id": 3950,
+          "position": 75
+        },
+        {
+          "text": "path",
+          "label": "green",
+          "token_id": 14725,
+          "position": 76
+        },
+        {
+          "text": ".",
+          "label": "green",
+          "token_id": 21405,
+          "position": 77
+        },
+        {
+          "text": "The",
+          "label": "green",
+          "token_id": 27646,
+          "position": 78
+        },
+        {
+          "text": "verifier",
+          "label": "green",
+          "token_id": 15794,
+          "position": 79
+        },
+        {
+          "text": "learns",
+          "label": "red",
+          "token_id": 8573,
+          "position": 80
+        },
+        {
+          "text": "nothing",
+          "label": "red",
+          "token_id": 21085,
+          "position": 81
+        },
+        {
+          "text": "about",
+          "label": "red",
+          "token_id": 29447,
+          "position": 82
+        },
+        {
+          "text": "the",
+          "label": "green",
+          "token_id": 27479,
+          "position": 83
+        },
+        {
+          "text": "solution",
+          "label": "green",
+          "token_id": 23999,
+          "position": 84
+        },
+        {
+          "text": ",",
+          "label": "red",
+          "token_id": 26876,
+          "position": 85
+        },
+        {
+          "text": "only",
+          "label": "green",
+          "token_id": 17514,
+          "position": 86
+        },
+        {
+          "text": "that",
+          "label": "green",
+          "token_id": 20057,
+          "position": 87
+        },
+        {
+          "text": "you",
+          "label": "green",
+          "token_id": 23929,
+          "position": 88
+        },
+        {
+          "text": "possess",
+          "label": "red",
+          "token_id": 3651,
+          "position": 89
+        },
+        {
+          "text": "it",
+          "label": "red",
+          "token_id": 22256,
+          "position": 90
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 21405,
+          "position": 91
+        },
+        {
+          "text": "This",
+          "label": "red",
+          "token_id": 7350,
+          "position": 92
+        },
+        {
+          "text": "technique",
+          "label": "green",
+          "token_id": 30705,
+          "position": 93
+        },
+        {
+          "text": "has",
+          "label": "red",
+          "token_id": 31508,
+          "position": 94
+        },
+        {
+          "text": "profound",
+          "label": "red",
+          "token_id": 17165,
+          "position": 95
+        },
+        {
+          "text": "applications",
+          "label": "green",
+          "token_id": 18280,
+          "position": 96
+        },
+        {
+          "text": "in",
+          "label": "green",
+          "token_id": 5599,
+          "position": 97
+        },
+        {
+          "text": "blockchain",
+          "label": "green",
+          "token_id": 24216,
+          "position": 98
+        },
+        {
+          "text": "privacy",
+          "label": "green",
+          "token_id": 27779,
+          "position": 99
+        },
+        {
+          "text": ",",
+          "label": "green",
+          "token_id": 26876,
+          "position": 100
+        },
+        {
+          "text": "authentication",
+          "label": "green",
+          "token_id": 3616,
+          "position": 101
+        },
+        {
+          "text": "systems",
+          "label": "green",
+          "token_id": 13394,
+          "position": 102
+        },
+        {
+          "text": ",",
+          "label": "green",
+          "token_id": 26876,
+          "position": 103
+        },
+        {
+          "text": "and",
+          "label": "green",
+          "token_id": 30584,
+          "position": 104
+        },
+        {
+          "text": "secure",
+          "label": "green",
+          "token_id": 30025,
+          "position": 105
+        },
+        {
+          "text": "voting",
+          "label": "green",
+          "token_id": 8612,
+          "position": 106
+        },
+        {
+          "text": "protocols",
+          "label": "red",
+          "token_id": 8703,
+          "position": 107
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 21405,
+          "position": 108
+        }
+      ],
+      "detection": {
+        "z_score": 7.56,
+        "green_fraction": 0.5648,
+        "num_scored_tokens": 108,
+        "is_watermarked": true,
+        "threshold": 4.0
+      }
+    },
+    {
+      "label": "After LLMP Attack",
+      "description": "LLM Paraphrase attack applied — the model rewrites its own output to remove the watermark.",
+      "text": "Explain what a zero-knowledge proof is and give a simple analogy. A zero-knowledge proof is a fundamental cryptographic protocol that enables a prover to demonstrate knowledge of certain information to a verifier without disclosing the information itself. Consider an analogy: imagine someone claims they can solve a jigsaw puzzle. To prove this without showing the completed picture, they could let you pick any piece and describe what neighbors it, repeatedly, until you are convinced they truly have the solution. The key insight is that the verifier gains certainty without gaining the secret. Modern applications include privacy-preserving transactions and identity verification.",
+      "tokens": [
+        {
+          "text": "Explain",
+          "label": "neutral",
+          "token_id": 25455,
+          "position": 0
+        },
+        {
+          "text": "what",
+          "label": "neutral",
+          "token_id": 28870,
+          "position": 1
+        },
+        {
+          "text": "a",
+          "label": "neutral",
+          "token_id": 6497,
+          "position": 2
+        },
+        {
+          "text": "zero",
+          "label": "neutral",
+          "token_id": 9018,
+          "position": 3
+        },
+        {
+          "text": "-",
+          "label": "neutral",
+          "token_id": 5671,
+          "position": 4
+        },
+        {
+          "text": "knowledge",
+          "label": "neutral",
+          "token_id": 16383,
+          "position": 5
+        },
+        {
+          "text": "proof",
+          "label": "neutral",
+          "token_id": 27106,
+          "position": 6
+        },
+        {
+          "text": "is",
+          "label": "neutral",
+          "token_id": 15849,
+          "position": 7
+        },
+        {
+          "text": "and",
+          "label": "neutral",
+          "token_id": 30584,
+          "position": 8
+        },
+        {
+          "text": "give",
+          "label": "neutral",
+          "token_id": 5017,
+          "position": 9
+        },
+        {
+          "text": "a",
+          "label": "neutral",
+          "token_id": 6497,
+          "position": 10
+        },
+        {
+          "text": "simple",
+          "label": "neutral",
+          "token_id": 874,
+          "position": 11
+        },
+        {
+          "text": "analogy",
+          "label": "neutral",
+          "token_id": 6818,
+          "position": 12
+        },
+        {
+          "text": ".",
+          "label": "neutral",
+          "token_id": 21405,
+          "position": 13
+        },
+        {
+          "text": "A",
+          "label": "red",
+          "token_id": 2345,
+          "position": 14
+        },
+        {
+          "text": "zero",
+          "label": "red",
+          "token_id": 9018,
+          "position": 15
+        },
+        {
+          "text": "-",
+          "label": "green",
+          "token_id": 5671,
+          "position": 16
+        },
+        {
+          "text": "knowledge",
+          "label": "red",
+          "token_id": 16383,
+          "position": 17
+        },
+        {
+          "text": "proof",
+          "label": "green",
+          "token_id": 27106,
+          "position": 18
+        },
+        {
+          "text": "is",
+          "label": "red",
+          "token_id": 15849,
+          "position": 19
+        },
+        {
+          "text": "a",
+          "label": "red",
+          "token_id": 6497,
+          "position": 20
+        },
+        {
+          "text": "fundamental",
+          "label": "green",
+          "token_id": 21276,
+          "position": 21
+        },
+        {
+          "text": "cryptographic",
+          "label": "red",
+          "token_id": 29782,
+          "position": 22
+        },
+        {
+          "text": "protocol",
+          "label": "red",
+          "token_id": 31515,
+          "position": 23
+        },
+        {
+          "text": "that",
+          "label": "red",
+          "token_id": 20057,
+          "position": 24
+        },
+        {
+          "text": "enables",
+          "label": "red",
+          "token_id": 20745,
+          "position": 25
+        },
+        {
+          "text": "a",
+          "label": "red",
+          "token_id": 6497,
+          "position": 26
+        },
+        {
+          "text": "prover",
+          "label": "red",
+          "token_id": 16891,
+          "position": 27
+        },
+        {
+          "text": "to",
+          "label": "red",
+          "token_id": 31793,
+          "position": 28
+        },
+        {
+          "text": "demonstrate",
+          "label": "red",
+          "token_id": 15358,
+          "position": 29
+        },
+        {
+          "text": "knowledge",
+          "label": "red",
+          "token_id": 16383,
+          "position": 30
+        },
+        {
+          "text": "of",
+          "label": "green",
+          "token_id": 17380,
+          "position": 31
+        },
+        {
+          "text": "certain",
+          "label": "red",
+          "token_id": 25381,
+          "position": 32
+        },
+        {
+          "text": "information",
+          "label": "green",
+          "token_id": 21420,
+          "position": 33
+        },
+        {
+          "text": "to",
+          "label": "red",
+          "token_id": 31793,
+          "position": 34
+        },
+        {
+          "text": "a",
+          "label": "red",
+          "token_id": 6497,
+          "position": 35
+        },
+        {
+          "text": "verifier",
+          "label": "red",
+          "token_id": 15794,
+          "position": 36
+        },
+        {
+          "text": "without",
+          "label": "red",
+          "token_id": 18370,
+          "position": 37
+        },
+        {
+          "text": "disclosing",
+          "label": "green",
+          "token_id": 27870,
+          "position": 38
+        },
+        {
+          "text": "the",
+          "label": "red",
+          "token_id": 27479,
+          "position": 39
+        },
+        {
+          "text": "information",
+          "label": "red",
+          "token_id": 21420,
+          "position": 40
+        },
+        {
+          "text": "itself",
+          "label": "red",
+          "token_id": 3161,
+          "position": 41
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 21405,
+          "position": 42
+        },
+        {
+          "text": "Consider",
+          "label": "green",
+          "token_id": 23419,
+          "position": 43
+        },
+        {
+          "text": "an",
+          "label": "green",
+          "token_id": 15464,
+          "position": 44
+        },
+        {
+          "text": "analogy",
+          "label": "green",
+          "token_id": 6818,
+          "position": 45
+        },
+        {
+          "text": ":",
+          "label": "red",
+          "token_id": 1559,
+          "position": 46
+        },
+        {
+          "text": "imagine",
+          "label": "red",
+          "token_id": 2505,
+          "position": 47
+        },
+        {
+          "text": "someone",
+          "label": "red",
+          "token_id": 1309,
+          "position": 48
+        },
+        {
+          "text": "claims",
+          "label": "green",
+          "token_id": 8775,
+          "position": 49
+        },
+        {
+          "text": "they",
+          "label": "red",
+          "token_id": 20742,
+          "position": 50
+        },
+        {
+          "text": "can",
+          "label": "green",
+          "token_id": 23693,
+          "position": 51
+        },
+        {
+          "text": "solve",
+          "label": "green",
+          "token_id": 7886,
+          "position": 52
+        },
+        {
+          "text": "a",
+          "label": "red",
+          "token_id": 6497,
+          "position": 53
+        },
+        {
+          "text": "jigsaw",
+          "label": "red",
+          "token_id": 10883,
+          "position": 54
+        },
+        {
+          "text": "puzzle",
+          "label": "red",
+          "token_id": 28772,
+          "position": 55
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 21405,
+          "position": 56
+        },
+        {
+          "text": "To",
+          "label": "red",
+          "token_id": 6995,
+          "position": 57
+        },
+        {
+          "text": "prove",
+          "label": "red",
+          "token_id": 29615,
+          "position": 58
+        },
+        {
+          "text": "this",
+          "label": "red",
+          "token_id": 29682,
+          "position": 59
+        },
+        {
+          "text": "without",
+          "label": "red",
+          "token_id": 18370,
+          "position": 60
+        },
+        {
+          "text": "showing",
+          "label": "red",
+          "token_id": 6309,
+          "position": 61
+        },
+        {
+          "text": "the",
+          "label": "red",
+          "token_id": 27479,
+          "position": 62
+        },
+        {
+          "text": "completed",
+          "label": "green",
+          "token_id": 10494,
+          "position": 63
+        },
+        {
+          "text": "picture",
+          "label": "green",
+          "token_id": 18544,
+          "position": 64
+        },
+        {
+          "text": ",",
+          "label": "red",
+          "token_id": 26876,
+          "position": 65
+        },
+        {
+          "text": "they",
+          "label": "red",
+          "token_id": 20742,
+          "position": 66
+        },
+        {
+          "text": "could",
+          "label": "red",
+          "token_id": 22315,
+          "position": 67
+        },
+        {
+          "text": "let",
+          "label": "green",
+          "token_id": 13155,
+          "position": 68
+        },
+        {
+          "text": "you",
+          "label": "red",
+          "token_id": 23929,
+          "position": 69
+        },
+        {
+          "text": "pick",
+          "label": "red",
+          "token_id": 29630,
+          "position": 70
+        },
+        {
+          "text": "any",
+          "label": "green",
+          "token_id": 3308,
+          "position": 71
+        },
+        {
+          "text": "piece",
+          "label": "green",
+          "token_id": 25377,
+          "position": 72
+        },
+        {
+          "text": "and",
+          "label": "red",
+          "token_id": 30584,
+          "position": 73
+        },
+        {
+          "text": "describe",
+          "label": "red",
+          "token_id": 16892,
+          "position": 74
+        },
+        {
+          "text": "what",
+          "label": "green",
+          "token_id": 28870,
+          "position": 75
+        },
+        {
+          "text": "neighbors",
+          "label": "red",
+          "token_id": 20669,
+          "position": 76
+        },
+        {
+          "text": "it",
+          "label": "green",
+          "token_id": 22256,
+          "position": 77
+        },
+        {
+          "text": ",",
+          "label": "green",
+          "token_id": 26876,
+          "position": 78
+        },
+        {
+          "text": "repeatedly",
+          "label": "red",
+          "token_id": 15026,
+          "position": 79
+        },
+        {
+          "text": ",",
+          "label": "green",
+          "token_id": 26876,
+          "position": 80
+        },
+        {
+          "text": "until",
+          "label": "red",
+          "token_id": 11360,
+          "position": 81
+        },
+        {
+          "text": "you",
+          "label": "green",
+          "token_id": 23929,
+          "position": 82
+        },
+        {
+          "text": "are",
+          "label": "red",
+          "token_id": 12167,
+          "position": 83
+        },
+        {
+          "text": "convinced",
+          "label": "red",
+          "token_id": 26268,
+          "position": 84
+        },
+        {
+          "text": "they",
+          "label": "red",
+          "token_id": 20742,
+          "position": 85
+        },
+        {
+          "text": "truly",
+          "label": "red",
+          "token_id": 21013,
+          "position": 86
+        },
+        {
+          "text": "have",
+          "label": "red",
+          "token_id": 22175,
+          "position": 87
+        },
+        {
+          "text": "the",
+          "label": "green",
+          "token_id": 27479,
+          "position": 88
+        },
+        {
+          "text": "solution",
+          "label": "green",
+          "token_id": 23999,
+          "position": 89
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 21405,
+          "position": 90
+        },
+        {
+          "text": "The",
+          "label": "green",
+          "token_id": 27646,
+          "position": 91
+        },
+        {
+          "text": "key",
+          "label": "green",
+          "token_id": 5661,
+          "position": 92
+        },
+        {
+          "text": "insight",
+          "label": "red",
+          "token_id": 13753,
+          "position": 93
+        },
+        {
+          "text": "is",
+          "label": "red",
+          "token_id": 15849,
+          "position": 94
+        },
+        {
+          "text": "that",
+          "label": "red",
+          "token_id": 20057,
+          "position": 95
+        },
+        {
+          "text": "the",
+          "label": "green",
+          "token_id": 27479,
+          "position": 96
+        },
+        {
+          "text": "verifier",
+          "label": "red",
+          "token_id": 15794,
+          "position": 97
+        },
+        {
+          "text": "gains",
+          "label": "green",
+          "token_id": 7061,
+          "position": 98
+        },
+        {
+          "text": "certainty",
+          "label": "red",
+          "token_id": 11607,
+          "position": 99
+        },
+        {
+          "text": "without",
+          "label": "green",
+          "token_id": 18370,
+          "position": 100
+        },
+        {
+          "text": "gaining",
+          "label": "red",
+          "token_id": 30966,
+          "position": 101
+        },
+        {
+          "text": "the",
+          "label": "red",
+          "token_id": 27479,
+          "position": 102
+        },
+        {
+          "text": "secret",
+          "label": "red",
+          "token_id": 873,
+          "position": 103
+        },
+        {
+          "text": ".",
+          "label": "green",
+          "token_id": 21405,
+          "position": 104
+        },
+        {
+          "text": "Modern",
+          "label": "red",
+          "token_id": 16468,
+          "position": 105
+        },
+        {
+          "text": "applications",
+          "label": "red",
+          "token_id": 18280,
+          "position": 106
+        },
+        {
+          "text": "include",
+          "label": "green",
+          "token_id": 4993,
+          "position": 107
+        },
+        {
+          "text": "privacy",
+          "label": "red",
+          "token_id": 27779,
+          "position": 108
+        },
+        {
+          "text": "-",
+          "label": "red",
+          "token_id": 5671,
+          "position": 109
+        },
+        {
+          "text": "preserving",
+          "label": "red",
+          "token_id": 27216,
+          "position": 110
+        },
+        {
+          "text": "transactions",
+          "label": "red",
+          "token_id": 9448,
+          "position": 111
+        },
+        {
+          "text": "and",
+          "label": "red",
+          "token_id": 30584,
+          "position": 112
+        },
+        {
+          "text": "identity",
+          "label": "red",
+          "token_id": 11839,
+          "position": 113
+        },
+        {
+          "text": "verification",
+          "label": "red",
+          "token_id": 7048,
+          "position": 114
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 21405,
+          "position": 115
+        }
+      ],
+      "detection": {
+        "z_score": 0.48,
+        "green_fraction": 0.2696,
+        "num_scored_tokens": 115,
+        "is_watermarked": false,
+        "threshold": 4.0
+      },
+      "attack_method": "LLMP"
+    }
+  ],
+  "mode": "preset",
+  "provenance": {
+    "kind": "illustrative",
+    "source": "Prewritten text annotated by scripts/annotate_text.py with word hashes and simulated watermark bias.",
+    "legacy_model_label": "Qwen2.5-7B-Instruct"
+  }
+}

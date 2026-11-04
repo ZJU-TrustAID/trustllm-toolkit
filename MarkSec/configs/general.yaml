@@ -1,0 +1,88 @@
+# ======================================================
+# General Configuration for the Experiment Pipeline
+# ======================================================
+project_root: .
+configs_dir: configs
+output_dir: output
+data_dir: ""
+models_root: "" # Optional root directory for pre-downloaded models. Empty means use Hugging Face Hub/cache.
+
+watermark_data:
+  output_dir: output/watermarked_data
+  filename_format: "{algorithm}_response.jsonl"
+  config_dir: configs/watermark
+  config_format: "{algorithm}.json"
+  prompt_source_path: ""
+
+runner_settings:
+  seed: 42
+  use_flash_attention: true
+  models_local_files_only: false
+  output_dir_base: "./output"
+  datasets_root: ""
+  save_result_texts: true
+  isolate_best_gpu: true
+
+database:
+  # Disabled in the minimal reproduction bundle to avoid machine-local setup.
+  # Enable and point config_path/connection at your own database if needed.
+  enabled: false
+  config_path: "configs/db/db_config.yaml"
+  table_name: "experiment_summary"
+
+# --- Evaluation Settings ---
+evaluation:
+  qsr:
+    metric: Prometheus
+    threshold: 3.0
+    thresholds: [2.0, 3.0, 4.0, 5.0]
+  quality_metrics:
+    BLEU: null  # or {}
+    ROUGE1: null # or {}
+    LogDiv: null
+    BERTScore:
+      model_path: "FacebookAI/roberta-large"
+    PPL: null
+    # PPL rate: 
+    PSP:
+      model_path: "paraphrase-at-scale-english/model.para.lc.100.pt"
+      sp_path: "paraphrase-at-scale-english/paranmt.model"
+      models_root: ""
+    NLIScore:
+      model_name: "cross-encoder/nli-deberta-v3-large"
+    SemanticFluency: {} 
+    # LLMScore: # cost
+    #   model_name: deepseek-v3.2
+    #   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    Prometheus:
+      model_path: "prometheus-eval/prometheus-7b-v2.0"
+
+
+
+  # -- Detection Metrics Configuration --
+  # Defines how watermark detection performance is measured.
+  detection_metrics:
+    # `dynamic` uses DynamicThresholdSuccessRateCalculator.
+    # `fundamental` uses FundamentalSuccessRateCalculator for boolean predictions.
+    type: dynamic
+    # Determines the direction of the detection score.
+    # Set to False if higher scores (e.g., z-score) mean "more likely watermarked".
+    # Set to True if lower scores (e.g., p-value) mean "more likely watermarked".
+    reverse_score_algorithms:
+      - Unbiased
+      - EXPEdit
+
+    params:
+      # The rule for determining the detection threshold.
+      # `target_fpr`: Finds a threshold to meet a specific False Positive Rate.
+      # `best`: Finds a threshold that maximizes the F1 score.
+      rule: target_fpr
+      
+      # Target False Positive Rate, This is only used when rule is 'target_fpr'.
+      target_fpr: 0.01
+      # target_fpr: 0
+      
+      reverse: False
+      
+      # Optional: A filter for which metrics to include in the final report.
+      labels: ['TPR', 'TNR', 'FPR', 'FNR', 'P', 'R', 'F1', 'ACC']

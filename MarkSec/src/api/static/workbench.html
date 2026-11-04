@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarkSec · Text Watermark Workbench</title>
+<style>
+  :root {
+    --green: #087f5b;
+    --green-soft: rgba(8, 127, 91, 0.08);
+    --green-chip: rgba(8, 127, 91, 0.14);
+    --red: #dc2626;
+    --red-soft: rgba(220, 38, 38, 0.12);
+    --ink: #1d2939;
+    --muted: #667085;
+    --line: #e4e4e0;
+    --panel: #ffffff;
+    --bg: #f6f6f3;
+    --accent-dark: #0b5c43;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 48px; }
+  .kicker {
+    margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-dark);
+  }
+  h1 { margin: 4px 0 12px; font-size: 24px; }
+  h2 { margin: 0; font-size: 18px; }
+  .empty-state {
+    border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
+    padding: 14px 18px; margin-top: 8px;
+  }
+  .empty-state p { margin: 0; font-weight: 600; }
+  .empty-state span { color: var(--muted); font-size: 14px; }
+  .error {
+    border: 1px solid #f1c0c0; background: #fdf0f0; color: var(--red);
+    border-radius: 10px; padding: 14px 18px; margin: 12px 0 0;
+  }
+  .hidden { display: none; }
+  .controls { display: grid; grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); gap: 16px; margin-top: 16px; }
+  @media (max-width: 760px) { .controls { grid-template-columns: 1fr; } }
+  .panel {
+    border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 18px;
+  }
+  .panel label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px; }
+  textarea {
+    width: 100%; min-height: 110px; resize: vertical; border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 12px; font: inherit; color: var(--ink); background: #fbfbf9;
+  }
+  textarea:focus { outline: 2px solid var(--green-soft); border-color: var(--green); }
+  select {
+    width: 100%; margin-top: 4px; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 8px; font: inherit; background: #fbfbf9; color: var(--ink);
+  }
+  .options-panel label { margin-bottom: 14px; }
+  button {
+    font: inherit; font-weight: 600; cursor: pointer; border-radius: 8px;
+    border: 1px solid var(--green); background: var(--green); color: #fff; padding: 9px 18px;
+  }
+  button:disabled { opacity: 0.55; cursor: not-allowed; }
+  #running { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+  .result-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-top: 24px; }
+  .toggle {
+    background: transparent; color: var(--ink); border: 1px solid var(--line);
+    padding: 7px 14px; font-size: 13px;
+  }
+  .toggle[aria-pressed="true"] { background: var(--green-soft); border-color: var(--green); color: var(--accent-dark); }
+  .prompt-readout {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 10px;
+    padding: 12px 16px; margin-top: 14px;
+  }
+  .prompt-readout span {
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted);
+  }
+  .prompt-readout p { margin: 4px 0 0; white-space: pre-wrap; }
+  .detection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 760px) { .detection-grid, .text-grid { grid-template-columns: 1fr; } }
+  .card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 16px 18px; }
+  .card.hit { border-color: var(--green); background: var(--green-soft); }
+  .card-top { display: flex; justify-content: space-between; align-items: center; }
+  .card-label {
+    margin: 0; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-dark);
+  }
+  .card-icon { font-size: 16px; }
+  .card.hit .card-icon { color: var(--green); }
+  .card:not(.hit) .card-icon { color: var(--muted); }
+  .verdict { margin-top: 8px; font-size: 17px; font-weight: 600; }
+  .card.hit .verdict { color: var(--green); }
+  .card:not(.hit) .verdict { color: var(--muted); }
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  .metrics p { margin: 0; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); }
+  .metrics strong { display: block; margin-top: 2px; font-size: 15px; color: var(--ink); }
+  .metrics strong small { font-size: 11px; font-weight: 400; color: var(--muted); }
+  .reason { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+  .text-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .text-panel { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 16px 18px; }
+  .text-panel-header span { font-weight: 600; }
+  .text-panel-header p { margin: 2px 0 10px; font-size: 12px; color: var(--muted); }
+  .token-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.9; }
+  .token { border-radius: 3px; padding: 0 1px; }
+  .token.green { background: var(--green-chip); color: var(--green); }
+  .token.red { background: var(--red-soft); color: var(--red); }
+  .token.neutral { color: var(--ink); }
+  .score-note { margin-top: 14px; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <span id="status-detail" hidden></span>
+
+  <p id="error" role="alert" class="error hidden"></p>
+
+  <section class="controls">
+    <div class="panel">
+      <label for="prompt">提示词</label>
+      <textarea id="prompt" maxlength="4096">Explain what a zero-knowledge proof is and give a simple analogy.</textarea>
+      <button id="run" type="button" disabled>运行工具包</button>
+      <p id="running" role="status" class="hidden">正在生成与改写文本；首次运行会同时加载模型。</p>
+    </div>
+    <div class="panel options-panel">
+      <label for="watermark">水印算法
+        <select id="watermark" disabled></select>
+      </label>
+      <label for="attack">攻击方法
+        <select id="attack" disabled></select>
+      </label>
+    </div>
+  </section>
+
+  <section id="result" class="hidden">
+    <div class="result-header">
+      <div><p class="kicker">检测结果</p><h2 id="result-title"></h2></div>
+      <button id="coloring" type="button" class="toggle" aria-pressed="false">着色 关</button>
+    </div>
+    <div class="prompt-readout"><span>提示词</span><p id="result-prompt"></p></div>
+    <div class="detection-grid" id="detections"></div>
+    <div class="text-grid" id="texts"></div>
+    <p class="score-note" id="score-note"></p>
+  </section>
+
+  <div class="empty-state" id="placeholder" style="margin-top: 20px;">
+    <p>输入提示词并运行工具包，查看水印生成、改写与检测结果。</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var capabilities = null;
+  var result = null;
+  var coloring = false;
+  var running = false;
+
+  var el = function (id) { return document.getElementById(id); };
+  var statusDetail = el('status-detail');
+  var errorBox = el('error');
+  var runButton = el('run');
+  var runningNote = el('running');
+  var promptInput = el('prompt');
+  var watermarkSelect = el('watermark');
+  var attackSelect = el('attack');
+  var resultPanel = el('result');
+  var placeholder = el('placeholder');
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.classList.remove('hidden');
+  }
+
+  function clearError() {
+    errorBox.textContent = '';
+    errorBox.classList.add('hidden');
+  }
+
+  function readResponse(response) {
+    return response.json().then(function (data) {
+      if (!response.ok) {
+        throw new Error(typeof data.detail === 'string' ? data.detail : '请求未能完成。');
+      }
+      return data;
+    });
+  }
+
+  /* 后端返回的变体标签/描述是英文，这里映射为中文；未知文案原样展示 */
+  var VARIANT_LABELS = { Watermarked: '水印生成文本', Attacked: '改写攻击文本' };
+  var VARIANT_DESCRIPTIONS = {
+    'MarkSec LLMP model rewrite.': '经 MarkSec LLMP 改写的模型输出。',
+    'Fresh model generation with watermark logits processing.': '带水印 logits 处理的模型实时生成。',
+    'Real generation, MarkSec LLMP rewriting, and watermark detection.': '真实生成 + LLMP 改写 + 水印检测。',
+  };
+  function variantLabel(label) { return VARIANT_LABELS[label] || label; }
+  function variantDescription(text) { return VARIANT_DESCRIPTIONS[text] || text; }
+  function resultTitle(title) {
+    return String(title || '').replace(' watermark vs LLMP', ' 水印 + LLMP 改写');
+  }
+
+  function fillSelect(select, names, fallback) {
+    select.innerHTML = '';
+    (names && names.length ? names : fallback).forEach(function (name) {
+      var option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+  }
+
+  function refreshControls() {
+    watermarkSelect.disabled = running || !capabilities;
+    attackSelect.disabled = running || !capabilities;
+    promptInput.disabled = running;
+    runButton.disabled = running || !capabilities || !promptInput.value.trim();
+  }
+
+  function initialize() {
+    fetch('v1/capabilities', { cache: 'no-store' })
+      .then(readResponse)
+      .then(function (data) {
+        capabilities = data;
+        statusDetail.textContent = '模型：' + data.model +
+          '（每次运行实时生成、改写并检测）';
+        fillSelect(watermarkSelect, data.watermarks, ['KGW']);
+        fillSelect(attackSelect, data.attacks, ['LLMP']);
+        clearError();
+        refreshControls();
+      })
+      .catch(function (e) {
+        statusDetail.textContent = '工具包不可用：请启动后端后刷新页面。';
+        showError(e instanceof Error ? e.message : '无法加载当前模式。');
+        refreshControls();
+      });
+  }
+
+  function detectionCard(title, detection) {
+    var hit = !!detection.is_watermarked;
+    var card = document.createElement('div');
+    card.className = 'card' + (hit ? ' hit' : '');
+    var statusText = detection.z_score === null || detection.z_score === undefined
+      ? '可计分 token 不足'
+      : hit ? '检出水印' : '低于阈值';
+    var z = detection.z_score === null || detection.z_score === undefined
+      ? '—' : Number(detection.z_score).toFixed(2);
+    card.innerHTML =
+      '<div class="card-top"><p class="card-label"></p><span class="card-icon"></span></div>' +
+      '<p class="verdict"></p>' +
+      '<div class="metrics">' +
+      '<div><p>Z 分数</p><strong></strong></div>' +
+      '<div><p>绿 token 占比</p><strong></strong></div>' +
+      '<div><p>计分 token</p><strong></strong></div>' +
+      '</div>';
+    card.querySelector('.card-label').textContent = title;
+    card.querySelector('.card-icon').textContent = hit ? '🛡' : '✕';
+    card.querySelector('.verdict').textContent = statusText;
+    var values = card.querySelectorAll('.metrics strong');
+    values[0].textContent = z;
+    values[1].innerHTML = (Number(detection.green_fraction || 0) * 100).toFixed(1) + '<small>%</small>';
+    values[2].textContent = String(detection.num_scored_tokens);
+    if (detection.reason) {
+      var reason = document.createElement('p');
+      reason.className = 'reason';
+      reason.textContent = detection.reason;
+      card.appendChild(reason);
+    }
+    return card;
+  }
+
+  function tokenSpan(token) {
+    var span = document.createElement('span');
+    span.className = 'token ' + (token.label || 'neutral');
+    span.textContent = token.text;
+    span.title = token.position !== undefined && token.position !== null
+      ? '位置 ' + token.position + ' · ' + token.label
+      : String(token.label);
+    return span;
+  }
+
+  function textPanel(variant) {
+    var panel = document.createElement('section');
+    panel.className = 'text-panel';
+    var header = document.createElement('div');
+    header.className = 'text-panel-header';
+    var label = document.createElement('span');
+    label.textContent = variant.label;
+    var description = document.createElement('p');
+    description.textContent = variantDescription(variant.description || '');
+    header.appendChild(label);
+    header.appendChild(description);
+    var body = document.createElement('div');
+    body.className = 'token-text';
+    (variant.tokens || []).forEach(function (token) {
+      var span = tokenSpan(token);
+      if (!coloring) { span.className = 'token neutral'; }
+      body.appendChild(span);
+    });
+    panel.appendChild(header);
+    panel.appendChild(body);
+    return panel;
+  }
+
+  function renderResult() {
+    if (!result) { return; }
+    el('result-title').textContent = resultTitle(result.title);
+    el('result-prompt').textContent = result.prompt || '';
+    el('score-note').textContent = '模型：' + result.model +
+      '。检测分数由返回文本计算；改写后水印信号可能仍被保留。';
+    var detections = el('detections');
+    detections.innerHTML = '';
+    var texts = el('texts');
+    texts.innerHTML = '';
+    (result.variants || []).forEach(function (variant) {
+      var labeled = Object.assign({}, variant, { label: variantLabel(variant.label) });
+      detections.appendChild(detectionCard(labeled.label, variant.detection || {}));
+      texts.appendChild(textPanel(labeled));
+    });
+    resultPanel.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+  }
+
+  function run() {
+    var prompt = promptInput.value.trim();
+    if (!prompt || !capabilities) { return; }
+    result = null;
+    clearError();
+    running = true;
+    runningNote.classList.remove('hidden');
+    refreshControls();
+    fetch('v1/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: prompt,
+        watermark: watermarkSelect.value,
+        attack: attackSelect.value,
+        max_new_tokens: 128,
+        seed: 42,
+      }),
+      signal: AbortSignal.timeout(300000),
+    })
+      .then(readResponse)
+      .then(function (data) {
+        result = data;
+        renderResult();
+      })
+      .catch(function (e) {
+        showError(e instanceof Error ? e.message : '工具包请求失败。');
+      })
+      .finally(function () {
+        running = false;
+        runningNote.classList.add('hidden');
+        refreshControls();
+      });
+  }
+
+  el('coloring').addEventListener('click', function () {
+    coloring = !coloring;
+    this.setAttribute('aria-pressed', String(coloring));
+    this.textContent = coloring ? '着色 开' : '着色 关';
+    if (result) { renderResult(); }
+  });
+  runButton.addEventListener('click', run);
+  promptInput.addEventListener('input', function () {
+    result = null;
+    resultPanel.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+    refreshControls();
+  });
+  watermarkSelect.addEventListener('change', function () {
+    result = null;
+    resultPanel.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+  });
+  attackSelect.addEventListener('change', function () {
+    result = null;
+    resultPanel.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+  });
+
+  initialize();
+  refreshControls();
+})();
+</script>
+</body>
+</html>

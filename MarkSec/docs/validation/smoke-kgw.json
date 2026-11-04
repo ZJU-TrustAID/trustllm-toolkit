@@ -1,0 +1,435 @@
+{
+  "id": "b9362dd2-e49b-46f6-87ef-fd2e3296643c",
+  "mode": "live",
+  "title": "KGW watermark vs LLMP",
+  "description": "Computed by MarkSec for this request.",
+  "prompt": "Explain why passwords should be unique for each account.",
+  "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "watermark": {
+    "type": "KGW",
+    "gamma": 0.5,
+    "delta": 2.0,
+    "prefix_length": 1
+  },
+  "variants": [
+    {
+      "label": "Watermarked",
+      "description": "Fresh model generation with watermark logits processing.",
+      "text": "When creating passwords for each account on a system like Huggingface, there's a good reason for creating unique passwords for each platform. Here's why:",
+      "tokens": [
+        {
+          "text": "When",
+          "label": "neutral",
+          "token_id": 2427,
+          "position": 0
+        },
+        {
+          "text": " creating",
+          "label": "green",
+          "token_id": 2733,
+          "position": 1
+        },
+        {
+          "text": " passwords",
+          "label": "red",
+          "token_id": 16940,
+          "position": 2
+        },
+        {
+          "text": " for",
+          "label": "green",
+          "token_id": 327,
+          "position": 3
+        },
+        {
+          "text": " each",
+          "label": "green",
+          "token_id": 971,
+          "position": 4
+        },
+        {
+          "text": " account",
+          "label": "red",
+          "token_id": 2051,
+          "position": 5
+        },
+        {
+          "text": " on",
+          "label": "green",
+          "token_id": 335,
+          "position": 6
+        },
+        {
+          "text": " a",
+          "label": "green",
+          "token_id": 253,
+          "position": 7
+        },
+        {
+          "text": " system",
+          "label": "green",
+          "token_id": 817,
+          "position": 8
+        },
+        {
+          "text": " like",
+          "label": "green",
+          "token_id": 702,
+          "position": 9
+        },
+        {
+          "text": " H",
+          "label": "red",
+          "token_id": 407,
+          "position": 10
+        },
+        {
+          "text": "ugging",
+          "label": "green",
+          "token_id": 19712,
+          "position": 11
+        },
+        {
+          "text": "face",
+          "label": "green",
+          "token_id": 1803,
+          "position": 12
+        },
+        {
+          "text": ",",
+          "label": "green",
+          "token_id": 28,
+          "position": 13
+        },
+        {
+          "text": " there",
+          "label": "green",
+          "token_id": 665,
+          "position": 14
+        },
+        {
+          "text": "'s",
+          "label": "green",
+          "token_id": 506,
+          "position": 15
+        },
+        {
+          "text": " a",
+          "label": "green",
+          "token_id": 253,
+          "position": 16
+        },
+        {
+          "text": " good",
+          "label": "green",
+          "token_id": 1123,
+          "position": 17
+        },
+        {
+          "text": " reason",
+          "label": "green",
+          "token_id": 2166,
+          "position": 18
+        },
+        {
+          "text": " for",
+          "label": "red",
+          "token_id": 327,
+          "position": 19
+        },
+        {
+          "text": " creating",
+          "label": "green",
+          "token_id": 2733,
+          "position": 20
+        },
+        {
+          "text": " unique",
+          "label": "red",
+          "token_id": 2116,
+          "position": 21
+        },
+        {
+          "text": " passwords",
+          "label": "green",
+          "token_id": 16940,
+          "position": 22
+        },
+        {
+          "text": " for",
+          "label": "green",
+          "token_id": 327,
+          "position": 23
+        },
+        {
+          "text": " each",
+          "label": "green",
+          "token_id": 971,
+          "position": 24
+        },
+        {
+          "text": " platform",
+          "label": "green",
+          "token_id": 3941,
+          "position": 25
+        },
+        {
+          "text": ".",
+          "label": "green",
+          "token_id": 30,
+          "position": 26
+        },
+        {
+          "text": " Here",
+          "label": "green",
+          "token_id": 3726,
+          "position": 27
+        },
+        {
+          "text": "'s",
+          "label": "red",
+          "token_id": 506,
+          "position": 28
+        },
+        {
+          "text": " why",
+          "label": "green",
+          "token_id": 1701,
+          "position": 29
+        },
+        {
+          "text": ":",
+          "label": "red",
+          "token_id": 42,
+          "position": 30
+        }
+      ],
+      "token_spacing": "verbatim",
+      "detection": {
+        "z_score": 2.9211869733608857,
+        "green_fraction": 0.7666666666666667,
+        "num_scored_tokens": 30,
+        "is_watermarked": false,
+        "threshold": 4.0,
+        "reason": null
+      }
+    },
+    {
+      "label": "Attacked",
+      "description": "MarkSec LLMP model rewrite.",
+      "text": "When creating passwords for each account on Huggingface, a strong password is crucial to prevent unauthorized access to the system. The reason is that each platform has a",
+      "tokens": [
+        {
+          "text": "When",
+          "label": "neutral",
+          "token_id": 2427,
+          "position": 0
+        },
+        {
+          "text": " creating",
+          "label": "green",
+          "token_id": 2733,
+          "position": 1
+        },
+        {
+          "text": " passwords",
+          "label": "red",
+          "token_id": 16940,
+          "position": 2
+        },
+        {
+          "text": " for",
+          "label": "green",
+          "token_id": 327,
+          "position": 3
+        },
+        {
+          "text": " each",
+          "label": "green",
+          "token_id": 971,
+          "position": 4
+        },
+        {
+          "text": " account",
+          "label": "red",
+          "token_id": 2051,
+          "position": 5
+        },
+        {
+          "text": " on",
+          "label": "green",
+          "token_id": 335,
+          "position": 6
+        },
+        {
+          "text": " H",
+          "label": "green",
+          "token_id": 407,
+          "position": 7
+        },
+        {
+          "text": "ugging",
+          "label": "green",
+          "token_id": 19712,
+          "position": 8
+        },
+        {
+          "text": "face",
+          "label": "green",
+          "token_id": 1803,
+          "position": 9
+        },
+        {
+          "text": ",",
+          "label": "green",
+          "token_id": 28,
+          "position": 10
+        },
+        {
+          "text": " a",
+          "label": "red",
+          "token_id": 253,
+          "position": 11
+        },
+        {
+          "text": " strong",
+          "label": "green",
+          "token_id": 1837,
+          "position": 12
+        },
+        {
+          "text": " password",
+          "label": "green",
+          "token_id": 8824,
+          "position": 13
+        },
+        {
+          "text": " is",
+          "label": "red",
+          "token_id": 314,
+          "position": 14
+        },
+        {
+          "text": " crucial",
+          "label": "red",
+          "token_id": 3202,
+          "position": 15
+        },
+        {
+          "text": " to",
+          "label": "red",
+          "token_id": 288,
+          "position": 16
+        },
+        {
+          "text": " prevent",
+          "label": "red",
+          "token_id": 1746,
+          "position": 17
+        },
+        {
+          "text": " unauthorized",
+          "label": "green",
+          "token_id": 23144,
+          "position": 18
+        },
+        {
+          "text": " access",
+          "label": "green",
+          "token_id": 1594,
+          "position": 19
+        },
+        {
+          "text": " to",
+          "label": "red",
+          "token_id": 288,
+          "position": 20
+        },
+        {
+          "text": " the",
+          "label": "green",
+          "token_id": 260,
+          "position": 21
+        },
+        {
+          "text": " system",
+          "label": "red",
+          "token_id": 817,
+          "position": 22
+        },
+        {
+          "text": ".",
+          "label": "red",
+          "token_id": 30,
+          "position": 23
+        },
+        {
+          "text": " The",
+          "label": "red",
+          "token_id": 378,
+          "position": 24
+        },
+        {
+          "text": " reason",
+          "label": "red",
+          "token_id": 2166,
+          "position": 25
+        },
+        {
+          "text": " is",
+          "label": "red",
+          "token_id": 314,
+          "position": 26
+        },
+        {
+          "text": " that",
+          "label": "red",
+          "token_id": 338,
+          "position": 27
+        },
+        {
+          "text": " each",
+          "label": "red",
+          "token_id": 971,
+          "position": 28
+        },
+        {
+          "text": " platform",
+          "label": "green",
+          "token_id": 3941,
+          "position": 29
+        },
+        {
+          "text": " has",
+          "label": "green",
+          "token_id": 553,
+          "position": 30
+        },
+        {
+          "text": " a",
+          "label": "red",
+          "token_id": 253,
+          "position": 31
+        }
+      ],
+      "token_spacing": "verbatim",
+      "detection": {
+        "z_score": -0.1796053020267749,
+        "green_fraction": 0.4838709677419355,
+        "num_scored_tokens": 31,
+        "is_watermarked": false,
+        "threshold": 4.0,
+        "reason": null
+      },
+      "attack_method": "LLMP"
+    }
+  ],
+  "provenance": {
+    "backend": "transformers",
+    "device": "cpu",
+    "seed": 42,
+    "model_revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "attack": "MarkSec LLMP (shared generation model)",
+    "elapsed_seconds": 12.906
+  }
+}

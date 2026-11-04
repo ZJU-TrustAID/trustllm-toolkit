@@ -1,0 +1,3 @@
+backend: sqlite
+database: output/marksec.db
+connect_timeout: 30

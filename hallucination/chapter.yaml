@@ -1,0 +1,84 @@
+# 第六章 · 幻觉缓解 —— hub 接入清单
+chapter: 6
+title: 幻觉检测与缓解
+toolkit: hallucination
+enabled: true
+brief: 幻觉检测与缓解：白盒/黑盒/证据验证检测，推理时缓解（DoLa / CAD / ITI / CoVe）与对话式工作台。
+
+frontend:
+  mode: proxy            # 经 hub 同源反代访问（浏览器只需 hub 一个端口）
+  autostart: true        # 教学演示无模型权重，进入工作台即自动启动
+  server:
+    # 真后端工作台：服务本身轻量（模型在首次真实调用时懒加载，显存常驻直到停止）。
+    command: ["{conda}", "run", "--no-capture-output", "-n", "hallucination", "python", "web_demo/server.py"]
+    port: 8781
+    ready_path: /api/health
+    timeout: 3600
+    env:
+      HALLUCINATION_DEMO_PORT: "{port}"
+      HALLUCINATION_DEMO_CONFIG: "{config}"
+    # 工作台选的主模型/设备/精度注入 demo；辅助模型（NLI/句子向量）由顶部参数卡片
+    # 按下方选择的方法提供（留空 = 使用 demo 内置默认，按需懒加载）。
+    config:
+      model: "{models.default.entry}"
+      device: "{common.device}"
+      dtype: "{common.dtype}"
+      nli_source: "{models.nli.entry}"
+      embedding_source: "{models.embedding.entry}"
+  entry: /
+
+backend:
+  # 真实后端：在独立的 hallucination 环境中执行（白盒方法需要 torch/transformers）。
+  command: ["{conda}", "run", "--no-capture-output", "-n", "hallucination", "python", "-m", "hallucination.hub_adapter",
+            "--config", "{yaml}", "--output-dir", "{output_dir}"]
+  timeout: 3600
+
+models:
+  - role: default
+    title: 主模型（被检测 / 被缓解的模型）
+    accepts: [local_path, hf, api]
+    required: true
+    default: {source: hf, repo: "Qwen/Qwen2.5-1.5B-Instruct"}
+  # 辅助模型仅黑盒检测部分方法使用；是否启用由工作台当前方法实时联动（postMessage）。
+  - role: nli
+    title: 辅助模型 · NLI（语义熵 / SelfCheck-NLI 用）
+    accepts: [local_path, hf]
+    required: false
+    default: {source: hf, repo: "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli"}
+  - role: embedding
+    title: 辅助模型 · 句子向量（余弦一致性用）
+    accepts: [local_path, hf]
+    required: false
+    default: {source: hf, repo: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"}
+
+params:
+  - {key: task, type: enum, options: [mitigation, detection, fit-iti, benchmark-mitigation, benchmark-detection, fit-calibration],
+     default: mitigation, title: 任务}
+  - {key: method, type: enum, options: [dola, cad, iti, cove], default: dola, title: 缓解方法, when: {task: mitigation}}
+  - {key: prompt, type: text, default: "请介绍蓝鲸的食性。", title: 提示词, when: {task: mitigation}}
+  - {key: context, type: text, default: "", title: 上下文（CAD 冲突实验用，可留空）, when: {task: mitigation}}
+  - {key: max_new_tokens, type: int, default: 128, title: 生成长度上限, when: {task: mitigation}}
+  - {key: probe, type: text, default: "", title: ITI probe 产物路径（fit-iti 任务生成）, when: {task: mitigation}}
+  # ---- fit-iti：拟合 ITI 探针 ----
+  - {key: fit_dataset, type: text, default: "examples/mitigation/data/iti_demo.jsonl", title: 拟合数据集 (JSONL), when: {task: fit-iti}}
+  - {key: fit_layers, type: text, default: "", title: 层列表（留空=自动）, when: {task: fit-iti}}
+  - {key: fit_top_k, type: int, default: 48, title: 每层 top-k 头数, when: {task: fit-iti}}
+  - {key: fit_alpha, type: float, default: 15.0, title: alpha, when: {task: fit-iti}}
+  - {key: fit_out, type: text, default: "probe.json", title: 产物文件名, when: {task: fit-iti}}
+  # ---- benchmark ----
+  - {key: bench_dataset, type: text, default: "textbook_toy", title: 数据集（注册名或 JSONL 路径）, when: {task: benchmark-mitigation}}
+  - {key: bench_preset, type: text, default: "", title: 检测预设（留空=detection 默认）, when: {task: benchmark-detection}}
+  - {key: bench_method, type: text, default: "", title: 缓解方法（留空=全部）, when: {task: benchmark-mitigation}}
+  - {key: bench_model, type: text, default: "", title: 模型（留空=公共模型）, when: {task: benchmark-mitigation}}
+  - {key: bench_n, type: int, default: 20, title: 每项样本数, when: {task: benchmark-mitigation}}
+  # ---- fit-calibration ----
+  - {key: cal_scores, type: text, default: "", title: 分数记录 JSONL（score+label）, when: {task: fit-calibration}}
+  - {key: cal_method, type: enum, options: [threshold, platt, isotonic, temperature], default: threshold, title: 校准方法, when: {task: fit-calibration}}
+  # ---- detection（原样保留）----
+  - {key: preset, type: enum, options: [hf_whitebox, openai_whitebox, openai_blackbox, offline_toy], default: hf_whitebox, title: 检测预设, when: {task: detection}}
+  - {key: num_samples, type: int, default: 5, title: 黑盒采样数, when: {task: detection}}
+  - {key: threshold, type: float, default: 0.5, title: 风险阈值, when: {task: detection}}
+
+results:
+  primary: report.md
+  files: [report.md, report.json]

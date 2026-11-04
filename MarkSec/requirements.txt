@@ -1,0 +1,12 @@
+-e .[benchmark]
+# Optional extras (install as needed):
+#   pip install -e .[logging]
+#   pip install -e .[db-mysql]
+#   pip install -e .[db-postgres]
+#   pip install -e .[gpu-extra]
+
+# Optional for postgres backend:
+# psycopg[binary]
+
+# Optional CUDA acceleration on compatible GPU hosts only:
+# flash-attn

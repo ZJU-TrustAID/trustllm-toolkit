@@ -1,0 +1,15 @@
+{
+  "description": "LLM paraphrase attack using a threat-model surrogate (smaller model than victim/base when mapped).",
+  "model_requirements": {
+    "attack": "auto"
+  },
+  "generation_config": {
+    "max_new_tokens": 256,
+    "do_sample": true,
+    "temperature": 0.7
+  },
+  "operational_parameters": {
+    "device": "cuda"
+  },
+  "prompt_template": "Rewrite the following text using different words and sentence structures while strictly preserving the original meaning, logic, and tone. Do not add any new information or omit key details.\n\nOriginal Text:\n{text}\n\nRewritten Text:"
+}

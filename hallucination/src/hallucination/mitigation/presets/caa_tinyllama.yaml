@@ -1,0 +1,14 @@
+name: caa_tinyllama
+method: caa
+model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+backend: hf
+dtype: bfloat16
+device: cuda
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  layer: 10
+  multiplier: 1.0
+  position: generated
+artifact: null

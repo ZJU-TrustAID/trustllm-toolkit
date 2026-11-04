@@ -1,0 +1,14 @@
+name: cad_qwen2_5_1_5b
+method: cad
+model: Qwen/Qwen2.5-1.5B-Instruct
+backend: hf
+dtype: bfloat16
+device: cuda
+requires_context: true
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  alpha: 0.5
+  context_template: chat
+  filter_top_p: 1.0

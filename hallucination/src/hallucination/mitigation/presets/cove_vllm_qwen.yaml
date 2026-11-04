@@ -1,0 +1,12 @@
+name: cove_vllm_qwen
+method: cove
+model: Qwen/Qwen2.5-7B-Instruct
+backend: openai-compatible
+api_base: http://localhost:8000/v1
+api_key_env: HM_API_KEY
+generation:
+  max_new_tokens: 256
+  do_sample: false
+method_args:
+  max_questions: 6
+  mode: factored

@@ -1,0 +1,13 @@
+name: dola_tinyllama
+method: dola
+model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+backend: hf
+dtype: bfloat16
+device: cuda
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  mature_layer: 22
+  candidate_premature_layers: [10, 12, 14, 16, 18, 20]
+  relative_top: 0.1

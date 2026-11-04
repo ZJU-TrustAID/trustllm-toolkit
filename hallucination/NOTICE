@@ -1,0 +1,26 @@
+# NOTICE
+
+`hallucination-toolkit` is an independent, clean-room implementation of
+published hallucination detection and inference-time mitigation methods,
+written as the executable companion to a book on trustworthy LLMs.
+
+Mitigation methods and their references:
+
+- DoLa: https://github.com/voidism/DoLa (README labels MIT; no root LICENSE file).
+  The implementation here is a clean-room implementation of the paper's method.
+- CAA: https://github.com/nrimsky/CAA (MIT). Used as a conceptual reference.
+- ITI: https://github.com/likenneth/honest_llama (MIT). Used as a conceptual reference.
+- CAD: https://github.com/xhan77/context-aware-decoding (no LICENSE file).
+  The official multi-process code is not copied; this project implements the
+  paper's single-model logits combination.
+- CoVe: no official Meta repository was found for the implementation. The
+  community repository https://github.com/ritun16/chain-of-verification is
+  unlicensed and is not copied; prompts and flow are independently written.
+
+Detection methods (MTP/LNTP, entropy, EigenScore, effective rank, exact-match
+and semantic-entropy consistency, SelfCheck, FActScore-style verification,
+P(True), CoVe detection, LLM judges) follow the formulas in the corresponding
+papers and the UQLM/SelfCheckGPT/FActScore reference implementations; deviations
+are documented in docs/detection-fidelity.md.
+
+No third-party source code is vendored in this repository.

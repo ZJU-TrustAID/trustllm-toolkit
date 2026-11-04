@@ -1,0 +1,554 @@
+{
+  "audit_date": "2026-09-29",
+  "scope": "Assembly protocol audit; no target-model calls, optimizer execution, ASR or performance claims.",
+  "report": "paper_alignment_audit.md",
+  "local_sources": [
+    {
+      "path": "src/textbook_toolkit/jailbreak/generation.py",
+      "sha256": "29c33567c145476d02cb18f3c97a4cd6e7175d78aca447d1e277b64ff739d102"
+    },
+    {
+      "path": "src/textbook_toolkit/jailbreak/manual.py",
+      "sha256": "ebbecaa975daf4ae9594153bd3f7bcff2fef56df5721081f85a7bdde35d864ed"
+    },
+    {
+      "path": "src/textbook_toolkit/jailbreak/artifacts.py",
+      "sha256": "7dbdd34d46b05fd4a04cf0cf6f7c0fb7a55267b84bb275612fa75fb6b2930ee2"
+    },
+    {
+      "path": "src/textbook_toolkit/jailbreak/catalog.py",
+      "sha256": "f2a64291e9f4c4febeec4588ae807ad762a9c7a1815f07207d3692690c8556e0"
+    },
+    {
+      "path": "src/textbook_toolkit/jailbreak/types.py",
+      "sha256": "0e8dab61f604107347555b55123f29ff420532436923fb9402430b7df629ad95"
+    }
+  ],
+  "sources": [
+    {
+      "id": "pair-main",
+      "repository": "patrickrchao/JailbreakingLLMs",
+      "revision": "6379ef705a0fc745530f7d895963510c021b496a",
+      "revision_kind": "commit",
+      "path": "main.py",
+      "fetched_from": "https://raw.githubusercontent.com/patrickrchao/JailbreakingLLMs/6379ef705a0fc745530f7d895963510c021b496a/main.py",
+      "url": "https://github.com/patrickrchao/JailbreakingLLMs/blob/6379ef705a0fc745530f7d895963510c021b496a/main.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "4ac0b1c5e148f6f57416f3d78bb2ae83f225001d3965df6c83c298db988753e5"
+    },
+    {
+      "id": "pair-common",
+      "repository": "patrickrchao/JailbreakingLLMs",
+      "revision": "6379ef705a0fc745530f7d895963510c021b496a",
+      "revision_kind": "commit",
+      "path": "common.py",
+      "fetched_from": "https://raw.githubusercontent.com/patrickrchao/JailbreakingLLMs/6379ef705a0fc745530f7d895963510c021b496a/common.py",
+      "url": "https://github.com/patrickrchao/JailbreakingLLMs/blob/6379ef705a0fc745530f7d895963510c021b496a/common.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "355ea162e44f5421325399a7558714d2fcb955302fae2655a92fef0b66b410b4"
+    },
+    {
+      "id": "pair-prompts",
+      "repository": "patrickrchao/JailbreakingLLMs",
+      "revision": "6379ef705a0fc745530f7d895963510c021b496a",
+      "revision_kind": "commit",
+      "path": "system_prompts.py",
+      "fetched_from": "https://raw.githubusercontent.com/patrickrchao/JailbreakingLLMs/6379ef705a0fc745530f7d895963510c021b496a/system_prompts.py",
+      "url": "https://github.com/patrickrchao/JailbreakingLLMs/blob/6379ef705a0fc745530f7d895963510c021b496a/system_prompts.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "18cdf3c3840993ea63efeaf9706972963027b19445e38aef7dd942b614e01626"
+    },
+    {
+      "id": "pair-conversers",
+      "repository": "patrickrchao/JailbreakingLLMs",
+      "revision": "6379ef705a0fc745530f7d895963510c021b496a",
+      "revision_kind": "commit",
+      "path": "conversers.py",
+      "fetched_from": "https://raw.githubusercontent.com/patrickrchao/JailbreakingLLMs/6379ef705a0fc745530f7d895963510c021b496a/conversers.py",
+      "url": "https://github.com/patrickrchao/JailbreakingLLMs/blob/6379ef705a0fc745530f7d895963510c021b496a/conversers.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "98c5f81c9041d1bedc6ef9f3f1c4e57a43348af28b8b560a90bba18e906b2cb4"
+    },
+    {
+      "id": "tap-main",
+      "repository": "RICommunity/TAP",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "main_TAP.py",
+      "fetched_from": "https://raw.githubusercontent.com/RICommunity/TAP/main/main_TAP.py",
+      "url": "https://github.com/RICommunity/TAP/blob/main/main_TAP.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "4d82568a3881c2e1c8a818594b64a4fb58156c8a2140269e1974220a0474a125"
+    },
+    {
+      "id": "autodan-operators",
+      "repository": "SheltonLiu-N/AutoDAN",
+      "revision": "34062e964185693e81a6775b4f0d00bfd7507612",
+      "revision_kind": "commit",
+      "path": "utils/opt_utils.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/SheltonLiu-N/AutoDAN@34062e964185693e81a6775b4f0d00bfd7507612/utils/opt_utils.py",
+      "url": "https://github.com/SheltonLiu-N/AutoDAN/blob/34062e964185693e81a6775b4f0d00bfd7507612/utils/opt_utils.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "eafd912b28b811c498c8e9e93af952b9c50e9bc2ba13ea7d66c621ad29aa1ea7"
+    },
+    {
+      "id": "autodan-format",
+      "repository": "SheltonLiu-N/AutoDAN",
+      "revision": "34062e964185693e81a6775b4f0d00bfd7507612",
+      "revision_kind": "commit",
+      "path": "utils/string_utils.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/SheltonLiu-N/AutoDAN@34062e964185693e81a6775b4f0d00bfd7507612/utils/string_utils.py",
+      "url": "https://github.com/SheltonLiu-N/AutoDAN/blob/34062e964185693e81a6775b4f0d00bfd7507612/utils/string_utils.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "de4f37801943753c8234becc37102e37affc70a3a9dbf89ccfe25ff63751246f"
+    },
+    {
+      "id": "autodan-loop",
+      "repository": "SheltonLiu-N/AutoDAN",
+      "revision": "34062e964185693e81a6775b4f0d00bfd7507612",
+      "revision_kind": "commit",
+      "path": "autodan_hga_eval.py",
+      "fetched_from": "https://raw.githubusercontent.com/SheltonLiu-N/AutoDAN/34062e964185693e81a6775b4f0d00bfd7507612/autodan_hga_eval.py",
+      "url": "https://github.com/SheltonLiu-N/AutoDAN/blob/34062e964185693e81a6775b4f0d00bfd7507612/autodan_hga_eval.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "feb193b0fe61a331a7c4ee500d1b448524268dcf836c4abee9da572324b76f46"
+    },
+    {
+      "id": "fuzzer-mutator",
+      "repository": "hubertyoo/GPTFuzz",
+      "revision": "0c26cccc3b19cd5eed91d6cb6912431cf2501762",
+      "revision_kind": "commit",
+      "path": "gptfuzzer/fuzzer/mutator.py",
+      "fetched_from": "https://api.github.com/repos/hubertyoo/GPTFuzz/contents/gptfuzzer/fuzzer/mutator.py?ref=0c26cccc3b19cd5eed91d6cb6912431cf2501762",
+      "url": "https://github.com/hubertyoo/GPTFuzz/blob/0c26cccc3b19cd5eed91d6cb6912431cf2501762/gptfuzzer/fuzzer/mutator.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "ae7ce9db0b41a60c00c04fd71a7d7cd2a66f797ab4324161619a79399c93397c"
+    },
+    {
+      "id": "fuzzer-template",
+      "repository": "hubertyoo/GPTFuzz",
+      "revision": "0c26cccc3b19cd5eed91d6cb6912431cf2501762",
+      "revision_kind": "commit",
+      "path": "gptfuzzer/utils/template.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/hubertyoo/GPTFuzz@0c26cccc3b19cd5eed91d6cb6912431cf2501762/gptfuzzer/utils/template.py",
+      "url": "https://github.com/hubertyoo/GPTFuzz/blob/0c26cccc3b19cd5eed91d6cb6912431cf2501762/gptfuzzer/utils/template.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "d3a59b531fae187e865be77e111c845af3f54d1f98f5ec45e9754804f973723d"
+    },
+    {
+      "id": "turbo-attacker",
+      "repository": "SaFo-Lab/AutoDAN-Turbo",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "framework/attacker.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/SaFo-Lab/AutoDAN-Turbo@main/framework/attacker.py",
+      "url": "https://github.com/SaFo-Lab/AutoDAN-Turbo/blob/main/framework/attacker.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "de2568a0bac922610ca79a80878a7edb27affd58a77284825a4ca53efa1e5b81"
+    },
+    {
+      "id": "turbo-pipeline",
+      "repository": "SaFo-Lab/AutoDAN-Turbo",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "pipeline.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/SaFo-Lab/AutoDAN-Turbo@main/pipeline.py",
+      "url": "https://github.com/SaFo-Lab/AutoDAN-Turbo/blob/main/pipeline.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "6d86420adea23b76d669f8ac02ff8205a9228c4833c5d17dc75f8a64d9519331"
+    },
+    {
+      "id": "reasoning-best",
+      "repository": "SaFo-Lab/AutoDAN-Reasoning",
+      "revision": "95774e79e93a25a3944328f318331766d68723b9",
+      "revision_kind": "commit",
+      "path": "framework_autodan_reasoning/attacker_best_of_n.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/SaFo-Lab/AutoDAN-Reasoning@95774e79e93a25a3944328f318331766d68723b9/framework_autodan_reasoning/attacker_best_of_n.py",
+      "url": "https://github.com/SaFo-Lab/AutoDAN-Reasoning/blob/95774e79e93a25a3944328f318331766d68723b9/framework_autodan_reasoning/attacker_best_of_n.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "cda252df03c9e8c313de2fb23a0c6b803a9404c4394ea92936adbd2a9553fe70"
+    },
+    {
+      "id": "reasoning-beam",
+      "repository": "SaFo-Lab/AutoDAN-Reasoning",
+      "revision": "95774e79e93a25a3944328f318331766d68723b9",
+      "revision_kind": "commit",
+      "path": "framework_autodan_reasoning/attacker_beam_search.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/SaFo-Lab/AutoDAN-Reasoning@95774e79e93a25a3944328f318331766d68723b9/framework_autodan_reasoning/attacker_beam_search.py",
+      "url": "https://github.com/SaFo-Lab/AutoDAN-Reasoning/blob/95774e79e93a25a3944328f318331766d68723b9/framework_autodan_reasoning/attacker_beam_search.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "1c262bb16ba5742387c4b152b88de70b5cdb7de67a9fdf4eed9549a6dead6cfb"
+    },
+    {
+      "id": "reasoning-attacker",
+      "repository": "SaFo-Lab/AutoDAN-Reasoning",
+      "revision": "95774e79e93a25a3944328f318331766d68723b9",
+      "revision_kind": "commit",
+      "path": "framework_autodan_reasoning/attacker_autodan_reasoning.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/SaFo-Lab/AutoDAN-Reasoning@95774e79e93a25a3944328f318331766d68723b9/framework_autodan_reasoning/attacker_autodan_reasoning.py",
+      "url": "https://github.com/SaFo-Lab/AutoDAN-Reasoning/blob/95774e79e93a25a3944328f318331766d68723b9/framework_autodan_reasoning/attacker_autodan_reasoning.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "15ac32f39d8eb4e327391e4344a55ef0d79539293e6bc7a84c63d87ddb794a38"
+    },
+    {
+      "id": "cipher-readme",
+      "repository": "RobustNLP/CipherChat",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "README.md",
+      "fetched_from": "https://raw.githubusercontent.com/RobustNLP/CipherChat/main/README.md",
+      "url": "https://github.com/RobustNLP/CipherChat/blob/main/README.md",
+      "evidence_kind": "official_readme",
+      "inspection_scope": "Official descriptions, settings or entry points only; not an optimizer implementation audit.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "2f54ce3cc768519daf36545b0e9496d0ba921e4b0e472a8746a6b6fdcda2fc1a"
+    },
+    {
+      "id": "cipher-main",
+      "repository": "RobustNLP/CipherChat",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "main.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/RobustNLP/CipherChat@main/main.py",
+      "url": "https://github.com/RobustNLP/CipherChat/blob/main/main.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "02fd57bb9e5e1533382beafb6c87a46d5c2edbf81ca2e2cd2cb34e24b4ff831e"
+    },
+    {
+      "id": "cipher-encoding",
+      "repository": "RobustNLP/CipherChat",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "encode_experts.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/RobustNLP/CipherChat@main/encode_experts.py",
+      "url": "https://github.com/RobustNLP/CipherChat/blob/main/encode_experts.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "8e65362e0dceb2e32c583f474a17de4faf3d08ca8e308dca5ddcedea6b4232c7"
+    },
+    {
+      "id": "gcg-format",
+      "repository": "llm-attacks/llm-attacks",
+      "revision": "098262edf85f807224e70ecd87b9d83716bf6b73",
+      "revision_kind": "commit",
+      "path": "llm_attacks/minimal_gcg/string_utils.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/llm-attacks/llm-attacks@098262edf85f807224e70ecd87b9d83716bf6b73/llm_attacks/minimal_gcg/string_utils.py",
+      "url": "https://github.com/llm-attacks/llm-attacks/blob/098262edf85f807224e70ecd87b9d83716bf6b73/llm_attacks/minimal_gcg/string_utils.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "d02d57c9908f4f37e6040c023dc8fcbba5067ad57a8c057df8395c94faf13446"
+    },
+    {
+      "id": "atla-format",
+      "repository": "QData/ALTA_Augmented_Adversarial_Trigger_Learning",
+      "revision": "b70ea26148c598fa7dfb06fc0c53058f4fbfa463",
+      "revision_kind": "commit",
+      "path": "llm_attacks/atla/string_utils.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/QData/ALTA_Augmented_Adversarial_Trigger_Learning@b70ea26148c598fa7dfb06fc0c53058f4fbfa463/llm_attacks/atla/string_utils.py",
+      "url": "https://github.com/QData/ALTA_Augmented_Adversarial_Trigger_Learning/blob/b70ea26148c598fa7dfb06fc0c53058f4fbfa463/llm_attacks/atla/string_utils.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "1aa41c64adf2f49c71da15073d6dcbcb1882652dd2aac847de1c28cc97069fb9"
+    },
+    {
+      "id": "advprompter-main",
+      "repository": "facebookresearch/advprompter",
+      "revision": "802a500c91f1dcd7c8b76869d3e39bf8e40ed7d7",
+      "revision_kind": "commit",
+      "path": "main.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/facebookresearch/advprompter@802a500c91f1dcd7c8b76869d3e39bf8e40ed7d7/main.py",
+      "url": "https://github.com/facebookresearch/advprompter/blob/802a500c91f1dcd7c8b76869d3e39bf8e40ed7d7/main.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "6d3eed84f686bca5bf9d103e19c877007e83d354c91fc16e64fe5ed8e00b19b1"
+    },
+    {
+      "id": "advprompter-sequence",
+      "repository": "facebookresearch/advprompter",
+      "revision": "802a500c91f1dcd7c8b76869d3e39bf8e40ed7d7",
+      "revision_kind": "commit",
+      "path": "sequence.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/facebookresearch/advprompter@802a500c91f1dcd7c8b76869d3e39bf8e40ed7d7/sequence.py",
+      "url": "https://github.com/facebookresearch/advprompter/blob/802a500c91f1dcd7c8b76869d3e39bf8e40ed7d7/sequence.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "d9e3b8d9a9482b47bc25982f9a6d7c9d41fb4669856eaf33fb47d958b81e5b71"
+    },
+    {
+      "id": "cold-readme",
+      "repository": "Yu-Fangxu/COLD-Attack",
+      "revision": "f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1",
+      "revision_kind": "commit",
+      "path": "README.md",
+      "fetched_from": "https://raw.githubusercontent.com/Yu-Fangxu/COLD-Attack/f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/README.md",
+      "url": "https://github.com/Yu-Fangxu/COLD-Attack/blob/f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/README.md",
+      "evidence_kind": "official_readme",
+      "inspection_scope": "Official descriptions, settings or entry points only; not an optimizer implementation audit.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "4fd5d71459438d2a631daf529f9435eedb20f8a4407cc6271423212ed85c6096"
+    },
+    {
+      "id": "ample-readme",
+      "repository": "OSU-NLP-Group/AmpleGCG",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "README.md",
+      "fetched_from": "https://raw.githubusercontent.com/OSU-NLP-Group/AmpleGCG/main/README.md",
+      "url": "https://github.com/OSU-NLP-Group/AmpleGCG/blob/main/README.md",
+      "evidence_kind": "official_readme",
+      "inspection_scope": "Official descriptions, settings or entry points only; not an optimizer implementation audit.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "317d43e56f5b84cdb3186532f8c3338e877eb69dc8c565da88687d0f48da53a7"
+    },
+    {
+      "id": "gasp-readme",
+      "repository": "TrustMLRG/GASP",
+      "revision": "45a4e4a8591a235f646369d9e0cc8d7b881f22b8",
+      "revision_kind": "commit",
+      "path": "README.md",
+      "fetched_from": "https://raw.githubusercontent.com/TrustMLRG/GASP/45a4e4a8591a235f646369d9e0cc8d7b881f22b8/README.md",
+      "url": "https://github.com/TrustMLRG/GASP/blob/45a4e4a8591a235f646369d9e0cc8d7b881f22b8/README.md",
+      "evidence_kind": "official_readme",
+      "inspection_scope": "Official descriptions, settings or entry points only; not an optimizer implementation audit.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "4d7a450ae85b0ac2cb98b603d2680ed10319c0594ff3cc7466462dc732792c79"
+    },
+    {
+      "id": "faster-readme",
+      "repository": "weiz0823/Faster-GCG",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "README.md",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/weiz0823/Faster-GCG@main/README.md",
+      "url": "https://github.com/weiz0823/Faster-GCG/blob/main/README.md",
+      "evidence_kind": "official_readme",
+      "inspection_scope": "Official descriptions, settings or entry points only; not an optimizer implementation audit.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "086858131f705723d309ebf65cfd9bad2962233c84e9768f7cb0d66ff7f1c78b"
+    },
+    {
+      "id": "cold-decoding",
+      "repository": "Yu-Fangxu/COLD-Attack",
+      "revision": "f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1",
+      "revision_kind": "commit",
+      "path": "cold_decoding.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/Yu-Fangxu/COLD-Attack@f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/cold_decoding.py",
+      "url": "https://github.com/Yu-Fangxu/COLD-Attack/blob/f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/cold_decoding.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "ed694c4fde33bbdfc285eeef0326897f180fd29c3ab1d3f147f138eb2bfd48d3"
+    },
+    {
+      "id": "cold-control",
+      "repository": "Yu-Fangxu/COLD-Attack",
+      "revision": "f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1",
+      "revision_kind": "commit",
+      "path": "attack_control.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/Yu-Fangxu/COLD-Attack@f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/attack_control.py",
+      "url": "https://github.com/Yu-Fangxu/COLD-Attack/blob/f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/attack_control.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "d60eb5e14dc850bb7f713eaca816fad806d19cb0170ae51709eae985ef6fe89e"
+    },
+    {
+      "id": "cold-insertion",
+      "repository": "Yu-Fangxu/COLD-Attack",
+      "revision": "f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1",
+      "revision_kind": "commit",
+      "path": "decoding_control.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/Yu-Fangxu/COLD-Attack@f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/decoding_control.py",
+      "url": "https://github.com/Yu-Fangxu/COLD-Attack/blob/f7ffcb0f0e3b56466e7f4fb764f67f7710435eb1/decoding_control.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "64c5ec0982814e022b1db47ff901bf06fa0987f5f9936413f49872d09be88eac"
+    },
+    {
+      "id": "gasp-inference",
+      "repository": "TrustMLRG/GASP",
+      "revision": "45a4e4a8591a235f646369d9e0cc8d7b881f22b8",
+      "revision_kind": "commit",
+      "path": "helper/inference.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/TrustMLRG/GASP@45a4e4a8591a235f646369d9e0cc8d7b881f22b8/helper/inference.py",
+      "url": "https://github.com/TrustMLRG/GASP/blob/45a4e4a8591a235f646369d9e0cc8d7b881f22b8/helper/inference.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "09159501d1a02d2e245558d1b12c0f24469f8590b1e3e7b4fbb19d1b8b743de9"
+    },
+    {
+      "id": "gasp-lbo",
+      "repository": "TrustMLRG/GASP",
+      "revision": "45a4e4a8591a235f646369d9e0cc8d7b881f22b8",
+      "revision_kind": "commit",
+      "path": "helper/lbo.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/TrustMLRG/GASP@45a4e4a8591a235f646369d9e0cc8d7b881f22b8/helper/lbo.py",
+      "url": "https://github.com/TrustMLRG/GASP/blob/45a4e4a8591a235f646369d9e0cc8d7b881f22b8/helper/lbo.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "daafbd41447b6de68b3eb69ae9d1dbd967bca215a28f456eda149db312dca564"
+    },
+    {
+      "id": "eclipse-code",
+      "repository": "lenijwp/ECLIPSE",
+      "revision": "4751904cb15da1877d2c50415e83986c78f41e77",
+      "revision_kind": "commit",
+      "path": "Eclipse.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/lenijwp/ECLIPSE@4751904cb15da1877d2c50415e83986c78f41e77/Eclipse.py",
+      "url": "https://github.com/lenijwp/ECLIPSE/blob/4751904cb15da1877d2c50415e83986c78f41e77/Eclipse.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "32241d86a055bef31c589736713e08d51db8c65ec6f431904a0995cb61c6d39b"
+    },
+    {
+      "id": "degcg-readme",
+      "repository": "Waffle-Liu/DeGCG",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "README.md",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/Waffle-Liu/DeGCG@main/README.md",
+      "url": "https://github.com/Waffle-Liu/DeGCG/blob/main/README.md",
+      "evidence_kind": "official_readme",
+      "inspection_scope": "Official descriptions, settings or entry points only; not an optimizer implementation audit.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "0df2c6b7184afd121615e2f653510a5afcfdf4f47a3dca1b00ecb77baee922b9"
+    },
+    {
+      "id": "degcg-code",
+      "repository": "Waffle-Liu/DeGCG",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/Waffle-Liu/DeGCG@main/baselines/gcg_ensemble/gcg_ensemble.py",
+      "url": "https://github.com/Waffle-Liu/DeGCG/blob/main/baselines/gcg_ensemble/gcg_ensemble.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "7b65d4ed2143f26fe8580292aac5ea6f9a2ea47bcc40b5f91326a5ffb46cf6ed"
+    },
+    {
+      "id": "faster-entry",
+      "repository": "weiz0823/Faster-GCG",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "tools/main.py",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/weiz0823/Faster-GCG@main/tools/main.py",
+      "url": "https://github.com/weiz0823/Faster-GCG/blob/main/tools/main.py",
+      "evidence_kind": "source_code",
+      "inspection_scope": "Functions and call paths relevant to the reported assembly findings; not a whole-repository correctness certification.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "a8098bef1649a6cc08556081eb71bc678ce3597b763c35b21e45a0f754d05042"
+    },
+    {
+      "id": "ample-launch",
+      "repository": "OSU-NLP-Group/AmpleGCG",
+      "revision": "main",
+      "revision_kind": "unlocked_branch",
+      "path": "llmattack/experiments/launch_scripts/run_overgenerate_indiv_query_indiv_model_llama2-chat.sh",
+      "fetched_from": "https://cdn.jsdelivr.net/gh/OSU-NLP-Group/AmpleGCG@main/llmattack/experiments/launch_scripts/run_overgenerate_indiv_query_indiv_model_llama2-chat.sh",
+      "url": "https://github.com/OSU-NLP-Group/AmpleGCG/blob/main/llmattack/experiments/launch_scripts/run_overgenerate_indiv_query_indiv_model_llama2-chat.sh",
+      "evidence_kind": "entry_script",
+      "inspection_scope": "Official descriptions, settings or entry points only; not an optimizer implementation audit.",
+      "content_retained_in_product": false,
+      "sha256_text_utf8": "8222e34f216f27a26d52014254952167a925e1717f6fced32c0f54e0ed150ec4"
+    }
+  ],
+  "paper_evidence": [
+    {
+      "method": "many_shot",
+      "path": "2024 - Anthropic - ManyShotJailbreaking/Paper.pdf",
+      "scope": "Sections 2 and 3.3; source implementation not located and verified."
+    },
+    {
+      "method": "cold_attack",
+      "url": "https://arxiv.org/abs/2402.08679",
+      "path": "2024 - Yu - COLD-Attack/Paper.pdf",
+      "scope": "Attack settings and left-right coherence construction, checked against official decoding path."
+    },
+    {
+      "method": "gasp",
+      "url": "https://arxiv.org/abs/2411.14133",
+      "path": "2024 - Basani - GASP/src/sec/3_proj.tex",
+      "scope": "Suffix construction and latent optimization mechanism, also checked against code."
+    },
+    {
+      "method": "eclipse",
+      "path": "2024 - Jiang - ECLIPSE/src/src/design.tex",
+      "scope": "Suffix generation and feedback mechanism; official source inspected separately."
+    },
+    {
+      "method": "de_gcg",
+      "url": "https://arxiv.org/html/2408.14866",
+      "scope": "Partial HTML retrieved; verified author-provided GitHub link to Waffle-Liu/DeGCG. Not a complete HTML copy."
+    },
+    {
+      "method": "red_teaming",
+      "url": "https://aclanthology.org/2022.emnlp-main.225/",
+      "scope": "Paper identity verified. Exact original generation prompts remain unverified due to incomplete PDF/HTML retrieval.",
+      "status": "unverified_prompt_protocol"
+    }
+  ],
+  "validation": {
+    "existing_unit_tests": {
+      "command": ".venv/bin/python -m unittest discover -s tests -v",
+      "passed": 35,
+      "failed": 0
+    },
+    "offline_contract_probes": "See report validation table; benign fixed-return generators only.",
+    "algorithm_source_modified": false,
+    "differential_checks": {
+      "autodan_single_paragraph_equal_length_cases": 300,
+      "caesar_default_codepoints": 133,
+      "scope": "Reviewed pure crossover function and CaesarExpert class extracted by AST; upstream module bodies and imports were not executed."
+    }
+  },
+  "limitations": [
+    "Commit snapshots do not establish identity with the original paper's experimental revision.",
+    "Unlocked branches may change; inspected text hashes are recorded, but they do not identify a repository commit. Source bodies are not vendored into the product.",
+    "AmpleGCG and Faster-GCG internals were not audited beyond documentation and entry points.",
+    "Perez original prompt protocol and Many-shot official implementation remain unverified.",
+    "No full-method implementation is certified by this audit."
+  ],
+  "hash_definition": "SHA-256 of the inspected tool-returned source text encoded as UTF-8. This identifies the inspected text, not a verified original HTTP byte stream."
+}

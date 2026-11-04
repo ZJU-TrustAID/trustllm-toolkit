@@ -1,0 +1,499 @@
+/* Signal Desk 真后端工作台（对话式）：发送提示词 → 模型回答 → 选方法 → 参数 → 结果卡片 */
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const PRESET_PROMPTS = [
+  "请介绍蓝鲸的食性。",
+  "阿根廷一共赢过几次世界杯？",
+  "纸是谁发明的？",
+  "给爱尔兰代码 999 的国家是哪里？",
+];
+
+const TABS = {
+  whitebox: {
+    title: "白盒检测", panelTitle: "白盒检测方法", runLabel: "开始检测",
+    banner: "利用模型内部状态（词元概率、熵、隐藏层表征）估计置信度，适合白盒开源模型。",
+    methods: {
+      mtp: { title: "最小词元概率", params: {} },
+      lntp: { title: "长度归一化词元概率", params: {} },
+      token_entropy: { title: "词元熵", params: {} },
+      eigenscore: { title: "EigenScore", params: {} },
+      effective_rank: { title: "Effective Rank", params: {} },
+    },
+    groups: [
+      { title: "基于词元概率检测", keys: ["mtp", "lntp"] },
+      { title: "基于熵值检测", keys: ["token_entropy"] },
+      { title: "基于表征分析检测", keys: ["eigenscore", "effective_rank"] },
+    ],
+  },
+  blackbox: {
+    title: "黑盒检测", panelTitle: "黑盒检测方法", runLabel: "开始检测",
+    banner: "只依赖输入与输出：采样一致性、证据比对、模型自评估，适合黑盒闭源模型。",
+    methods: {
+      p_true: { title: "P(True)", params: {} },
+      exact_match: { title: "精准匹配率", params: {} },
+      response_cosine: { title: "余弦相似度", params: {} },
+      semantic_entropy: { title: "语义熵", params: {} },
+      selfcheck_ngram: { title: "SelfCheck-Ngram", params: { n: { label: "n-gram", type: "int", def: 1 } } },
+      selfcheck_nli: { title: "SelfCheck-NLI", params: {} },
+      bertscore: { title: "SelfCheck-BERTScore", params: {} },
+    },
+    groups: [
+      { title: "基于模型自评估检测", keys: ["p_true"] },
+      { title: "基于一致性检测", keys: ["exact_match", "response_cosine", "semantic_entropy", "selfcheck_ngram", "selfcheck_nli", "bertscore"] },
+    ],
+  },
+  mitigation: {
+    title: "缓解方法", panelTitle: "幻觉缓解方法", runLabel: "开始缓解",
+    banner: "推理时干预解码、激活或后处理修正，改变模型输出。",
+    methods: {
+      dola: { title: "DoLa 层间对比解码", params: { relative_top: { label: "relative_top", type: "float", def: 0.1 } } },
+      iti: { title: "ITI 推理激活干预", params: { probe: { label: "probe 产物路径", type: "text", def: "" }, top_k: { label: "top_k", type: "int", def: 48 }, alpha: { label: "alpha", type: "float", def: 15.0 } } },
+      cad: { title: "CAD 上下文对比解码", params: { alpha: { label: "alpha", type: "float", def: 0.5 }, filter_top_p: { label: "filter_top_p", type: "float", def: 1.0 } } },
+      cove: { title: "CoVe 验证链", params: { max_questions: { label: "验证问题数", type: "int", def: 6 }, max_answer_tokens: { label: "单答长度", type: "int", def: 96 } } },
+    },
+    groups: [
+      { title: "事实性增强解码", keys: ["dola", "iti"] },
+      { title: "忠实性增强解码", keys: ["cad"] },
+      { title: "事后修正", keys: ["cove"] },
+    ],
+  },
+};
+
+const state = {
+  tab: "whitebox",
+  method: null,
+  response: null,       // 最近一次生成的模型回答
+  samples: null,        // 黑盒文本样本
+  hiddenSampleKey: null, // 表征分析的抽样缓存键
+  busy: false,
+};
+
+/* ---------------- 基础 UI ---------------- */
+function setBusy(busy) {
+  state.busy = busy;
+  for (const id of ["rd-btn-generate", "rd-btn-run", "rd-btn-sample"]) $(id).disabled = busy;
+}
+
+/* 回答区（固定高度内滚）：用户消息回显 / 模型回答 */
+function msgAppend(node) {
+  const empty = document.querySelector("#rd-msglist .rd-empty");
+  if (empty) empty.remove();
+  $("rd-msglist").append(node);
+  $("rd-msglist").scrollTop = $("rd-msglist").scrollHeight;
+}
+function addUserMsg(text) {
+  msgAppend(el2("div", { class: "rd-msg user" }, esc(text)));
+}
+function beginAssistantMsg() {
+  const node = el2("div", { class: "rd-msg assistant" }, "生成中…");
+  msgAppend(node);
+  return node;
+}
+function el2(tag, attrs, html) {
+  const node = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+  if (html !== undefined) node.innerHTML = html;
+  return node;
+}
+
+/* 结果显示在输入框下方，随页面滚动 */
+function showResult(html) {
+  const box = $("rd-result");
+  box.style.display = "";
+  box.append(el2("div", { class: "rd-result-card" }, html));
+  box.lastElementChild.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+function showError(message) { showResult(`<div class="rd-error">${esc(message)}</div>`); }
+
+async function api(action, payload) {
+  const response = await fetch(`api/real/${action}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload || {}),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+  return data;
+}
+
+/* ---------------- 模型与辅助模型 ----------------
+   模型/辅助模型来源由 hub 的章节参数卡片统一配置（服务启动时注入），
+   首次真实调用时自动懒加载；这里只把「当前方法需要哪些辅助模型」
+   实时同步给 hub 页面，用于启用/锁定卡片里对应的输入框。 */
+const AUX_NEEDS = {
+  nli: ["semantic_entropy", "selfcheck_nli"],
+  embedding: ["response_cosine"],
+};
+
+function postModelNeeds() {
+  if (window.parent === window) return;
+  const needs = {};
+  for (const [role, methods] of Object.entries(AUX_NEEDS)) {
+    needs[role] = state.tab === "blackbox" && methods.includes(state.method);
+  }
+  window.parent.postMessage({ type: "trustllm-hub-model-needs", needs }, "*");
+}
+
+function toast(message) {
+  const node = el2("div", { class: "rd-toast" }, esc(message));
+  document.body.append(node);
+  setTimeout(() => node.remove(), 2400);
+}
+
+/* ---------------- 生成（对话式） ---------------- */
+async function generate() {
+  const prompt = $("rd-prompt").value.trim();
+  if (!prompt) return toast("请先输入提示词");
+  addUserMsg(prompt);
+  const bubble = beginAssistantMsg();
+  setBusy(true);
+  let acc = "";
+  try {
+    const response = await fetch("api/real/generate_stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, max_new_tokens: parseInt($("rd-max-tokens").value || "128", 10) }),
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || `HTTP ${response.status}`);
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "", final = null;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const chunk = JSON.parse(line);
+        if (chunk.error) throw new Error(chunk.error);
+        if (chunk.token !== undefined) {
+          acc += chunk.token;
+          bubble.textContent = acc;
+          $("rd-msglist").scrollTop = $("rd-msglist").scrollHeight; // 回答区滚动
+        }
+        if (chunk.done) final = chunk;
+      }
+    }
+    if (!final) throw new Error("生成流意外结束");
+    state.response = final.response;
+    bubble.innerHTML =
+      `${esc(final.response)}<div class="rd-note">共 ${final.num_tokens} tokens · ${final.latency_seconds}s</div>`;
+    $("rd-run-hint").textContent = "模型已回答（见上方回答区）。选择右侧方法并填写参数后运行。";
+  } catch (err) {
+    bubble.innerHTML = `<span style="color:#c0392b">生成失败：${esc(err.message)}</span>`;
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* ---------------- 抽样（黑盒 / 表征分析统一） ---------------- */
+function samplingMode() {
+  if (state.tab === "blackbox") return "text";
+  if (state.tab === "whitebox" && (state.method === "eigenscore" || state.method === "effective_rank")) return "hidden";
+  return null;
+}
+function updateSamplingCard() {
+  const mode = samplingMode();
+  $("rd-sampling").style.display = mode ? "" : "none";
+  $("rd-layer-wrap").style.display = mode === "hidden" ? "" : "none";
+  $("rd-sampling-title").textContent = mode === "hidden"
+    ? "抽样（表征分析：n 条独立回答 → 隐状态矩阵）"
+    : "抽样（一致性方法需要多个独立样本）";
+}
+
+async function sample() {
+  const prompt = $("rd-prompt").value.trim();
+  if (!prompt) return toast("请先输入提示词");
+  const mode = samplingMode();
+  if (!mode) return;
+  setBusy(true);
+  $("rd-samples").textContent = "抽样中…";
+  try {
+    if (mode === "hidden") {
+      const data = await api("sample", {
+        mode: "hidden", prompt,
+        n: parseInt($("rd-num-samples").value || "5", 10),
+        layer: parseInt($("rd-hidden-layer").value || "-1", 10),
+        max_new_tokens: parseInt($("rd-max-tokens").value || "128", 10),
+      });
+      state.hiddenSampleKey = data.sample_key;
+      renderSampleList(data.texts);
+    } else {
+      const texts = await api("sample", {
+        mode: "text", prompt,
+        n: parseInt($("rd-num-samples").value || "5", 10),
+        max_new_tokens: parseInt($("rd-max-tokens").value || "64", 10),
+      });
+      state.samples = texts.texts;
+      renderSampleList(texts.texts);
+    }
+  } catch (err) {
+    $("rd-samples").textContent = "抽样失败：" + err.message;
+  } finally { setBusy(false); }
+}
+function renderSampleList(texts) {
+  $("rd-samples").innerHTML = texts.map((s, i) =>
+    `<div class="rd-note"><b>样本 ${i + 1}</b>：${esc(s.slice(0, 120))}${s.length > 120 ? "…" : ""}</div>`).join("");
+}
+
+/* ---------------- 方法与参数 ---------------- */
+function renderMethods() {
+  const tab = TABS[state.tab];
+  const box = $("rd-methods");
+  box.innerHTML = `<p class="rd-label">${tab.panelTitle}</p>`;
+  if (tab.banner) box.append(el2("div", { class: "rd-banner" }, esc(tab.banner)));
+  if (!state.method || !tab.methods[state.method] || tab.methods[state.method].disabled) state.method = null;
+  for (const group of tab.groups) {
+    box.append(el2("p", { class: "rd-group-title" }, esc(group.title)));
+    for (const key of group.keys) {
+      const spec = tab.methods[key];
+      const node = document.createElement("div");
+      node.className = "rd-method" + (state.method === key ? " selected" : "") + (spec.disabled ? " disabled" : "");
+      node.innerHTML = esc(spec.title) +
+        (spec.disabled ? `<span class="rd-sub">${esc(spec.disabled)}</span>` : "");
+      node.addEventListener("click", () => {
+        if (spec.disabled) { toast(spec.disabled); return; }
+        state.method = key;
+        renderMethods(); renderParams(); updateSamplingCard(); postModelNeeds();
+        // 切换方法即清空上一次的检测结果，避免叠加
+        const box = $("rd-result");
+        box.style.display = "none";
+        box.innerHTML = "";
+      });
+      box.append(node);
+    }
+  }
+  if (!state.method) box.append(el2("div", {}, `<p class="rd-hint">点击方法后填写参数。</p>`));
+}
+
+function renderParams() {
+  const tab = TABS[state.tab];
+  const box = $("rd-params");
+  box.innerHTML = "";
+  $("rd-context-card").style.display = state.tab === "mitigation" ? "" : "none";
+  $("rd-btn-run").textContent = tab.runLabel;
+  if (!state.method) { box.innerHTML = `<p class="rd-hint">未选择方法。</p>`; return; }
+  const spec = tab.methods[state.method];
+  const params = spec.params || {};
+  const stored = JSON.parse(localStorage.getItem(`rd.params.${state.tab}.${state.method}`) || "{}");
+  if (!Object.keys(params).length) {
+    box.innerHTML = `<p class="rd-label">「${esc(spec.title)}」无额外参数</p>` +
+      (tab.methods[state.method].sub.includes("需先抽样") ? `<p class="rd-hint">请在下方抽样卡片完成抽样（样本数 / 隐状态层），再运行。</p>` : "");
+    return;
+  }
+  box.innerHTML = `<p class="rd-label">「${esc(spec.title)}」参数</p>`;
+  for (const [key, p] of Object.entries(params)) {
+    const value = stored[key] !== undefined ? stored[key] : p.def;
+    const id = `rd-p-${key}`;
+    const wrap = document.createElement("label");
+    wrap.className = "field";
+    if (p.type === "int") wrap.innerHTML = `${esc(p.label)}<input type="number" id="${id}" step="1" value="${esc(value)}" />`;
+    else if (p.type === "float") wrap.innerHTML = `${esc(p.label)}<input type="number" step="0.05" id="${id}" value="${esc(value)}" />`;
+    else wrap.innerHTML = `${esc(p.label)}<textarea id="${id}" rows="2">${esc(value)}</textarea>`;
+    box.append(wrap);
+  }
+}
+
+function collectParams() {
+  const tab = TABS[state.tab];
+  if (!state.method) return null;
+  const params = {};
+  for (const [key, p] of Object.entries((tab.methods[state.method].params || {}))) {
+    const node = $(`rd-p-${key}`);
+    if (!node) continue;
+    const raw = node.value.trim();
+    if (raw === "" && p.type === "text") continue;
+    params[key] = p.type === "int" ? parseInt(raw || String(p.def), 10)
+      : p.type === "float" ? parseFloat(raw || String(p.def)) : raw;
+  }
+  localStorage.setItem(`rd.params.${state.tab}.${state.method}`, JSON.stringify(params));
+  return params;
+}
+
+/* ---------------- 运行 ---------------- */
+async function run() {
+  const tab = TABS[state.tab];
+  const prompt = $("rd-prompt").value.trim();
+  if (!prompt) return toast("请先在下方输入并发送提示词");
+  if (!state.method) return toast("请先在右侧选择方法");
+  if (!state.response) return toast("请先发送提示词，等模型生成回答");
+  const params = collectParams();
+
+  if (state.tab === "blackbox" && !state.samples) {
+    setBusy(false);
+    const num = $("rd-num-samples").value || "5";
+    return showError(`黑盒一致性方法需要多个独立样本。请先点击「抽样」按钮（当前设置：${num} 条），再运行检测。`);
+  }
+  if (state.tab === "whitebox" && (state.method === "eigenscore" || state.method === "effective_rank") && !state.hiddenSampleKey) {
+    setBusy(false);
+    return showError("表征分析方法需要先抽样：请点击抽样卡片里的「抽样」按钮，生成 n 条独立回答后再运行。");
+  }
+
+  setBusy(true);
+  try {
+    if (state.tab === "whitebox") {
+      const data = await api("detect", {
+        task: "whitebox", method: state.method, prompt, params,
+        sample_key: state.hiddenSampleKey || null,
+      });
+      renderDetection(data, tab);
+    } else if (state.tab === "blackbox") {
+      const data = await api("detect", {
+        task: "blackbox", method: state.method, prompt, response: state.response, samples: state.samples, params,
+      });
+      renderDetection(data, tab);
+    } else {
+      const data = await api("mitigate", {
+        method: state.method, prompt,
+        context: $("rd-context").value.trim() || null, params,
+      });
+      renderMitigation(data);
+    }
+  } catch (err) {
+    showError(tab.runLabel + "失败：" + err.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* ---------------- 结果渲染 ---------------- */
+function renderDetection(data, tab) {
+  const f = data.final;
+  const badge = f.is_hallucinated
+    ? '<span class="rd-badge bad">判定：幻觉风险较高 (risk ≥ 0.5)</span>'
+    : '<span class="rd-badge ok">判定：风险较低 (risk < 0.5)</span>';
+  let html = `
+    <div class="eyebrow">${esc(tab.title)} · ${esc(f.method)}</div>
+    <div class="rd-final">
+      <div><div class="big-num">${f.score.toFixed(4)}</div><div class="big-label">score（置信度）</div></div>
+      <div><div class="big-num">${f.risk.toFixed(4)}</div><div class="big-label">risk（幻觉风险）</div></div>
+      ${badge}
+      <div><div class="big-num" style="font-size:16px">${data.latency_seconds}s</div><div class="big-label">耗时</div></div>
+    </div>`;
+  const inter = data.intermediates || {};
+  if (inter.tokens) {
+    html += `<div class="rd-section-title">逐 token 数据</div><table class="rd-table"><tr><th>#</th><th>token</th><th>log p</th><th>top-1 备选</th></tr>`;
+    inter.tokens.forEach((token, i) => {
+      const lp = inter.token_logprobs[i];
+      const lpText = lp == null ? "-∞" : Number(lp).toFixed(3);
+      const triples = (inter.top_logprobs && inter.top_logprobs[i]) || [];
+      let top = null;
+      for (const triple of triples) {
+        const logp = triple && triple[2];
+        if (logp != null && (top === null || logp > top[2])) top = triple;
+      }
+      const topText = top ? `${esc(top[1])} (${top[2] == null ? "-∞" : Number(top[2]).toFixed(2)})` : "-";
+      html += `<tr><td>${i + 1}</td><td>${esc(token)}</td><td>${lpText}</td><td>${topText}</td></tr>`;
+    });
+    html += "</table>";
+  }
+  if (inter.per_token_entropy) {
+    html += `<p class="rd-note">平均 entropy（=-log p）: <b>${inter.mean_entropy}</b></p>`;
+  }
+  if (inter.note) html += `<p class="rd-note">${esc(inter.note)}</p>`;
+  if (inter.sentences) {
+    html += `<div class="rd-section-title">逐句风险</div><table class="rd-table"><tr><th>句子</th><th>risk</th></tr>`;
+    inter.sentences.forEach((sentence, i) => {
+      html += `<tr><td>${esc(sentence)}</td><td>${(inter.sentence_risk[i] || 0).toFixed(4)}</td></tr>`;
+    });
+    html += `</table>`;
+  }
+  if (inter.effective_rank !== undefined) {
+    html += `<div class="rd-section-title">谱分析</div>
+      <table class="rd-table">
+        <tr><th>有效秩 effective rank</th><td>${inter.effective_rank}</td></tr>
+        <tr><th>谱熵 spectral entropy</th><td>${inter.spectral_entropy}</td></tr>
+        <tr><th>Gram 特征值谱</th><td>${(inter.eigenvalues_gram || []).join(", ")}</td></tr>
+      </table>`;
+  }
+  if (inter.samples) {
+    html += `<div class="rd-section-title">使用的样本（${inter.samples.length} 条）</div>`;
+    html += inter.samples.map((s, i) => `<p class="rd-note"><b>${i + 1}.</b> ${esc(s.slice(0, 90))}${s.length > 90 ? "…" : ""}</p>`).join("");
+  }
+  showResult(html);
+}
+
+function renderMitigation(data) {
+  let html = `
+    <div class="eyebrow">缓解方法 · ${esc(data.method)}</div>
+    <div class="rd-final">
+      <div><div class="big-num" style="font-size:16px">${data.latency_seconds}s</div><div class="big-label">耗时</div></div>
+    </div>
+    <div class="rd-section-title">基线回答（未缓解）</div>
+    <div class="rd-response">${esc(data.baseline || "（空）")}</div>
+    <div class="rd-section-title" style="margin-top:12px">缓解后回答</div>
+    <div class="rd-response" style="border-left-color: var(--deep)">${esc(data.mitigated || "（空）")}</div>`;
+  if (data.warnings && data.warnings.length) {
+    html += `<p class="rd-note">⚠ ${esc(data.warnings.join("；"))}</p>`;
+  }
+  if (data.trace && Object.keys(data.trace).length) {
+    html += `<div class="rd-section-title">方法轨迹（trace）</div><table class="rd-table">`;
+    for (const [key, value] of Object.entries(flatten(data.trace))) {
+      html += `<tr><td>${esc(key)}</td><td>${esc(shorten(value))}</td></tr>`;
+    }
+    html += `</table>`;
+  }
+  showResult(html);
+}
+function flatten(obj, prefix) {
+  const out = {};
+  for (const [key, value] of Object.entries(obj || {})) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (value && typeof value === "object" && !Array.isArray(value)) Object.assign(out, flatten(value, path));
+    else out[path] = Array.isArray(value) ? JSON.stringify(value) : value;
+  }
+  return out;
+}
+function shorten(value) {
+  const text = String(value);
+  return text.length > 90 ? text.slice(0, 89) + "…" : text;
+}
+
+/* ---------------- 初始化 ---------------- */
+function switchTab(tab) {
+  state.tab = tab;
+  state.method = null;
+  document.querySelectorAll(".tut-page-tab").forEach((node) => {
+    node.classList.toggle("is-active", node.dataset.tab === tab);
+  });
+  // 切换白盒/黑盒/缓解标签同样清空上一次的检测结果
+  const box = $("rd-result");
+  box.style.display = "none";
+  box.innerHTML = "";
+  renderMethods();
+  renderParams();
+  updateSamplingCard();
+  postModelNeeds();
+}
+
+function init() {
+  document.querySelectorAll(".tut-page-tab").forEach((node) => {
+    node.addEventListener("click", () => switchTab(node.dataset.tab));
+  });
+  $("rd-btn-generate").addEventListener("click", generate);
+  $("rd-btn-sample").addEventListener("click", sample);
+  $("rd-btn-run").addEventListener("click", run);
+  $("rd-prompt-preset").addEventListener("change", () => {
+    if ($("rd-prompt-preset").value) $("rd-prompt").value = $("rd-prompt-preset").value;
+  });
+  $("rd-prompt").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); generate(); }
+  });
+  const preset = $("rd-prompt-preset");
+  preset.append(new Option("选择预设提示词…", ""));
+  for (const p of PRESET_PROMPTS) preset.append(new Option(p, p));
+  renderMethods();
+  renderParams();
+  updateSamplingCard();
+  postModelNeeds();
+}
+
+init();

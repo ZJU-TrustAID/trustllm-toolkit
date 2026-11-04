@@ -1,0 +1,9 @@
+{
+    "backend": "postgres",
+    "host": "127.0.0.1",
+    "user": "postgres",
+    "password": "change-me",
+    "database": "marksec",
+    "port": 5432,
+    "connect_timeout": 30
+}

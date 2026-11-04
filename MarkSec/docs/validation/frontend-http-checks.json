@@ -1,0 +1,8 @@
+{
+  "preset_page": 200,
+  "toolkit": 200,
+  "api/toolkit/capabilities": 200,
+  "unsupported_live_attack": 422,
+  "same_origin_post_forwarded": 422,
+  "cross_origin_post": 403
+}

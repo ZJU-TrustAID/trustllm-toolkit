@@ -1,0 +1,13 @@
+name: experimental_hidden_state
+threshold: 0.5
+aggregation: mean
+scorers:
+  - name: eigenscore
+    enabled: true
+    layer: -1
+    pooling: last_token
+  - name: effective_rank
+    enabled: true
+    layer: -1
+    pooling: mean_token
+

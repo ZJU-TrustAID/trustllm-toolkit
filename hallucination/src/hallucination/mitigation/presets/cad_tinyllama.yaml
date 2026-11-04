@@ -1,0 +1,13 @@
+name: cad_tinyllama
+method: cad
+model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+backend: hf
+dtype: bfloat16
+device: cuda
+requires_context: true
+generation:
+  max_new_tokens: 128
+  do_sample: false
+method_args:
+  alpha: 0.5
+  context_template: chat

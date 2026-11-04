@@ -1,0 +1,12 @@
+{
+  "ref_model_name": null,
+  "k_top_tokens": 10,
+  "alpha_smoothness": 1.0,
+  "watermark_name": "KGW",
+  "watermark_type": "distortionary",
+  "confidence_norm_samples_N": 200,
+  "confidence_norm_num_bins": 100,
+  "max_new_tokens": 200,
+  "prompt_max_length": 512,
+  "device": "auto"
+}

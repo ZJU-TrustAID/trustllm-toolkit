@@ -1,0 +1,17 @@
+{
+    "lex_diversity": 60,
+    "order_diversity": 0,
+    "sent_interval": 1,
+    "torch_dtype": "bfloat16",
+    "model_path": "kalpeshk2011/dipper-paraphraser-xxl",
+    "tokenizer_path": "google/t5-v1_1-xl",
+    "model_requirements": {
+        "paraphraser": "kalpeshk2011/dipper-paraphraser-xxl"
+    },
+    "tokenizer_requirements": {
+        "paraphraser": "google/t5-v1_1-xl"
+    },
+    "model_parallel_roles": [
+        "paraphraser"
+    ]
+}
