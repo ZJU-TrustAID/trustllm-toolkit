@@ -17,26 +17,28 @@
       </nav>
 
       <main class="tut-shell">
-        <!-- 左上：模型问答（跨两行，高度与右侧两框之和一致） -->
+        <!-- 左上：模型问答（跨两行；高度只跟随右侧两框，消息多了列表内部滚动） -->
         <section class="rd-panel rd-panel-chat">
-          <p class="rd-panel-title">模型问答</p>
-          <div class="rd-msglist" id="rd-msglist">
-            <div class="rd-empty">发送提示词后，模型回答显示在这里；回答会保留，供右侧方法反复检测。</div>
-          </div>
-
-          <div class="rd-inputbar">
-            <textarea id="rd-prompt" rows="2" placeholder="输入提示词，发送后模型开始回答…"></textarea>
-            <div class="rd-row">
-              <select id="rd-prompt-preset"></select>
-              <label class="rd-inline">生成长度 <input type="number" id="rd-max-tokens" value="128" min="16" max="512" step="16" /></label>
-              <span class="rd-flex"></span>
-              <button class="rd-btn rd-dark" id="rd-btn-generate">发送</button>
+          <div class="rd-chat-body">
+            <p class="rd-panel-title">模型问答</p>
+            <div class="rd-msglist" id="rd-msglist">
+              <div class="rd-empty">发送提示词后，模型回答显示在这里；回答会保留，供右侧方法反复检测。</div>
             </div>
-          </div>
 
-          <div class="rd-card" id="rd-context-card" style="display:none">
-            <p class="rd-label">上下文（CAD 冲突实验用，可留空）</p>
-            <textarea id="rd-context" rows="2" placeholder="例如：阿根廷在 1978、1986 和 2022 年赢得了世界杯。"></textarea>
+            <div class="rd-inputbar">
+              <textarea id="rd-prompt" rows="2" placeholder="输入提示词，发送后模型开始回答…"></textarea>
+              <div class="rd-row">
+                <select id="rd-prompt-preset"></select>
+                <label class="rd-inline">生成长度 <input type="number" id="rd-max-tokens" value="128" min="16" max="512" step="16" /></label>
+                <span class="rd-flex"></span>
+                <button class="rd-btn rd-dark" id="rd-btn-generate">发送</button>
+              </div>
+            </div>
+
+            <div class="rd-card" id="rd-context-card" style="display:none">
+              <p class="rd-label">上下文（CAD 冲突实验用，可留空）</p>
+              <textarea id="rd-context" rows="2" placeholder="例如：阿根廷在 1978、1986 和 2022 年赢得了世界杯。"></textarea>
+            </div>
           </div>
         </section>
 
@@ -62,16 +64,17 @@
           <div id="rd-params" class="rd-params"></div>
         </section>
 
-        <!-- 下方：输出结果（抽样出的独立回答） -->
-        <section class="rd-panel rd-panel-samples">
+        <!-- 下方：输出结果（抽样出的独立回答；仅需要抽样的方法显示） -->
+        <section class="rd-panel rd-panel-samples" id="rd-samples-panel" hidden>
           <p class="rd-panel-title">输出结果</p>
           <div id="rd-samples" class="rd-samples-empty">尚未抽样。</div>
         </section>
 
-        <!-- 最下：检测结果 -->
+        <!-- 最下：检测结果（按回答保存，标签切换同一条回答的不同方法结果） -->
         <section class="rd-panel rd-panel-result">
           <p class="rd-panel-title">检测结果</p>
-          <div class="rd-result-empty" id="rd-result-empty">选择右侧方法并填写参数后点击运行，检测结果展示在这里。</div>
+          <div class="rd-result-tabs" id="rd-result-tabs" hidden></div>
+          <div class="rd-result-empty" id="rd-result-empty">选择方法并运行后，检测结果展示在这里。</div>
           <div id="rd-result" class="rd-result" style="display:none"></div>
         </section>
       </main>

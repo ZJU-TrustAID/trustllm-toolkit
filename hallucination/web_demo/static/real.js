@@ -65,11 +65,60 @@ const TABS = {
 const state = {
   tab: "whitebox",
   method: null,
-  response: null,       // 最近一次生成的模型回答
+  records: [],          // 全部问答记录 [{ id, prompt, response, num_tokens, latency_seconds }]
+  targetId: null,       // 手动选中的回答记录 id；null = 默认使用最新一条
+  response: null,       // 当前目标回答（与 target 同步，供抽样等旧逻辑引用）
   samples: null,        // 黑盒文本样本
+  samplesPrompt: null,  // 样本对应的提问（用于校验样本与所选回答是否配套）
   hiddenSampleKey: null, // 表征分析的抽样缓存键
+  resultsByRecord: {},  // 每条回答的检测结果列表 { [recordId]: [{ title, html }] }
+  activeResultIdx: {},  // 每条回答当前查看的结果下标（切回时停在上次查看处）
   busy: false,
 };
+
+/* 生成完成：登记问答记录，绑定气泡点选，回到默认「检测最新」 */
+function commitAssistantAnswer(bubble, { prompt, response, num_tokens, latency_seconds }) {
+  const record = {
+    id: `rec-${state.records.length + 1}-${Date.now()}`,
+    prompt, response, num_tokens, latency_seconds,
+  };
+  state.records.push(record);
+  state.targetId = null; // 生成新回答后回到默认「检测最新」
+  state.response = response;
+  bubble.dataset.recordId = record.id;
+  const row = bubble.closest(".rd-msg-row");
+  row.classList.add("rd-targetable");
+  row.addEventListener("click", () => {
+    state.targetId = state.targetId === record.id ? null : record.id; // 再点一次取消，恢复检测最新
+    renderTargetMarks();
+  });
+  renderTargetMarks();
+}
+
+/* 当前检测/缓解目标：手动选中的回答优先，否则默认最新一条 */
+function currentTarget() {
+  if (state.targetId) return state.records.find((r) => r.id === state.targetId) || null;
+  return state.records[state.records.length - 1] || null;
+}
+
+/* 回答选中态：手动选中的气泡打勾高亮；未手动选时默认目标为最新一条 */
+function renderTargetMarks() {
+  const latest = state.records[state.records.length - 1];
+  document.querySelectorAll("#rd-msglist .rd-msg-row").forEach((row) => {
+    const bubble = row.querySelector(".rd-msg.assistant");
+    const pick = row.querySelector(".rd-pick");
+    if (!bubble || !pick || !bubble.dataset.recordId) return;
+    const manual = state.targetId === bubble.dataset.recordId;
+    row.classList.toggle("rd-picked", manual);
+    row.classList.toggle("rd-latest", !manual && !!latest && latest.id === bubble.dataset.recordId);
+  });
+  const hint = $("rd-run-hint");
+  const target = currentTarget();
+  if (!target) hint.textContent = "先在左侧发送提示词，再选择方法运行。";
+  else if (state.targetId) hint.textContent = `将检测/缓解你选中的第 ${state.records.indexOf(target) + 1} 轮回答；再次点击该气泡取消，恢复为检测最新。`;
+  else hint.textContent = `默认将检测/缓解最新一次回答（第 ${state.records.length} 轮）；点击任意模型回答气泡可改选。`;
+  renderResultsPanel(); // 目标回答变化 → 结果面板随之切换到该回答的结果集
+}
 
 /* ---------------- 基础 UI ---------------- */
 function setBusy(busy) {
@@ -90,8 +139,12 @@ function addUserMsg(text) {
   msgAppend(el2("div", { class: "rd-msg user" }, esc(text)));
 }
 function beginAssistantMsg() {
+  /* 回答行 = 左侧单选圆圈 + 气泡；生成完成后可点选为检测目标 */
+  const row = el2("div", { class: "rd-msg-row" });
+  const pick = el2("span", { class: "rd-pick", title: "点击选中此回答作为检测/缓解对象" });
   const node = el2("div", { class: "rd-msg assistant" }, "生成中…");
-  msgAppend(node);
+  row.append(pick, node);
+  msgAppend(row);
   return node;
 }
 function el2(tag, attrs, html) {
@@ -102,20 +155,57 @@ function el2(tag, attrs, html) {
 }
 
 /* 结果显示在下方「检测结果」区域；清空时恢复占位提示 */
-function clearResultPanel() {
+/* 「检测结果」区域：按回答记录保存结果，顶部的标签可在同一条回答的不同方法结果间切换。
+   切换回答 → 展示该回答的结果集（没有则占位提示）；同一方法重跑 → 覆盖旧结果。 */
+function renderResultsPanel() {
+  const tabs = $("rd-result-tabs");
   const box = $("rd-result");
-  box.style.display = "none";
-  box.innerHTML = "";
-  $("rd-result-empty").style.display = "";
+  const empty = $("rd-result-empty");
+  const target = currentTarget();
+  const list = target ? (state.resultsByRecord[target.id] || []) : [];
+  tabs.innerHTML = "";
+  if (!target || !list.length) {
+    tabs.hidden = true;
+    box.style.display = "none";
+    box.innerHTML = "";
+    empty.style.display = "";
+    empty.textContent = target
+      ? "对该回答运行方法后，检测结果展示在这里；不同方法的结果都会保留，可在上方标签间切换查看。"
+      : "选择方法并运行后，检测结果展示在这里。";
+    return;
+  }
+  const idx = state.activeResultIdx[target.id];
+  const active = (typeof idx === "number" && idx >= 0 && idx < list.length) ? idx : list.length - 1;
+  state.activeResultIdx[target.id] = active;
+  list.forEach((item, i) => {
+    const pill = el2("button", { class: "rd-result-tab" + (i === active ? " is-active" : "") }, esc(item.title));
+    pill.addEventListener("click", () => { state.activeResultIdx[target.id] = i; renderResultsPanel(); });
+    tabs.append(pill);
+  });
+  tabs.hidden = false;
+  empty.style.display = "none";
+  box.style.display = "";
+  box.innerHTML = `<div class="rd-result-card">${list[active].html}</div>`;
 }
-function showResult(html) {
-  $("rd-result-empty").style.display = "none";
+
+function showResult(html, title) {
+  const target = currentTarget();
+  if (!target) return;
+  const list = (state.resultsByRecord[target.id] ||= []);
+  const item = { title: title || "结果", html };
+  const existing = list.findIndex((it) => it.title === item.title);
+  if (existing >= 0) list[existing] = item; // 同一方法重跑覆盖旧结果
+  else list.push(item);
+  state.activeResultIdx[target.id] = list.indexOf(item);
+  renderResultsPanel();
+}
+function showError(message) {
+  // 运行错误即时显示，不写入结果列表
+  renderResultsPanel();
   const box = $("rd-result");
   box.style.display = "";
-  box.append(el2("div", { class: "rd-result-card" }, html));
-  box.lastElementChild.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  box.innerHTML = `<div class="rd-result-card"><div class="rd-error">${esc(message)}</div></div>`;
 }
-function showError(message) { showResult(`<div class="rd-error">${esc(message)}</div>`); }
 
 async function api(action, payload) {
   const response = await fetch(`api/real/${action}`, {
@@ -192,10 +282,9 @@ async function generate() {
       }
     }
     if (!final) throw new Error("生成流意外结束");
-    state.response = final.response;
     bubble.innerHTML =
       `${esc(final.response)}<div class="rd-note">共 ${final.num_tokens} tokens · ${final.latency_seconds}s</div>`;
-    $("rd-run-hint").textContent = "模型已回答（见上方回答区）。选择右侧方法并填写参数后运行。";
+    commitAssistantAnswer(bubble, { prompt, response: final.response, num_tokens: final.num_tokens, latency_seconds: final.latency_seconds });
   } catch (err) {
     bubble.innerHTML = `<span style="color:#c0392b">生成失败：${esc(err.message)}</span>`;
   } finally {
@@ -216,11 +305,17 @@ function updateSamplingCard() {
   $("rd-sampling-title").textContent = mode === "hidden"
     ? "抽样（表征分析：n 条独立回答 → 隐状态矩阵）"
     : "抽样（一致性方法需要多个独立样本）";
+  // 「输出结果」框只在需要抽样的方法下出现
+  $("rd-samples-panel").hidden = !mode;
+  document.querySelector(".tut-shell").classList.toggle("no-samples", !mode);
 }
 
 async function sample() {
-  const prompt = $("rd-prompt").value.trim();
+  // 抽样针对「当前检测目标」的提问进行（未生成回答时退回输入框内容），保证样本与回答配套
+  const target = currentTarget();
+  const prompt = (target ? target.prompt : "") || $("rd-prompt").value.trim();
   if (!prompt) return toast("请先输入提示词");
+  state.samplesPrompt = prompt;
   const mode = samplingMode();
   if (!mode) return;
   setBusy(true);
@@ -277,8 +372,6 @@ function renderMethods() {
         if (spec.disabled) { toast(spec.disabled); return; }
         state.method = key;
         renderMethods(); renderParams(); updateSamplingCard(); postModelNeeds();
-        // 切换方法即清空上一次的检测结果，避免叠加
-        clearResultPanel();
       });
       box.append(node);
     }
@@ -363,10 +456,9 @@ function collectParams() {
 /* ---------------- 运行 ---------------- */
 async function run() {
   const tab = TABS[state.tab];
-  const prompt = $("rd-prompt").value.trim();
-  if (!prompt) return toast("请先在下方输入并发送提示词");
+  const target = currentTarget();
+  if (!target) return toast("请先发送提示词，等模型生成回答");
   if (!state.method) return toast("请先在右侧选择方法");
-  if (!state.response) return toast("请先发送提示词，等模型生成回答");
   const params = collectParams();
 
   if (state.tab === "blackbox" && !state.samples) {
@@ -374,27 +466,35 @@ async function run() {
     const num = $("rd-num-samples").value || "5";
     return showError(`黑盒一致性方法需要多个独立样本。请先点击「抽样」按钮（当前设置：${num} 条），再运行检测。`);
   }
-  if (state.tab === "whitebox" && (state.method === "eigenscore" || state.method === "effective_rank") && !state.hiddenSampleKey) {
-    setBusy(false);
-    return showError("表征分析方法需要先抽样：请点击抽样卡片里的「抽样」按钮，生成 n 条独立回答后再运行。");
+  if (state.tab === "blackbox" && state.samplesPrompt !== target.prompt) {
+    return showError("「输出结果」中的样本对应其他提问；请点击「抽样」按所选回答的提问重新抽样后再运行。");
+  }
+  if (state.tab === "whitebox" && (state.method === "eigenscore" || state.method === "effective_rank")) {
+    if (!state.hiddenSampleKey) {
+      setBusy(false);
+      return showError("表征分析方法需要先抽样：请点击抽样卡片里的「抽样」按钮，生成 n 条独立回答后再运行。");
+    }
+    if (state.samplesPrompt !== target.prompt) {
+      return showError("已抽出的隐状态样本对应其他提问；请点击「抽样」按所选回答的提问重新抽样后再运行。");
+    }
   }
 
   setBusy(true);
   try {
     if (state.tab === "whitebox") {
       const data = await api("detect", {
-        task: "whitebox", method: state.method, prompt, params,
+        task: "whitebox", method: state.method, prompt: target.prompt, params,
         sample_key: state.hiddenSampleKey || null,
       });
       renderDetection(data, tab);
     } else if (state.tab === "blackbox") {
       const data = await api("detect", {
-        task: "blackbox", method: state.method, prompt, response: state.response, samples: state.samples, params,
+        task: "blackbox", method: state.method, prompt: target.prompt, response: target.response, samples: state.samples, params,
       });
       renderDetection(data, tab);
     } else {
       const data = await api("mitigate", {
-        method: state.method, prompt,
+        method: state.method, prompt: target.prompt,
         context: $("rd-context").value.trim() || null, params,
       });
       renderMitigation(data);
@@ -460,7 +560,7 @@ function renderDetection(data, tab) {
     html += `<div class="rd-section-title">使用的样本（${inter.samples.length} 条）</div>`;
     html += inter.samples.map((s, i) => `<p class="rd-note"><b>${i + 1}.</b> ${esc(s.slice(0, 90))}${s.length > 90 ? "…" : ""}</p>`).join("");
   }
-  showResult(html);
+  showResult(html, `${tab.title} · ${f.method}`);
 }
 
 function renderMitigation(data) {
@@ -483,7 +583,7 @@ function renderMitigation(data) {
     }
     html += `</table>`;
   }
-  showResult(html);
+  showResult(html, `缓解方法 · ${data.method}`);
 }
 function flatten(obj, prefix) {
   const out = {};
@@ -506,8 +606,7 @@ function switchTab(tab) {
   document.querySelectorAll(".tut-page-tab").forEach((node) => {
     node.classList.toggle("is-active", node.dataset.tab === tab);
   });
-  // 切换白盒/黑盒/缓解标签同样清空上一次的检测结果
-  clearResultPanel();
+  // 检测结果按回答记录保存，切页签不清空
   renderMethods();
   renderParams();
   updateSamplingCard();
@@ -534,6 +633,8 @@ function init() {
   renderParams();
   updateSamplingCard();
   postModelNeeds();
+  renderTargetMarks();
+  renderResultsPanel();
 }
 
 init();
