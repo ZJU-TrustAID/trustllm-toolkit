@@ -10,7 +10,7 @@
   <body>
     <div class="app-shell">
       <nav class="tut-pages rd-tabs">
-        <span class="rd-tabs-label">选择方法</span>
+        <span class="rd-tabs-label">选择分类</span>
         <button class="tut-page-tab is-active" data-tab="whitebox"><span class="tab-no">01</span> 白盒检测</button>
         <button class="tut-page-tab" data-tab="blackbox"><span class="tab-no">02</span> 黑盒检测</button>
         <button class="tut-page-tab" data-tab="mitigation"><span class="tab-no">03</span> 幻觉缓解</button>
@@ -46,20 +46,23 @@
         <aside class="rd-panel rd-panel-side">
           <div id="rd-methods"></div>
           <button class="rd-btn rd-dark rd-run" id="rd-btn-run">开始检测 / 缓解</button>
+          <div id="rd-paper" class="rd-paper" hidden>
+            <a id="rd-paper-link" target="_blank" rel="noopener">
+              <span id="rd-paper-title"></span>
+              <span id="rd-paper-sec"></span>
+            </a>
+          </div>
           <p class="rd-hint" id="rd-run-hint">先在左侧发送提示词，再选择方法运行。</p>
         </aside>
 
-        <!-- 右下：参数设置（抽样 + 方法参数） -->
+        <!-- 右下：参数设置（高度固定为参数最多方法的长度） -->
         <section class="rd-panel rd-panel-params">
           <p class="rd-panel-title">参数设置</p>
           <p class="rd-label rd-params-for" id="rd-params-for" hidden></p>
-          <div class="rd-card" id="rd-sampling" style="display:none">
-            <p class="rd-label" id="rd-sampling-title">抽样</p>
-            <div class="rd-row">
-              <label class="rd-inline">样本数 <input type="number" id="rd-num-samples" min="2" max="10" step="1" placeholder="5" /></label>
-              <label class="rd-inline" id="rd-layer-wrap" style="display:none">隐状态层 <input type="number" id="rd-hidden-layer" step="1" placeholder="-1" /></label>
-              <button class="rd-btn" id="rd-btn-sample">抽样</button>
-            </div>
+          <div id="rd-sampling" style="display:none">
+            <label class="field field-num">样本数 <input type="number" id="rd-num-samples" min="2" max="10" step="1" placeholder="5" /></label>
+            <label class="field field-num" id="rd-layer-wrap" style="display:none">隐状态层 <input type="number" id="rd-hidden-layer" step="1" placeholder="-1" /></label>
+            <button class="rd-btn rd-dark rd-run" id="rd-btn-sample">抽样</button>
           </div>
           <div id="rd-params" class="rd-params"></div>
         </section>
@@ -78,8 +81,6 @@
           <div id="rd-result" class="rd-result" style="display:none"></div>
         </section>
       </main>
-
-      <footer class="footer"><span>Signal Desk</span><span>真实后端 · 结果与 toolkit CLI 完全一致</span></footer>
     </div>
 
     <script src="real.js"></script>

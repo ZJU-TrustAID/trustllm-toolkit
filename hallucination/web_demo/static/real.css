@@ -81,13 +81,27 @@
 .rd-method.disabled { color: #b3beb8; background: #fafbf7; cursor: not-allowed; }
 .rd-method.disabled:hover { border-color: var(--line); }
 .rd-method .rd-sub { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; font-weight: 400; }
-.rd-params .rd-label { margin-top: 12px; }
-.rd-params label.field { display: block; margin-bottom: 8px; font-size: 12.5px; color: #4a5852; }
-/* 数值参数：标签居左、输入框定宽居右，不再占满整行 */
-.rd-params label.field-num { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.rd-params label.field-num input { width: 140px; flex: 0 0 auto; margin-top: 0; text-align: right; }
-.rd-params input, .rd-params select, .rd-params textarea { width: 100%; box-sizing: border-box; margin-top: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+/* 参数设置：高度固定为参数最多方法（ITI）的长度，内容不足时留白/居中 */
+.rd-panel-params { min-height: 272px; }
+.rd-panel-params.rd-params-empty #rd-params { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; }
+.rd-panel-params.rd-params-empty #rd-params .rd-hint { margin: 0; text-align: center; }
+.rd-panel-params .rd-label { margin-top: 12px; }
+.rd-panel-params label.field { display: block; margin-bottom: 8px; font-size: 12.5px; color: #4a5852; }
+/* 数值参数：标签居左、输入框定宽居右，不再占满整行（含抽样参数字段） */
+.rd-panel-params label.field-num { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.rd-panel-params label.field-num input { width: 140px; flex: 0 0 auto; margin-top: 0; text-align: right; }
+.rd-panel-params input, .rd-panel-params select, .rd-panel-params textarea { width: 100%; box-sizing: border-box; margin-top: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
 .rd-run { width: 100%; justify-content: center; margin-top: 10px; padding: 10px 0; font-size: 14px; }
+/* 选中方法的论文出处：无边框紧凑样式，📄 符号直接连接论文名，完整换行显示，教材链接在其下 */
+.rd-paper { margin-top: 8px; min-width: 0; }
+.rd-paper a { display: block; font-size: 12px; line-height: 1.55; text-decoration: none; }
+.rd-paper a::before { content: "📄 "; }
+#rd-paper-title { display: inline; color: var(--muted); }
+#rd-paper-sec { display: block; margin-top: 2px; color: var(--green); font-weight: 650; }
+.rd-paper a:hover #rd-paper-sec { text-decoration: underline; }
+#rd-run-hint { margin-top: 8px; }
+/* 抽样区块与其后的方法参数之间保持间距 */
+#rd-sampling { margin-bottom: 10px; }
 .rd-result { border: none; background: transparent; border-radius: 0; padding: 0; margin: 0; }
 .rd-result-empty { color: var(--muted); font-size: 13.5px; text-align: center; padding: 44px 0; }
 /* 同一条回答多方法结果的切换标签 */

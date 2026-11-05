@@ -108,13 +108,32 @@ JSONL benchmark are documented in [docs/mitigation.md](docs/mitigation.md).
 python web_demo/server.py    # http://127.0.0.1:8765
 ```
 
-A MarkSec-style **教程模式** tutorial across three pages (白盒检测 /
-黑盒检测 / 缓解方法): click the prompt dialog to pick a prompt, choose a
-method in the right-hand option group, and 生成 simulates the streamed
-generation before rendering the method's result. The page never calls a
-model — real scorers and decoding math run on packaged teaching data
-(14 detection + 5 mitigation methods); run the CLI/notebooks locally for
-real inference. See [web_demo/README.md](web_demo/README.md).
+A real-backend chat workbench, laid out as six bordered cards
+（选择分类 / 模型问答 / 选择方法 / 参数设置 / 输出结果 / 检测结果；see the
+layout template in [web_demo/README.md](web_demo/README.md)):
+
+1. **选择分类**（top bar）— switch between 白盒检测 / 黑盒检测 / 幻觉缓解.
+2. **模型问答**（left, spans two rows）— streaming chat with the configured
+   model. Every answer is registered as a record and its bubble can be clicked
+   as the detection target; otherwise the latest answer is used.
+3. **选择方法**（top right）— methods grouped by the book's taxonomy, plus the
+   gated 「开始检测 / 缓解」button (unlocks once a method is selected, numeric
+   params are filled and any required sampling is done) and a paper reference
+   line linking to the matching textbook section, e.g.
+   `…/chapter-6/6-5/#基于词元概率检测`.
+4. **参数设置**（bottom right, fixed height）— sampling fields (样本数 /
+   隐状态层) with the 「抽样」button and per-method extra params; defaults are
+   grey placeholders and are never auto-filled or silently sent.
+5. **输出结果**（full width, shown only for sampling-based methods）— the
+   sampled independent answers.
+6. **检测结果**（full width）— results are archived per answer record with
+   pill tabs to switch between methods of the same answer; switching answers
+   switches the result set, switching tabs never clears it.
+
+The workbench calls `api/real/*` with a real model (local path / HF repo /
+OpenAI-compatible API) and returns results identical to the toolkit CLI.
+The legacy offline 教程模式 API (`GET /api/catalog`, `POST /api/method`) is
+still served for compatibility; see [web_demo/README.md](web_demo/README.md).
 
 ## Examples
 

@@ -13,8 +13,7 @@ const PRESET_PROMPTS = [
 
 const TABS = {
   whitebox: {
-    title: "白盒检测", panelTitle: "白盒检测方法", runLabel: "开始检测",
-    banner: "利用模型内部状态（词元概率、熵、隐藏层表征）估计置信度，适合白盒开源模型。",
+    title: "白盒检测", panelTitle: "选择方法", runLabel: "开始检测",
     methods: {
       mtp: { title: "最小词元概率", params: {} },
       lntp: { title: "长度归一化词元概率", params: {} },
@@ -29,8 +28,7 @@ const TABS = {
     ],
   },
   blackbox: {
-    title: "黑盒检测", panelTitle: "黑盒检测方法", runLabel: "开始检测",
-    banner: "只依赖输入与输出：采样一致性、证据比对、模型自评估，适合黑盒闭源模型。",
+    title: "黑盒检测", panelTitle: "选择方法", runLabel: "开始检测",
     methods: {
       p_true: { title: "P(True)", params: {} },
       exact_match: { title: "精准匹配率", params: {} },
@@ -46,8 +44,7 @@ const TABS = {
     ],
   },
   mitigation: {
-    title: "缓解方法", panelTitle: "幻觉缓解方法", runLabel: "开始缓解",
-    banner: "推理时干预解码、激活或后处理修正，改变模型输出。",
+    title: "缓解方法", panelTitle: "选择方法", runLabel: "开始缓解",
     methods: {
       dola: { title: "DoLa 层间对比解码", params: { relative_top: { label: "relative_top", type: "float", def: 0.1 } } },
       iti: { title: "ITI 推理激活干预", params: { probe: { label: "probe 产物路径", type: "text", def: "" }, top_k: { label: "top_k", type: "int", def: 48 }, alpha: { label: "alpha", type: "float", def: 15.0 } } },
@@ -60,6 +57,26 @@ const TABS = {
       { title: "事后修正", keys: ["cove"] },
     ],
   },
+};
+
+/* 方法 → 论文出处与教材小节锚点（教材 6-5：幻觉的检测与缓解） */
+const PAPER_REFS = {
+  "whitebox.mtp": { title: "A Stitch in Time Saves Nine: Detecting and Mitigating Hallucinations of LLMs by Validating Low-confidence Generation (Varshney et al., 2023)", secNum: "6.5.1.2 基于词元概率检测", section: "#基于词元概率检测" },
+  "whitebox.lntp": { title: "A Stitch in Time Saves Nine: Detecting and Mitigating Hallucinations of LLMs by Validating Low-confidence Generation (Varshney et al., 2023)", secNum: "6.5.1.2 基于词元概率检测", section: "#基于词元概率检测" },
+  "whitebox.token_entropy": { title: "On Hallucination and Predictive Uncertainty in Conditional Language Generation (Xiao & Wang, 2021)", secNum: "6.5.1.3 基于熵值检测", section: "#基于熵值检测" },
+  "whitebox.eigenscore": { title: "INSIDE: LLMs' Internal States Retain the Power of Hallucination Detection (Chen et al., 2024)", secNum: "6.5.1.4 基于表征分析检测", section: "#基于表征分析检测" },
+  "whitebox.effective_rank": { title: "Revisiting Hallucination Detection with Effective Rank-based Uncertainty (Wang et al., 2025)", secNum: "6.5.1.4 基于表征分析检测", section: "#基于表征分析检测" },
+  "blackbox.p_true": { title: "Language Models (Mostly) Know What They Know (Kadavath et al., 2022)", secNum: "6.5.1.7 基于模型自评估检测", section: "#基于模型自评估检测" },
+  "blackbox.exact_match": { title: "Measuring and Narrowing the Compositionality Gap in Language Models (Press et al., 2023)", secNum: "6.5.1.8 基于一致性检测", section: "#基于一致性检测" },
+  "blackbox.response_cosine": { title: "SelfCheckGPT: Zero-resource Black-box Hallucination Detection for Generative Large Language Models (Manakul et al., 2023)", secNum: "6.5.1.8 基于一致性检测", section: "#基于一致性检测" },
+  "blackbox.semantic_entropy": { title: "Detecting Hallucinations in Large Language Models Using Semantic Entropy (Farquhar et al., 2024)", secNum: "6.5.1.8 基于一致性检测", section: "#基于一致性检测" },
+  "blackbox.selfcheck_ngram": { title: "SelfCheckGPT: Zero-resource Black-box Hallucination Detection for Generative Large Language Models (Manakul et al., 2023)", secNum: "6.5.1.8 基于一致性检测", section: "#基于一致性检测" },
+  "blackbox.selfcheck_nli": { title: "SelfCheckGPT: Zero-resource Black-box Hallucination Detection for Generative Large Language Models (Manakul et al., 2023)", secNum: "6.5.1.8 基于一致性检测", section: "#基于一致性检测" },
+  "blackbox.bertscore": { title: "SelfCheckGPT: Zero-resource Black-box Hallucination Detection for Generative Large Language Models (Manakul et al., 2023)", secNum: "6.5.1.8 基于一致性检测", section: "#基于一致性检测" },
+  "mitigation.dola": { title: "DoLa: Decoding by Contrasting Layers Improves Factuality in Large Language Models (Chuang et al., 2024)", secNum: "6.5.2.1 层间对比解码", section: "#层间对比解码" },
+  "mitigation.iti": { title: "Inference-Time Intervention: Eliciting Truthful Answers from a Language Model (Li et al., 2023)", secNum: "6.5.2.2 推理激活干预", section: "#推理激活干预" },
+  "mitigation.cad": { title: "Trusting Your Evidence: Hallucinate Less with Context-aware Decoding (Shi et al., 2024)", secNum: "6.5.3 忠实性增强解码", section: "#忠实性增强解码" },
+  "mitigation.cove": { title: "Chain-of-Verification Reduces Hallucination in Large Language Models (Dhuliawala et al., 2024)", secNum: "6.5.3 忠实性增强解码", section: "#忠实性增强解码" },
 };
 
 const state = {
@@ -302,9 +319,6 @@ function updateSamplingCard() {
   const mode = samplingMode();
   $("rd-sampling").style.display = mode ? "" : "none";
   $("rd-layer-wrap").style.display = mode === "hidden" ? "" : "none";
-  $("rd-sampling-title").textContent = mode === "hidden"
-    ? "抽样（表征分析：n 条独立回答 → 隐状态矩阵）"
-    : "抽样（一致性方法需要多个独立样本）";
   // 「输出结果」框只在需要抽样的方法下出现
   $("rd-samples-panel").hidden = !mode;
   document.querySelector(".tut-shell").classList.toggle("no-samples", !mode);
@@ -358,7 +372,6 @@ function renderMethods() {
   const tab = TABS[state.tab];
   const box = $("rd-methods");
   box.innerHTML = `<p class="rd-panel-title">${tab.panelTitle}</p>`;
-  if (tab.banner) box.append(el2("div", { class: "rd-banner" }, esc(tab.banner)));
   if (!state.method || !tab.methods[state.method] || tab.methods[state.method].disabled) state.method = null;
   for (const group of tab.groups) {
     box.append(el2("p", { class: "rd-group-title" }, esc(group.title)));
@@ -379,29 +392,56 @@ function renderMethods() {
   if (!state.method) box.append(el2("div", {}, `<p class="rd-hint">点击方法后填写参数。</p>`));
 }
 
+/* 选中方法后，在「开始检测 / 缓解」下方展示一行论文出处，点击跳教材对应小节 */
+function updatePaperRef() {
+  const box = $("rd-paper");
+  const ref = state.method ? PAPER_REFS[`${state.tab}.${state.method}`] : null;
+  if (!ref) { box.hidden = true; return; }
+  box.hidden = false;
+  const link = $("rd-paper-link");
+  $("rd-paper-title").textContent = ref.title;
+  $("rd-paper-sec").textContent = `教材 ${ref.secNum} ↗`;
+  link.href = "https://trustllm.trustaid.net/docs/llm/chapters/chapter-6/6-5/" + ref.section;
+  link.title = ref.title; // 悬停查看完整论文题名
+}
+
 function renderParams() {
   const tab = TABS[state.tab];
   const box = $("rd-params");
+  const panel = box.closest(".rd-panel-params");
   box.innerHTML = "";
   $("rd-context-card").style.display = state.tab === "mitigation" ? "" : "none";
   $("rd-btn-run").textContent = tab.runLabel;
+  updatePaperRef();
   const head = $("rd-params-for");
   head.hidden = true;
   head.textContent = "";
-  if (!state.method) { box.innerHTML = `<p class="rd-hint">未选择方法。选中方法并完成参数设置后，「${esc(tab.runLabel)}」才会解锁。</p>`; updateRunButton(); return; }
+  if (!state.method) {
+    panel.classList.add("rd-params-empty"); // 无内容时在框内水平上下居中
+    box.innerHTML = `<p class="rd-hint">未选择方法。选中方法并完成参数设置后，「${esc(tab.runLabel)}」才会解锁。</p>`;
+    updateRunButton();
+    return;
+  }
   const spec = tab.methods[state.method];
   const params = spec.params || {};
   const stored = JSON.parse(localStorage.getItem(`rd.params2.${state.tab}.${state.method}`) || "{}");
+  const needsSampling = !!samplingMode();
   // 选中方法后，在「参数设置」标题下、参数上方标注「方法名」额外参数
-  if (Object.keys(params).length || samplingMode()) {
+  if (Object.keys(params).length || needsSampling) {
     head.hidden = false;
     head.textContent = `「${spec.title}」额外参数`;
   }
   if (!Object.keys(params).length) {
-    box.innerHTML = (samplingMode() ? `<p class="rd-hint">该方法需要先抽样：请在上方抽样卡片完成抽样（样本数 / 隐状态层），完成抽样后「${esc(tab.runLabel)}」才会解锁。</p>` : "");
+    // 无方法参数：需抽样时上方已展示抽样参数（此处留空），否则居中一行提示
+    if (needsSampling) panel.classList.remove("rd-params-empty");
+    else {
+      panel.classList.add("rd-params-empty");
+      box.innerHTML = `<p class="rd-hint">该方法无需额外参数。</p>`;
+    }
     updateRunButton();
     return;
   }
+  panel.classList.remove("rd-params-empty");
   for (const [key, p] of Object.entries(params)) {
     // 默认值不直接填入，仅作灰色占位提示；只有用户此前真正填写过的值才回填
     const value = stored[key] !== undefined && stored[key] !== "" ? String(stored[key]) : "";
@@ -513,7 +553,6 @@ function renderDetection(data, tab) {
     ? '<span class="rd-badge bad">判定：幻觉风险较高 (risk ≥ 0.5)</span>'
     : '<span class="rd-badge ok">判定：风险较低 (risk < 0.5)</span>';
   let html = `
-    <div class="eyebrow">${esc(tab.title)} · ${esc(f.method)}</div>
     <div class="rd-final">
       <div><div class="big-num">${f.score.toFixed(4)}</div><div class="big-label">score（置信度）</div></div>
       <div><div class="big-num">${f.risk.toFixed(4)}</div><div class="big-label">risk（幻觉风险）</div></div>
@@ -565,7 +604,6 @@ function renderDetection(data, tab) {
 
 function renderMitigation(data) {
   let html = `
-    <div class="eyebrow">缓解方法 · ${esc(data.method)}</div>
     <div class="rd-final">
       <div><div class="big-num" style="font-size:16px">${data.latency_seconds}s</div><div class="big-label">耗时</div></div>
     </div>
