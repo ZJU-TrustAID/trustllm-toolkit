@@ -74,7 +74,9 @@ const state = {
 /* ---------------- 基础 UI ---------------- */
 function setBusy(busy) {
   state.busy = busy;
-  for (const id of ["rd-btn-generate", "rd-btn-run", "rd-btn-sample"]) $(id).disabled = busy;
+  for (const id of ["rd-btn-generate", "rd-btn-sample"]) $(id).disabled = busy;
+  $("rd-btn-run").disabled = busy;
+  if (!busy) updateRunButton(); // 解除忙碌后仍需遵守参数校验结果
 }
 
 /* 回答区（固定高度内滚）：用户消息回显 / 模型回答 */
@@ -99,8 +101,15 @@ function el2(tag, attrs, html) {
   return node;
 }
 
-/* 结果显示在输入框下方，随页面滚动 */
+/* 结果显示在下方「检测结果」区域；清空时恢复占位提示 */
+function clearResultPanel() {
+  const box = $("rd-result");
+  box.style.display = "none";
+  box.innerHTML = "";
+  $("rd-result-empty").style.display = "";
+}
 function showResult(html) {
+  $("rd-result-empty").style.display = "none";
   const box = $("rd-result");
   box.style.display = "";
   box.append(el2("div", { class: "rd-result-card" }, html));
@@ -215,7 +224,9 @@ async function sample() {
   const mode = samplingMode();
   if (!mode) return;
   setBusy(true);
-  $("rd-samples").textContent = "抽样中…";
+  const samplesBox = $("rd-samples");
+  samplesBox.className = "rd-samples-empty";
+  samplesBox.textContent = "抽样中…";
   try {
     if (mode === "hidden") {
       const data = await api("sample", {
@@ -236,11 +247,14 @@ async function sample() {
       renderSampleList(texts.texts);
     }
   } catch (err) {
-    $("rd-samples").textContent = "抽样失败：" + err.message;
+    if (mode === "hidden") state.hiddenSampleKey = null; else state.samples = null;
+    samplesBox.textContent = "抽样失败：" + err.message;
   } finally { setBusy(false); }
 }
 function renderSampleList(texts) {
-  $("rd-samples").innerHTML = texts.map((s, i) =>
+  const samplesBox = $("rd-samples");
+  samplesBox.className = "rd-samples-list";
+  samplesBox.innerHTML = texts.map((s, i) =>
     `<div class="rd-note"><b>样本 ${i + 1}</b>：${esc(s.slice(0, 120))}${s.length > 120 ? "…" : ""}</div>`).join("");
 }
 
@@ -248,7 +262,7 @@ function renderSampleList(texts) {
 function renderMethods() {
   const tab = TABS[state.tab];
   const box = $("rd-methods");
-  box.innerHTML = `<p class="rd-label">${tab.panelTitle}</p>`;
+  box.innerHTML = `<p class="rd-panel-title">${tab.panelTitle}</p>`;
   if (tab.banner) box.append(el2("div", { class: "rd-banner" }, esc(tab.banner)));
   if (!state.method || !tab.methods[state.method] || tab.methods[state.method].disabled) state.method = null;
   for (const group of tab.groups) {
@@ -264,9 +278,7 @@ function renderMethods() {
         state.method = key;
         renderMethods(); renderParams(); updateSamplingCard(); postModelNeeds();
         // 切换方法即清空上一次的检测结果，避免叠加
-        const box = $("rd-result");
-        box.style.display = "none";
-        box.innerHTML = "";
+        clearResultPanel();
       });
       box.append(node);
     }
@@ -280,26 +292,56 @@ function renderParams() {
   box.innerHTML = "";
   $("rd-context-card").style.display = state.tab === "mitigation" ? "" : "none";
   $("rd-btn-run").textContent = tab.runLabel;
-  if (!state.method) { box.innerHTML = `<p class="rd-hint">未选择方法。</p>`; return; }
+  const head = $("rd-params-for");
+  head.hidden = true;
+  head.textContent = "";
+  if (!state.method) { box.innerHTML = `<p class="rd-hint">未选择方法。选中方法并完成参数设置后，「${esc(tab.runLabel)}」才会解锁。</p>`; updateRunButton(); return; }
   const spec = tab.methods[state.method];
   const params = spec.params || {};
-  const stored = JSON.parse(localStorage.getItem(`rd.params.${state.tab}.${state.method}`) || "{}");
+  const stored = JSON.parse(localStorage.getItem(`rd.params2.${state.tab}.${state.method}`) || "{}");
+  // 选中方法后，在「参数设置」标题下、参数上方标注「方法名」额外参数
+  if (Object.keys(params).length || samplingMode()) {
+    head.hidden = false;
+    head.textContent = `「${spec.title}」额外参数`;
+  }
   if (!Object.keys(params).length) {
-    box.innerHTML = `<p class="rd-label">「${esc(spec.title)}」无额外参数</p>` +
-      (tab.methods[state.method].sub.includes("需先抽样") ? `<p class="rd-hint">请在下方抽样卡片完成抽样（样本数 / 隐状态层），再运行。</p>` : "");
+    box.innerHTML = (samplingMode() ? `<p class="rd-hint">该方法需要先抽样：请在上方抽样卡片完成抽样（样本数 / 隐状态层），完成抽样后「${esc(tab.runLabel)}」才会解锁。</p>` : "");
+    updateRunButton();
     return;
   }
-  box.innerHTML = `<p class="rd-label">「${esc(spec.title)}」参数</p>`;
   for (const [key, p] of Object.entries(params)) {
-    const value = stored[key] !== undefined ? stored[key] : p.def;
+    // 默认值不直接填入，仅作灰色占位提示；只有用户此前真正填写过的值才回填
+    const value = stored[key] !== undefined && stored[key] !== "" ? String(stored[key]) : "";
     const id = `rd-p-${key}`;
     const wrap = document.createElement("label");
-    wrap.className = "field";
-    if (p.type === "int") wrap.innerHTML = `${esc(p.label)}<input type="number" id="${id}" step="1" value="${esc(value)}" />`;
-    else if (p.type === "float") wrap.innerHTML = `${esc(p.label)}<input type="number" step="0.05" id="${id}" value="${esc(value)}" />`;
-    else wrap.innerHTML = `${esc(p.label)}<textarea id="${id}" rows="2">${esc(value)}</textarea>`;
+    wrap.className = "field" + (p.type === "text" ? "" : " field-num");
+    if (p.type === "int") wrap.innerHTML = `${esc(p.label)}<input type="number" id="${id}" step="1" placeholder="${esc(p.def)}" value="${esc(value)}" />`;
+    else if (p.type === "float") wrap.innerHTML = `${esc(p.label)}<input type="number" step="0.05" id="${id}" placeholder="${esc(p.def)}" value="${esc(value)}" />`;
+    else wrap.innerHTML = `${esc(p.label)}<textarea id="${id}" rows="2" placeholder="${esc(p.def)}">${esc(value)}</textarea>`;
+    wrap.querySelector(`#${id}`).addEventListener("input", updateRunButton);
     box.append(wrap);
   }
+  updateRunButton();
+}
+
+/* 当前方法的抽样是否已完成（产出过可用样本） */
+function samplingDone() {
+  const mode = samplingMode();
+  if (mode === "text") return Array.isArray(state.samples) && state.samples.length > 0;
+  if (mode === "hidden") return !!state.hiddenSampleKey;
+  return true;
+}
+
+/* 「开始检测 / 缓解」解锁条件：已选方法 + 需要抽样的方法完成抽样 + 数值参数全部填写
+  （默认值仅作灰色占位提示，文本参数如产物路径可选）。 */
+function updateRunButton() {
+  const btn = $("rd-btn-run");
+  if (!state.method) { btn.disabled = true; return; }
+  if (!samplingDone()) { btn.disabled = true; return; }
+  const params = TABS[state.tab].methods[state.method].params || {};
+  const missing = Object.entries(params).some(([key, p]) =>
+    p.type !== "text" && String($(`rd-p-${key}`)?.value ?? "").trim() === "");
+  btn.disabled = missing;
 }
 
 function collectParams() {
@@ -310,11 +352,11 @@ function collectParams() {
     const node = $(`rd-p-${key}`);
     if (!node) continue;
     const raw = node.value.trim();
-    if (raw === "" && p.type === "text") continue;
-    params[key] = p.type === "int" ? parseInt(raw || String(p.def), 10)
-      : p.type === "float" ? parseFloat(raw || String(p.def)) : raw;
+    if (raw === "") continue; // 未填写的参数不回传、不落库，由后端自行取默认值
+    params[key] = p.type === "int" ? parseInt(raw, 10)
+      : p.type === "float" ? parseFloat(raw) : raw;
   }
-  localStorage.setItem(`rd.params.${state.tab}.${state.method}`, JSON.stringify(params));
+  localStorage.setItem(`rd.params2.${state.tab}.${state.method}`, JSON.stringify(params));
   return params;
 }
 
@@ -465,9 +507,7 @@ function switchTab(tab) {
     node.classList.toggle("is-active", node.dataset.tab === tab);
   });
   // 切换白盒/黑盒/缓解标签同样清空上一次的检测结果
-  const box = $("rd-result");
-  box.style.display = "none";
-  box.innerHTML = "";
+  clearResultPanel();
   renderMethods();
   renderParams();
   updateSamplingCard();
