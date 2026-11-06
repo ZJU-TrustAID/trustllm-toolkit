@@ -93,7 +93,7 @@
 .rd-panel-params input, .rd-panel-params select, .rd-panel-params textarea { width: 100%; box-sizing: border-box; margin-top: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
 .rd-run { width: 100%; justify-content: center; margin-top: 10px; padding: 10px 0; font-size: 14px; }
 /* 选中方法的教材链接：置于「开始检测/缓解」上方的一行小链接，悬停显示论文全称 */
-#rd-paper-link { display: inline-block; margin-bottom: 8px; font-size: 12px; font-weight: 650; color: var(--green); text-decoration: none; }
+#rd-paper-link { display: inline-block; margin-top: 3px; font-size: 12px; font-weight: 650; color: var(--green); text-decoration: none; }
 #rd-paper-link[hidden] { display: none; }
 #rd-paper-link:hover { text-decoration: underline; }
 #rd-run-hint { margin-top: 8px; }
