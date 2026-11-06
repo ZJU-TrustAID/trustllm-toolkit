@@ -74,38 +74,10 @@ Open `http://127.0.0.1:8765`.
    方法已完成抽样」全部满足前保持禁用；未满足时由 ④/⑥ 中的提示文案告知缺什么。
 8. **结果按记录归档、按方法覆盖**：⑥ 内同一回答的多个方法结果都保留，顶部胶囊
    标签切换；同一方法重跑覆盖旧结果；运行错误即时显示，不写入结果列表。
+9. **方法配套论文与教材链接**：选中方法后，③ 的主按钮下方出现一行论文出处
+   （📄 论文题名完整显示，自动换行），紧随其后是绿色链接「教材 6.5.x.x 小节名 ↗」，
+   点击在新标签页打开教材网页并锚定到对应小节，例如
+   `https://trustllm.trustaid.net/docs/llm/chapters/chapter-6/6-5/#基于词元概率检测`。
+   映射关系维护在 `real.js` 的 `PAPER_REFS`（16 个方法 ↔ 论文 ↔ 教材 6-5 小节）；
+   未选方法时该行隐藏。
 
-## 教程模式
-
-A textbook-companion tutorial with a MarkSec-style flow, organized as three
-pages (top tab bar): **白盒检测** (5 white-box detection methods), **黑盒检测**
-(9 black-box detection methods in the book's three categories) and
-**缓解方法** (5 mitigation methods). On each page:
-
-1. **提示词对话框**: click the dialog box, pick one of the prompts from the
-   popover, and the choice is echoed back into the box. The popover only
-   offers prompts the current page can demonstrate (the faithful theme, for
-   instance, has no mitigation to correct).
-2. **右侧方法选项组**: the sidebar lists exactly the current page's methods,
-   grouped on every page following the book (white-box: 基于词元概率检测 /
-   基于熵值检测 / 基于表征分析检测; black-box: 基于外部知识库验证 /
-   基于模型自评估检测 / 基于一致性检测; mitigation: 事实性增强解码 /
-   忠实性增强解码 / 事后修正 / 激活转向 · toolkit 扩展). No method is picked
-   automatically — select one explicitly; options that the selected prompt
-   cannot demonstrate are disabled, and the selected method shows a summary
-   card (book reference, principle, prerequisites).
-3. **生成**: clicking generate simulates the generation process — the answer
-   streams into the output box with a blinking caret — then the method result
-   renders below: the conclusion card (with the reference answer and the
-   risk formula), token-level annotations and the mechanism visualizations.
-
-**No model is called on this page.** The presets feed canned teaching data
-through the toolkit's *real* code: detection scorers run on canned
-`DetectionExample`s with the offline demo backends; DoLa/CAD replay the real
-decoding math (`jsd`, `apc_mask`, `contrast_logits`, `combine_context_logits`,
-`distribution_kl`) on a small canned vocabulary; CoVe runs the real
-four-stage chain on a scripted backend.
-
-API endpoints: `GET /api/catalog`, `POST /api/method {method, scenario}`.
-
-The demo page itself never calls a model; clone the toolkit and run the CLI/notebooks for real inference (see the repository README).
