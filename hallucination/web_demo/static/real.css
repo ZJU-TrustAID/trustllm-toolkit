@@ -81,8 +81,7 @@
 .rd-method.disabled { color: #b3beb8; background: #fafbf7; cursor: not-allowed; }
 .rd-method.disabled:hover { border-color: var(--line); }
 .rd-method .rd-sub { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; font-weight: 400; }
-/* 参数设置：高度固定为参数最多方法（ITI）的长度，内容不足时留白/居中 */
-.rd-panel-params { min-height: 272px; }
+/* 参数设置：高度随内容自由伸缩；无参数方法在框内居中一行提示 */
 .rd-panel-params.rd-params-empty #rd-params { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; }
 .rd-panel-params.rd-params-empty #rd-params .rd-hint { margin: 0; text-align: center; }
 .rd-panel-params .rd-label { margin-top: 12px; }
