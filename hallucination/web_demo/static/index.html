@@ -29,7 +29,7 @@
               <textarea id="rd-prompt" rows="2" placeholder="输入提示词，发送后模型开始回答…"></textarea>
               <div class="rd-row">
                 <select id="rd-prompt-preset"></select>
-                <label class="rd-inline">生成长度 <input type="number" id="rd-max-tokens" value="128" min="16" max="512" step="16" /></label>
+                <label class="rd-inline">生成长度 <input type="number" id="rd-max-tokens" value="512" min="16" max="1024" step="16" /></label>
                 <span class="rd-flex"></span>
                 <button class="rd-btn rd-dark" id="rd-btn-generate">发送</button>
               </div>
@@ -45,13 +45,8 @@
         <!-- 右上：方法选择 -->
         <aside class="rd-panel rd-panel-side">
           <div id="rd-methods"></div>
+          <a id="rd-paper-link" target="_blank" rel="noopener" hidden></a>
           <button class="rd-btn rd-dark rd-run" id="rd-btn-run">开始检测 / 缓解</button>
-          <div id="rd-paper" class="rd-paper" hidden>
-            <a id="rd-paper-link" target="_blank" rel="noopener">
-              <span id="rd-paper-title"></span>
-              <span id="rd-paper-sec"></span>
-            </a>
-          </div>
           <p class="rd-hint" id="rd-run-hint">先在左侧发送提示词，再选择方法运行。</p>
         </aside>
 

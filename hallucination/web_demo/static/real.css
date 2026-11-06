@@ -92,13 +92,10 @@
 .rd-panel-params label.field-num input { width: 140px; flex: 0 0 auto; margin-top: 0; text-align: right; }
 .rd-panel-params input, .rd-panel-params select, .rd-panel-params textarea { width: 100%; box-sizing: border-box; margin-top: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
 .rd-run { width: 100%; justify-content: center; margin-top: 10px; padding: 10px 0; font-size: 14px; }
-/* 选中方法的论文出处：无边框紧凑样式，📄 符号直接连接论文名，完整换行显示，教材链接在其下 */
-.rd-paper { margin-top: 8px; min-width: 0; }
-.rd-paper a { display: block; font-size: 12px; line-height: 1.55; text-decoration: none; }
-.rd-paper a::before { content: "📄 "; }
-#rd-paper-title { display: inline; color: var(--muted); }
-#rd-paper-sec { display: block; margin-top: 2px; color: var(--green); font-weight: 650; }
-.rd-paper a:hover #rd-paper-sec { text-decoration: underline; }
+/* 选中方法的教材链接：置于「开始检测/缓解」上方的一行小链接，悬停显示论文全称 */
+.rd-paper-link { display: inline-block; margin-bottom: 8px; font-size: 12px; font-weight: 650; color: var(--green); text-decoration: none; }
+.rd-paper-link[hidden] { display: none; }
+.rd-paper-link:hover { text-decoration: underline; }
 #rd-run-hint { margin-top: 8px; }
 /* 抽样区块与其后的方法参数之间保持间距 */
 #rd-sampling { margin-bottom: 10px; }

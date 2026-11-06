@@ -271,7 +271,7 @@ async function generate() {
     const response = await fetch("api/real/generate_stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, max_new_tokens: parseInt($("rd-max-tokens").value || "128", 10) }),
+      body: JSON.stringify({ prompt, max_new_tokens: parseInt($("rd-max-tokens").value || "512", 10) }),
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
@@ -342,7 +342,7 @@ async function sample() {
         mode: "hidden", prompt,
         n: parseInt($("rd-num-samples").value || "5", 10),
         layer: parseInt($("rd-hidden-layer").value || "-1", 10),
-        max_new_tokens: parseInt($("rd-max-tokens").value || "128", 10),
+        max_new_tokens: parseInt($("rd-max-tokens").value || "512", 10),
       });
       state.hiddenSampleKey = data.sample_key;
       renderSampleList(data.texts);
@@ -392,17 +392,15 @@ function renderMethods() {
   if (!state.method) box.append(el2("div", {}, `<p class="rd-hint">点击方法后填写参数。</p>`));
 }
 
-/* 选中方法后，在「开始检测 / 缓解」下方展示一行论文出处，点击跳教材对应小节 */
+/* 选中方法后，在「开始检测 / 缓解」上方显示教材对应小节链接（悬停可看论文全称） */
 function updatePaperRef() {
-  const box = $("rd-paper");
-  const ref = state.method ? PAPER_REFS[`${state.tab}.${state.method}`] : null;
-  if (!ref) { box.hidden = true; return; }
-  box.hidden = false;
   const link = $("rd-paper-link");
-  $("rd-paper-title").textContent = ref.title;
-  $("rd-paper-sec").textContent = `教材 ${ref.secNum} ↗`;
+  const ref = state.method ? PAPER_REFS[`${state.tab}.${state.method}`] : null;
+  if (!ref) { link.hidden = true; return; }
+  link.hidden = false;
+  link.textContent = `📄 教材 ${ref.secNum} ↗`;
   link.href = "https://trustllm.trustaid.net/docs/llm/chapters/chapter-6/6-5/" + ref.section;
-  link.title = ref.title; // 悬停查看完整论文题名
+  link.title = ref.title;
 }
 
 function renderParams() {
