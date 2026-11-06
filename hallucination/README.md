@@ -121,9 +121,10 @@ layout template in [web_demo/README.md](web_demo/README.md)):
    params are filled and any required sampling is done) and a paper reference
    line linking to the matching textbook section, e.g.
    `…/chapter-6/6-5/#基于词元概率检测`.
-4. **参数设置**（bottom right, fixed height）— sampling fields (样本数 /
+4. **参数设置**（bottom right）— sampling fields (样本数 /
    隐状态层) with the 「抽样」button and per-method extra params; defaults are
-   grey placeholders and are never auto-filled or silently sent.
+   grey placeholders and are never auto-filled or silently sent. Methods
+   without extra params show a centered hint instead.
 5. **输出结果**（full width, shown only for sampling-based methods）— the
    sampled independent answers.
 6. **检测结果**（full width）— results are archived per answer record with
