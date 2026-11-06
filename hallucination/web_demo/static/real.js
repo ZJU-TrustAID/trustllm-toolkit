@@ -411,9 +411,6 @@ function renderParams() {
   $("rd-context-card").style.display = state.tab === "mitigation" ? "" : "none";
   $("rd-btn-run").textContent = tab.runLabel;
   updatePaperRef();
-  const head = $("rd-params-for");
-  head.hidden = true;
-  head.textContent = "";
   if (!state.method) {
     panel.classList.add("rd-params-empty"); // 无内容时在框内水平上下居中
     box.innerHTML = `<p class="rd-hint">未选择方法。选中方法并完成参数设置后，「${esc(tab.runLabel)}」才会解锁。</p>`;
@@ -424,11 +421,6 @@ function renderParams() {
   const params = spec.params || {};
   const stored = JSON.parse(localStorage.getItem(`rd.params2.${state.tab}.${state.method}`) || "{}");
   const needsSampling = !!samplingMode();
-  // 选中方法后，在「参数设置」标题下、参数上方标注「方法名」额外参数
-  if (Object.keys(params).length || needsSampling) {
-    head.hidden = false;
-    head.textContent = `「${spec.title}」额外参数`;
-  }
   if (!Object.keys(params).length) {
     // 无方法参数：需抽样时上方已展示抽样参数（此处留空），否则居中一行提示
     if (needsSampling) panel.classList.remove("rd-params-empty");
