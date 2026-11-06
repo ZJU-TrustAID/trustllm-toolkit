@@ -13,7 +13,7 @@ const PRESET_PROMPTS = [
 
 const TABS = {
   whitebox: {
-    title: "白盒检测", panelTitle: "选择方法", runLabel: "开始检测",
+    title: "白盒检测", runLabel: "开始检测",
     methods: {
       mtp: { title: "最小词元概率", params: {} },
       lntp: { title: "长度归一化词元概率", params: {} },
@@ -28,7 +28,7 @@ const TABS = {
     ],
   },
   blackbox: {
-    title: "黑盒检测", panelTitle: "选择方法", runLabel: "开始检测",
+    title: "黑盒检测", runLabel: "开始检测",
     methods: {
       p_true: { title: "P(True)", params: {} },
       exact_match: { title: "精准匹配率", params: {} },
@@ -44,7 +44,7 @@ const TABS = {
     ],
   },
   mitigation: {
-    title: "缓解方法", panelTitle: "选择方法", runLabel: "开始缓解",
+    title: "幻觉缓解", runLabel: "开始缓解",
     methods: {
       dola: { title: "DoLa 层间对比解码", params: { relative_top: { label: "relative_top", type: "float", def: 0.1 } } },
       iti: { title: "ITI 推理激活干预", params: { probe: { label: "probe 产物路径", type: "text", def: "" }, top_k: { label: "top_k", type: "int", def: 48 }, alpha: { label: "alpha", type: "float", def: 15.0 } } },
@@ -81,6 +81,7 @@ const PAPER_REFS = {
 
 const state = {
   tab: "whitebox",
+  catExpanded: false,   // 用户是否展开过大类：刷新/初次打开默认全部收起
   method: null,
   records: [],          // 全部问答记录 [{ id, prompt, response, num_tokens, latency_seconds }]
   targetId: null,       // 手动选中的回答记录 id；null = 默认使用最新一条
@@ -129,11 +130,7 @@ function renderTargetMarks() {
     row.classList.toggle("rd-picked", manual);
     row.classList.toggle("rd-latest", !manual && !!latest && latest.id === bubble.dataset.recordId);
   });
-  const hint = $("rd-run-hint");
-  const target = currentTarget();
-  if (!target) hint.textContent = "先在左侧发送提示词，再选择方法运行。";
-  else if (state.targetId) hint.textContent = `将检测/缓解你选中的第 ${state.records.indexOf(target) + 1} 轮回答；再次点击该气泡取消，恢复为检测最新。`;
-  else hint.textContent = `默认将检测/缓解最新一次回答（第 ${state.records.length} 轮）；点击任意模型回答气泡可改选。`;
+  updateRunHint(); // 目标回答变化 → 运行按钮下方的提示随之刷新
   renderResultsPanel(); // 目标回答变化 → 结果面板随之切换到该回答的结果集
 }
 
@@ -368,28 +365,51 @@ function renderSampleList(texts) {
 }
 
 /* ---------------- 方法与参数 ---------------- */
+/* 方法列表：三个大类为可折叠分组（同越狱攻击工具包），展开即切换大类（手风琴），
+   组内保留教材小分类；未选方法时在列表末尾提示。 */
 function renderMethods() {
   const tab = TABS[state.tab];
   const box = $("rd-methods");
-  box.innerHTML = `<p class="rd-panel-title">${tab.panelTitle}</p>`;
+  box.innerHTML = "";
   if (!state.method || !tab.methods[state.method] || tab.methods[state.method].disabled) state.method = null;
-  for (const group of tab.groups) {
-    box.append(el2("p", { class: "rd-group-title" }, esc(group.title)));
-    for (const key of group.keys) {
-      const spec = tab.methods[key];
-      const node = document.createElement("div");
-      node.className = "rd-method" + (state.method === key ? " selected" : "") + (spec.disabled ? " disabled" : "");
-      node.innerHTML = esc(spec.title) +
-        (spec.disabled ? `<span class="rd-sub">${esc(spec.disabled)}</span>` : "");
-      node.addEventListener("click", () => {
-        if (spec.disabled) { toast(spec.disabled); return; }
-        state.method = key;
-        renderMethods(); renderParams(); updateSamplingCard(); postModelNeeds();
-      });
-      box.append(node);
+  Object.keys(TABS).forEach((key, i) => {
+    const cat = TABS[key];
+    const details = el2("details", { class: "rd-cat" });
+    // 刷新/初次打开默认全部收起；用户展开过大类后，重渲染时保持当前大类展开
+    if (key === state.tab && state.catExpanded) details.open = true;
+    details.append(el2("summary", {},
+      `<span class="tab-no">0${i + 1}</span><span>${esc(cat.title)}</span>` +
+      `<span class="rd-cat-count">${Object.keys(cat.methods).length}</span>` +
+      `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 5 5-5 5"/></svg>`));
+    const body = el2("div", { class: "rd-cat-body" });
+    for (const group of cat.groups) {
+      body.append(el2("p", { class: "rd-group-title" }, esc(group.title)));
+      for (const mkey of group.keys) body.append(methodNode(mkey, cat));
     }
-  }
+    details.append(body);
+    details.addEventListener("toggle", () => {
+      if (!details.open) return; // 手动收起：只保持视觉状态，不切换大类
+      state.catExpanded = true;
+      if (state.tab !== key) switchTab(key); // 展开即切换大类（手风琴）
+    });
+    box.append(details);
+  });
   if (!state.method) box.append(el2("div", {}, `<p class="rd-hint">点击方法后填写参数。</p>`));
+}
+
+/* 单个方法条目：选中高亮，超出当前模型能力的方法置灰 */
+function methodNode(mkey, cat) {
+  const spec = cat.methods[mkey];
+  const node = document.createElement("div");
+  node.className = "rd-method" + (state.method === mkey ? " selected" : "") + (spec.disabled ? " disabled" : "");
+  node.innerHTML = esc(spec.title) +
+    (spec.disabled ? `<span class="rd-sub">${esc(spec.disabled)}</span>` : "");
+  node.addEventListener("click", () => {
+    if (spec.disabled) { toast(spec.disabled); return; }
+    state.method = mkey;
+    renderMethods(); renderParams(); updateSamplingCard(); postModelNeeds();
+  });
+  return node;
 }
 
 /* 选中方法后，在「开始检测 / 缓解」上方显示教材对应小节链接（悬停可看论文全称） */
@@ -403,12 +423,25 @@ function updatePaperRef() {
   link.title = ref.title;
 }
 
+/* 上下文卡（提示词输入框上方）：缓解大类下显示；CAD 依赖上下文做对比解码，
+   选中 CAD 时卡片高亮并提示必填，其余方法可留空。 */
+function updateContextCard() {
+  const card = $("rd-context-card");
+  const hint = $("rd-context-hint");
+  card.style.display = state.tab === "mitigation" ? "" : "none";
+  const isCad = state.tab === "mitigation" && state.method === "cad";
+  card.classList.toggle("rd-context-needed", isCad);
+  hint.textContent = isCad
+    ? "已选中 CAD，上下文必填。请填入希望遵循的背景信息（如正确事实），缓解后模型会更多依赖该上下文。"
+    : "供缓解方法使用的背景信息；选中 CAD 方法后此项必填，其余方法可留空。";
+}
+
 function renderParams() {
   const tab = TABS[state.tab];
   const box = $("rd-params");
   const panel = box.closest(".rd-panel-params");
   box.innerHTML = "";
-  $("rd-context-card").style.display = state.tab === "mitigation" ? "" : "none";
+  updateContextCard();
   $("rd-btn-run").textContent = tab.runLabel;
   updatePaperRef();
   if (!state.method) {
@@ -455,16 +488,36 @@ function samplingDone() {
   return true;
 }
 
-/* 「开始检测 / 缓解」解锁条件：已选方法 + 需要抽样的方法完成抽样 + 数值参数全部填写
-  （默认值仅作灰色占位提示，文本参数如产物路径可选）。 */
+/* 数值参数是否未填全（默认值仅作占位提示，文本参数如产物路径可选） */
+function paramsMissing() {
+  const params = TABS[state.tab].methods[state.method]?.params || {};
+  return Object.entries(params).some(([key, p]) =>
+    p.type !== "text" && String($(`rd-p-${key}`)?.value ?? "").trim() === "");
+}
+
+/* 「开始检测 / 缓解」解锁条件：已选方法 + 需要抽样的方法完成抽样 + 数值参数全部填写。 */
 function updateRunButton() {
   const btn = $("rd-btn-run");
-  if (!state.method) { btn.disabled = true; return; }
-  if (!samplingDone()) { btn.disabled = true; return; }
-  const params = TABS[state.tab].methods[state.method].params || {};
-  const missing = Object.entries(params).some(([key, p]) =>
-    p.type !== "text" && String($(`rd-p-${key}`)?.value ?? "").trim() === "");
-  btn.disabled = missing;
+  if (!state.method) { btn.disabled = true; updateRunHint(); return; }
+  if (!samplingDone()) { btn.disabled = true; updateRunHint(); return; }
+  btn.disabled = paramsMissing();
+  updateRunHint();
+}
+
+/* 运行按钮下方的提示行：无目标回答时引导先发送提示词；已发送提示词且已选方法、
+   仅因数值参数未填全而禁用时，提示先设置参数；其余情况说明当前作用的目标回答。 */
+function updateRunHint() {
+  const hint = $("rd-run-hint");
+  const target = currentTarget();
+  if (!target) {
+    hint.textContent = "先在左侧发送提示词，再选择方法运行。";
+  } else if (state.method && $("rd-btn-run").disabled && paramsMissing()) {
+    hint.textContent = "先在下方设置参数，再开始运行。";
+  } else if (state.targetId) {
+    hint.textContent = `将检测/缓解你选中的第 ${state.records.indexOf(target) + 1} 轮回答；再次点击该气泡取消，恢复为检测最新。`;
+  } else {
+    hint.textContent = `默认将检测/缓解最新一次回答（第 ${state.records.length} 轮）；点击任意模型回答气泡可改选。`;
+  }
 }
 
 function collectParams() {
@@ -523,9 +576,14 @@ async function run() {
       });
       renderDetection(data, tab);
     } else {
+      const context = $("rd-context").value.trim();
+      if (state.method === "cad" && !context) {
+        setBusy(false);
+        return toast("已选中 CAD 方法：请先在上方「上下文」中填入背景信息（必填），再运行缓解。");
+      }
       const data = await api("mitigate", {
         method: state.method, prompt: target.prompt,
-        context: $("rd-context").value.trim() || null, params,
+        context: context || null, params,
       });
       renderMitigation(data);
     }
@@ -611,7 +669,7 @@ function renderMitigation(data) {
     }
     html += `</table>`;
   }
-  showResult(html, `缓解方法 · ${data.method}`);
+  showResult(html, `幻觉缓解 · ${data.method}`);
 }
 function flatten(obj, prefix) {
   const out = {};
@@ -631,32 +689,56 @@ function shorten(value) {
 function switchTab(tab) {
   state.tab = tab;
   state.method = null;
-  document.querySelectorAll(".tut-page-tab").forEach((node) => {
-    node.classList.toggle("is-active", node.dataset.tab === tab);
-  });
-  // 检测结果按回答记录保存，切页签不清空
+  // 检测结果按回答记录保存，切大类不清空
   renderMethods();
   renderParams();
   updateSamplingCard();
   postModelNeeds();
 }
 
-function init() {
-  document.querySelectorAll(".tut-page-tab").forEach((node) => {
-    node.addEventListener("click", () => switchTab(node.dataset.tab));
+/* ---------------- 提示词输入胶囊 ----------------
+   左侧 + 弹出预设提示词与生成长度，右侧 ↑ 发送；输入框随内容自动增高 */
+function autosizePrompt() {
+  const ta = $("rd-prompt");
+  ta.style.height = "auto";
+  ta.style.height = `${Math.min(ta.scrollHeight, 132)}px`;
+}
+
+function initPromptBar() {
+  const popover = $("rd-preset-popover");
+  const plus = $("rd-btn-preset");
+  const list = $("rd-preset-list");
+  for (const p of PRESET_PROMPTS) {
+    const item = el2("button", { class: "rd-popover-item", type: "button" }, esc(p));
+    item.addEventListener("click", () => {
+      $("rd-prompt").value = p;
+      autosizePrompt();
+      popover.hidden = true;
+      plus.setAttribute("aria-expanded", "false");
+    });
+    list.append(item);
+  }
+  plus.addEventListener("click", (e) => {
+    e.stopPropagation();
+    popover.hidden = !popover.hidden;
+    plus.setAttribute("aria-expanded", String(!popover.hidden));
   });
+  popover.addEventListener("click", (e) => e.stopPropagation());
+  document.addEventListener("click", () => {
+    popover.hidden = true;
+    plus.setAttribute("aria-expanded", "false");
+  });
+  $("rd-prompt").addEventListener("input", autosizePrompt);
+}
+
+function init() {
   $("rd-btn-generate").addEventListener("click", generate);
   $("rd-btn-sample").addEventListener("click", sample);
   $("rd-btn-run").addEventListener("click", run);
-  $("rd-prompt-preset").addEventListener("change", () => {
-    if ($("rd-prompt-preset").value) $("rd-prompt").value = $("rd-prompt-preset").value;
-  });
   $("rd-prompt").addEventListener("keydown", (e) => {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); generate(); }
   });
-  const preset = $("rd-prompt-preset");
-  preset.append(new Option("选择预设提示词…", ""));
-  for (const p of PRESET_PROMPTS) preset.append(new Option(p, p));
+  initPromptBar();
   renderMethods();
   renderParams();
   updateSamplingCard();

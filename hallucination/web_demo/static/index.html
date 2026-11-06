@@ -9,11 +9,11 @@
   </head>
   <body>
     <div class="app-shell">
-      <nav class="tut-pages rd-tabs">
-        <span class="rd-tabs-label">选择分类</span>
-        <button class="tut-page-tab is-active" data-tab="whitebox"><span class="tab-no">01</span> 白盒检测</button>
-        <button class="tut-page-tab" data-tab="blackbox"><span class="tab-no">02</span> 黑盒检测</button>
-        <button class="tut-page-tab" data-tab="mitigation"><span class="tab-no">03</span> 幻觉缓解</button>
+      <nav class="mode-tabs" aria-label="实验模式">
+        <span class="mode-tabs-label">选择模式</span>
+        <button id="mode-demo" class="mode-tab active" type="button" aria-pressed="true"><span>01</span>预设回放<small>离线 · 不加载模型</small></button>
+        <button id="mode-live" class="mode-tab" type="button" aria-pressed="false"><span>02</span>实时模型<small id="live-mode-status">检查连接中</small></button>
+        <p id="mode-description">浏览已保存的教学记录；切换到实时模型后，才会提交新的实验。</p>
       </nav>
 
       <main class="tut-shell">
@@ -22,28 +22,38 @@
           <div class="rd-chat-body">
             <p class="rd-panel-title">模型问答</p>
             <div class="rd-msglist" id="rd-msglist">
-              <div class="rd-empty">发送提示词后，模型回答显示在这里；回答会保留，供右侧方法反复检测。</div>
-            </div>
-
-            <div class="rd-inputbar">
-              <textarea id="rd-prompt" rows="2" placeholder="输入提示词，发送后模型开始回答…"></textarea>
-              <div class="rd-row">
-                <select id="rd-prompt-preset"></select>
-                <label class="rd-inline">生成长度 <input type="number" id="rd-max-tokens" value="512" min="16" max="1024" step="16" /></label>
-                <span class="rd-flex"></span>
-                <button class="rd-btn rd-dark" id="rd-btn-generate">发送</button>
+              <div class="rd-empty">
+                <p class="rd-empty-title">你好，这里是幻觉演示助手</p>
+                <p class="rd-empty-sub">点击「+」选择预设问题发送，或在输入框输入提示词</p>
               </div>
             </div>
 
             <div class="rd-card" id="rd-context-card" style="display:none">
-              <p class="rd-label">上下文（CAD 冲突实验用，可留空）</p>
+              <p class="rd-label">上下文</p>
               <textarea id="rd-context" rows="2" placeholder="例如：阿根廷在 1978、1986 和 2022 年赢得了世界杯。"></textarea>
+              <p class="rd-hint" id="rd-context-hint"></p>
+            </div>
+
+            <div class="rd-inputbar">
+              <button class="rd-plus" id="rd-btn-preset" type="button" aria-label="选择预设提示词" aria-expanded="false">+</button>
+              <textarea id="rd-prompt" rows="1" placeholder="输入提示词，发送后模型开始回答…"></textarea>
+              <button class="rd-send" id="rd-btn-generate" type="button" aria-label="发送">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16V4m0 0-5 5m5-5 5 5" /></svg>
+              </button>
+              <div class="rd-popover" id="rd-preset-popover" hidden>
+                <p class="rd-popover-title">预设提示词</p>
+                <div id="rd-preset-list"></div>
+                <div class="rd-popover-field">
+                  <label class="rd-inline">生成长度 <input type="number" id="rd-max-tokens" value="512" min="16" max="1024" step="16" /></label>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <!-- 右上：方法选择 -->
+        <!-- 右上：方法选择（大类为可折叠分组，展开后是小分类与方法列表） -->
         <aside class="rd-panel rd-panel-side">
+          <p class="rd-panel-title">选择方法</p>
           <div id="rd-methods"></div>
           <a id="rd-paper-link" target="_blank" rel="noopener" hidden></a>
           <button class="rd-btn rd-dark rd-run" id="rd-btn-run">开始检测 / 缓解</button>
@@ -78,5 +88,6 @@
     </div>
 
     <script src="real.js"></script>
+    <script src="mode.js"></script>
   </body>
 </html>

@@ -4,14 +4,11 @@
 .rd-dot.on { background: var(--teal); box-shadow: 0 0 0 4px rgba(72, 191, 177, 0.15); }
 .rd-dot.busy { background: var(--amber); box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12); }
 .rd-status-text { font-size: 13px; color: #33403a; }
-.rd-flex { flex: 1; }
 .rd-btn { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; transition: border-color 140ms ease; }
 .rd-btn:hover:not(:disabled) { border-color: var(--green); }
 .rd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .rd-btn.rd-dark { background: var(--green); border-color: var(--green); color: #fff; font-weight: 650; }
 .rd-btn.rd-dark:hover:not(:disabled) { background: var(--green-hover); border-color: var(--green-hover); }
-.rd-row { display: flex; gap: 10px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
-.rd-row select { min-width: 210px; }
 .rd-inline { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #4a5852; }
 .rd-inline input { width: 90px; }
 .rd-card { border: 1px solid var(--line); background: #fdfdfa; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
@@ -56,24 +53,75 @@
 .rd-msg-row.rd-picked .rd-msg.assistant { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); }
 .rd-result-card { padding-bottom: 6px; margin-bottom: 10px; border-bottom: 1px dashed var(--line); }
 .rd-result-card:last-child { border-bottom: none; }
-.rd-empty { color: var(--muted); font-size: 13.5px; text-align: center; padding: 56px 0; }
+/* 空态欢迎语：在消息区内水平垂直居中（margin:auto 依赖 flex 列容器的剩余空间，
+   不用 justify-content:center 以免消息过多时顶部被裁切） */
+.rd-empty { margin: auto 0; text-align: center; }
+.rd-empty-title { margin: 0 0 10px; color: var(--deep-2); font-size: 20px; font-weight: 700; }
+.rd-empty-sub { margin: 0; color: var(--muted); font-size: 13.5px; }
 .rd-msg { max-width: 82%; padding: 10px 15px; border-radius: 14px; font-size: 14.5px; line-height: 1.8; white-space: pre-wrap; }
 .rd-msg.user { align-self: flex-end; background: var(--green-soft); color: var(--ink); border-bottom-right-radius: 4px; }
 .rd-msg.assistant { align-self: flex-start; background: #f7f8fa; border: 1px solid #d6dbe2; border-bottom-left-radius: 4px; }
 .rd-msg .rd-note { margin-top: 6px; }
+/* 提示词输入胶囊：左 +（弹出预设与生成长度）、中输入框（自适应增高）、右 ↑ 发送 */
 .rd-inputbar {
-  flex-shrink: 0; border: 1px solid var(--line); background: #fff; border-radius: 16px;
-  padding: 12px 14px; margin-bottom: 10px; box-shadow: 0 2px 12px rgba(23, 33, 31, 0.07);
+  flex-shrink: 0; position: relative;
+  display: flex; align-items: flex-end; gap: 9px;
+  border: 1px solid var(--line); background: #fff; border-radius: 26px;
+  padding: 7px 9px; margin-bottom: 10px; box-shadow: 0 2px 12px rgba(23, 33, 31, 0.07);
   transition: border-color 140ms ease, box-shadow 140ms ease;
 }
 .rd-inputbar:focus-within { border-color: var(--green); box-shadow: 0 2px 14px rgba(36, 91, 67, 0.14); }
-.rd-inputbar textarea { width: 100%; box-sizing: border-box; border: none; resize: vertical; font-size: 14px; font-family: inherit; background: transparent; }
+.rd-inputbar textarea {
+  flex: 1 1 auto; box-sizing: border-box; border: none; background: transparent;
+  resize: none; padding: 8px 2px; font-size: 14px; font-family: inherit; line-height: 1.6;
+  max-height: 132px; overflow-y: auto;
+}
 .rd-inputbar textarea:focus { outline: none; }
+.rd-plus {
+  flex: 0 0 34px; width: 34px; height: 34px; margin-bottom: 2px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%; background: #fff;
+  color: #4a5852; font-size: 17px; line-height: 1;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.rd-plus:hover { border-color: var(--green); color: var(--green); }
+.rd-send {
+  flex: 0 0 36px; width: 36px; height: 36px; margin-bottom: 2px;
+  display: grid; place-items: center;
+  border: 1px solid var(--green); border-radius: 50%;
+  background: var(--green); color: #fff;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.rd-send:hover:not(:disabled) { background: var(--green-hover); border-color: var(--green-hover); }
+.rd-send:disabled { opacity: 0.5; cursor: not-allowed; }
+.rd-send svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* + 弹层：预设提示词列表 + 生成长度，锚定在胶囊上方 */
+.rd-popover {
+  position: absolute; left: 6px; bottom: calc(100% + 10px); z-index: 30;
+  width: min(380px, calc(100% - 12px)); padding: 10px;
+  border: 1px solid var(--line); border-radius: 12px; background: #fff;
+  box-shadow: 0 12px 34px rgba(20, 42, 36, 0.16);
+}
+.rd-popover-title { margin: 2px 4px 6px; color: var(--muted); font-size: 11px; font-weight: 650; }
+.rd-popover-item {
+  display: block; width: 100%; text-align: left; padding: 8px 10px;
+  border: none; background: none; border-radius: 8px;
+  font-size: 13px; line-height: 1.6; color: var(--ink);
+  transition: background 140ms ease;
+}
+.rd-popover-item:hover { background: var(--green-soft); }
+.rd-popover-field { margin-top: 8px; padding: 8px 10px 2px; border-top: 1px solid var(--line); }
+.rd-popover-field .rd-inline input { width: 76px; }
 .rd-card textarea { width: 100%; box-sizing: border-box; resize: vertical; }
-.rd-inputbar .rd-btn.rd-dark { border-radius: 999px; padding: 7px 22px; }
 .rd-card { border: 1px solid var(--line); background: #fdfdfa; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
 .rd-card { border: 1px solid var(--line); background: #fdfdfa; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
 .rd-banner { margin: 2px 0 4px; padding: 10px 12px; border-left: 3px solid var(--amber); background: #fff8e9; color: #66502d; font-size: 12.5px; line-height: 1.7; }
+/* 上下文卡（提示词输入框上方）：选中 CAD 后绿色高亮为必填 */
+.rd-context-needed { border-color: var(--green); background: var(--green-soft); }
+.rd-context-needed .rd-label { color: var(--deep-2); }
+/* 提示行与卡片底缘的空隙收紧（抵消 p 默认下边距 + 卡片底部内边距） */
+#rd-context-card { padding-bottom: 8px; }
+#rd-context-card .rd-hint { margin-bottom: 0; }
 .rd-group-title { margin: 14px 0 7px; color: #4a5852; font-size: 12.5px; font-weight: 700; }
 .rd-method { display: block; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 9px 12px; margin-bottom: 7px; cursor: pointer; font-size: 13.5px; transition: border-color 140ms ease, background 140ms ease; }
 .rd-method:hover { border-color: var(--green); }
@@ -90,6 +138,8 @@
 .rd-panel-params label.field-num { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .rd-panel-params label.field-num input { width: 140px; flex: 0 0 auto; margin-top: 0; text-align: right; }
 .rd-panel-params input, .rd-panel-params select, .rd-panel-params textarea { width: 100%; box-sizing: border-box; margin-top: 3px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+/* 默认值占位：更浅的灰，与已填数值明显区分（配套参数框底部的占位说明行） */
+.rd-panel-params input::placeholder, .rd-panel-params textarea::placeholder { color: #b9c3ba; opacity: 1; }
 .rd-run { width: 100%; justify-content: center; margin-top: 10px; padding: 10px 0; font-size: 14px; }
 /* 选中方法的教材链接：置于「开始检测/缓解」上方的一行小链接，悬停显示论文全称 */
 #rd-paper-link { display: inline-block; margin-top: 3px; font-size: 12px; font-weight: 650; color: var(--green); text-decoration: none; }
@@ -121,18 +171,39 @@
 .rd-pop { background: #fdfdfa; border-radius: 10px; padding: 20px 22px; width: min(560px, 92vw); box-shadow: 0 18px 50px rgba(0,0,0,0.25); }
 .rd-pop h3 { margin: 0 0 6px; }
 .rd-pop input, .rd-pop select { flex: 1; border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font-size: 13px; }
-.rd-tabs {
+/* 大类折叠分组（同越狱攻击工具包的方法分组）：展开即切换大类，组内保留教材小分类；
+   展开内容整体相对大类标题缩进，形成「大类 → 小分类 → 方法」的层次 */
+.rd-cat + .rd-cat { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.rd-cat > summary {
+  display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 9px;
+  list-style: none; border-radius: 6px; cursor: pointer;
+  font-size: 13px; font-weight: 650; color: var(--deep-2);
+}
+.rd-cat > summary::-webkit-details-marker { display: none; }
+.rd-cat > summary:hover { background: var(--green-soft); }
+.rd-cat > summary svg { width: 12px; height: 12px; flex-shrink: 0; color: #97a39b; transition: transform 0.15s; }
+.rd-cat[open] > summary svg { transform: rotate(90deg); }
+.tab-no { font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 10.5px; color: #97a39b; }
+.rd-cat-count { margin-left: auto; color: #97a39b; font-size: 10.5px; font-weight: 400; }
+.rd-cat-body { margin: 0 0 6px; padding: 0 4px 0 22px; }
+/* 小分类标题弱于大类标题：更小一号，颜色退一层 */
+.rd-cat-body .rd-group-title { margin: 12px 0 6px; font-size: 11.5px; color: var(--muted); }
+.rd-cat-body .rd-group-title:first-child { margin-top: 4px; }
+/* 选择模式框（同越狱攻击工具包）：左侧固定标签，模式按钮居左，右侧说明随模式与模型状态变化 */
+.mode-tabs {
   position: relative;
-  display: flex; gap: 10px; justify-content: center; align-items: center;
-  margin-bottom: 14px; padding: 10px 14px;
+  display: flex; gap: 9px; align-items: center;
+  margin-bottom: 14px; padding: 10px 14px 10px 92px;
   border: 1px solid var(--line); background: #fdfdfa; border-radius: 8px;
 }
-.rd-tabs-label { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--deep-2); font-weight: 650; font-size: 14px; }
-.tab-no { font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 10.5px; margin-right: 4px; }
-.tut-page-tab { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; padding: 8px 18px; font-size: 13.5px; cursor: pointer; transition: border-color 140ms ease, background 140ms ease; }
-.tut-page-tab:hover { border-color: var(--green); }
-.tut-page-tab.is-active { background: var(--green); color: #fff; border-color: var(--green); font-weight: 650; }
-.tut-page-tab.is-active .tab-no { opacity: 0.75; }
+.mode-tabs-label { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--deep-2); font-weight: 650; font-size: 14px; }
+.mode-tab { display: flex; align-items: center; gap: 6px; padding: 8px 15px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 8px; font-size: 13px; line-height: 1.3; cursor: pointer; transition: border-color 140ms ease, background 140ms ease; }
+.mode-tab:hover { border-color: var(--green); }
+.mode-tab > span { font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 10.5px; color: #97a39b; }
+.mode-tab small { color: var(--muted); font-size: 10.5px; margin-left: 3px; }
+.mode-tab.active { color: #fff; background: var(--green); border-color: var(--green); font-weight: 650; }
+.mode-tab.active > span, .mode-tab.active small { color: rgba(255, 255, 255, 0.78); }
+.mode-tabs > p { flex: 1 1 auto; margin: 0 0 0 auto; text-align: right; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
 /* 窄屏时各区域按 DOM 顺序纵向堆叠；问答框还原为随内容自增高的常规布局 */
 @media (max-width: 1080px) {
   .tut-shell { grid-template-columns: 1fr; }
@@ -140,6 +211,15 @@
   .rd-panel-chat { position: static; padding: 14px 16px; }
   .rd-chat-body { position: static; inset: auto; }
   .rd-msglist { min-height: min(42vh, 380px); }
+  .mode-tabs > p { display: none; }
+}
+
+/* 更窄屏：模式框标签改为随流排列，状态小字隐藏，按钮可换行 */
+@media (max-width: 720px) {
+  .mode-tabs { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+  .mode-tabs-label { position: static; transform: none; padding: 0 4px; font-size: 12.5px; }
+  .mode-tab { padding: 7px 10px; font-size: 12px; }
+  .mode-tab small { display: none; }
 }
 
 /* 浮动提示（原状态栏移除后的轻量替代） */
